@@ -14,6 +14,8 @@ use Mcustiel\Phiremock\Server\Actions\ResetRequestsCountAction;
 use Mcustiel\Phiremock\Server\Actions\SearchRequestAction;
 use Mcustiel\Phiremock\Server\Actions\StoreRequestAction;
 use Mcustiel\Phiremock\Server\Actions\VerifyRequestFound;
+use Mcustiel\Phiremock\Server\Config\Actions;
+use Mcustiel\Phiremock\Server\Config\InputSources;
 use Mcustiel\Phiremock\Server\Config\Matchers;
 use Mcustiel\Phiremock\Server\Config\RouterConfig;
 use Mcustiel\Phiremock\Server\Http\Implementation\ReactPhpServer;
@@ -138,10 +140,10 @@ $di->register('conditionsMatcherFactory', function () use ($di) {
 
 $di->register('inputSourceFactory', function () {
     return new InputSourceFactory([
-        'method' => new SingletonLazyCreator(Method::class),
-        'url'    => new SingletonLazyCreator(UrlFromPath::class),
-        'header' => new SingletonLazyCreator(Header::class),
-        'body'   => new SingletonLazyCreator(Body::class),
+        InputSources::METHOD => new SingletonLazyCreator(Method::class),
+        InputSources::URL    => new SingletonLazyCreator(UrlFromPath::class),
+        InputSources::HEADER => new SingletonLazyCreator(Header::class),
+        InputSources::BODY   => new SingletonLazyCreator(Body::class),
     ]);
 });
 
@@ -164,7 +166,7 @@ $di->register('matcherFactory', function () {
 
 $di->register('actionFactory', function () use ($di) {
     return new ActionFactory([
-        'addExpectation' => new SingletonLazyCreator(
+        Actions::ADD_EXPECTATION => new SingletonLazyCreator(
             AddExpectationAction::class,
             [
                 $di->get('requestBuilder'),
@@ -172,20 +174,20 @@ $di->register('actionFactory', function () use ($di) {
                 $di->get('logger'),
             ]
         ),
-        'listExpectations' => new SingletonLazyCreator(
+        Actions::LIST_EXPECTATIONS => new SingletonLazyCreator(
             ListExpectationsAction::class,
             [$di->get('expectationStorage')]
         ),
-        'clearExpectations' => new SingletonLazyCreator(
+        Actions::CLEAR_EXPECTATIONS => new SingletonLazyCreator(
             ClearExpectationsAction::class,
             [$di->get('expectationStorage')]
         ),
-        'serverError'    => new SingletonLazyCreator(ServerError::class),
-        'clearScenarios' => new SingletonLazyCreator(
+        Actions::SERVER_ERROR    => new SingletonLazyCreator(ServerError::class),
+        Actions::CLEAR_SCENARIOS => new SingletonLazyCreator(
             ClearScenariosAction::class,
             [$di->get('scenarioStorage')]
         ),
-        'checkExpectations' => new SingletonLazyCreator(
+        Actions::CHECK_EXPECTATIONS => new SingletonLazyCreator(
             SearchRequestAction::class,
             [
                 $di->get('expectationStorage'),
@@ -193,7 +195,7 @@ $di->register('actionFactory', function () use ($di) {
                 $di->get('logger'),
             ]
         ),
-        'verifyExpectations' => new SingletonLazyCreator(
+        Actions::VERIFY_EXPECTATIONS => new SingletonLazyCreator(
             VerifyRequestFound::class,
             [
                 $di->get('scenarioStorage'),
@@ -201,7 +203,7 @@ $di->register('actionFactory', function () use ($di) {
                 $di->get('responseStrategyFactory'),
             ]
         ),
-        'countRequests' => new SingletonLazyCreator(
+        Actions::COUNT_REQUESTS => new SingletonLazyCreator(
             CountRequestsAction::class,
             [
                 $di->get('requestBuilder'),
@@ -210,11 +212,11 @@ $di->register('actionFactory', function () use ($di) {
                 $di->get('logger'),
             ]
         ),
-        'resetCount' => new SingletonLazyCreator(
+        Actions::RESET_COUNT => new SingletonLazyCreator(
             ResetRequestsCountAction::class,
             [$di->get('requestStorage')]
         ),
-        'storeRequest' => new SingletonLazyCreator(
+        Actions::STORE_REQUEST => new SingletonLazyCreator(
             StoreRequestAction::class,
             [$di->get('requestStorage')]
         ),

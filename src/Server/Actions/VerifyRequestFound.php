@@ -25,6 +25,11 @@ class VerifyRequestFound implements ActionInterface
      */
     private $responseStrategyFactory;
 
+    /**
+     * @param \Mcustiel\Phiremock\Server\Model\ScenarioStorage         $scenarioStorage
+     * @param \Psr\Log\LoggerInterface                                 $logger
+     * @param \Mcustiel\Phiremock\Server\Utils\ResponseStrategyFactory $responseStrategyFactory
+     */
     public function __construct(
         ScenarioStorage $scenarioStorage,
         LoggerInterface $logger,
@@ -35,6 +40,11 @@ class VerifyRequestFound implements ActionInterface
         $this->responseStrategyFactory = $responseStrategyFactory;
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Mcustiel\PowerRoute\Actions\ActionInterface::execute()
+     */
     public function execute(TransactionData $transactionData, $argument = null)
     {
         /**
@@ -57,6 +67,11 @@ class VerifyRequestFound implements ActionInterface
         $transactionData->setResponse($response);
     }
 
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     *
+     * @return string
+     */
     private function getLoggableResponse(ResponseInterface $response)
     {
         return $response->getStatusCode() . ' / '

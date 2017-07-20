@@ -11,6 +11,11 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class RegexResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface::createResponse()
+     */
     public function createResponse(Expectation $expectation, TransactionData $transactionData)
     {
         $responseConfig = $expectation->getResponse();
@@ -27,6 +32,13 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $httpResponse;
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation   $expectation
+     * @param \Psr\Http\Message\ResponseInterface      $httpResponse
+     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     private function getResponseWithBody(
         Expectation $expectation,
         ResponseInterface $httpResponse,
@@ -43,6 +55,13 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $httpResponse;
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation   $expectation
+     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
+     * @param string                                   $responseBody
+     *
+     * @return string
+     */
     private function fillWithBodyMatches($expectation, $httpRequest, $responseBody)
     {
         if ($this->bodyConditionIsRegex($expectation)) {
@@ -58,12 +77,24 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $responseBody;
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     *
+     * @return bool
+     */
     private function bodyConditionIsRegex($expectation)
     {
         return $expectation->getRequest()->getBody()
             && $expectation->getRequest()->getBody()->getMatcher() === Matchers::MATCHES;
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation   $expectation
+     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
+     * @param string                                   $responseBody
+     *
+     * @return string
+     */
     private function fillWithUrlMatches($expectation, $httpRequest, $responseBody)
     {
         if ($this->urlConditionIsRegex($expectation)) {
@@ -79,6 +110,11 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $responseBody;
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     *
+     * @return bool
+     */
     private function urlConditionIsRegex($expectation)
     {
         return $expectation->getRequest()->getUrl() && $expectation->getRequest()->getUrl()->getMatcher() === Matchers::MATCHES;

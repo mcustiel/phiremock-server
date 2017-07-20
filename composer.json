@@ -27,15 +27,14 @@
     "require" : {
         "php" : ">=5.6",
         "react/http" : "~0.7.0",
-        "symfony/cache": "^3.1",
         "mcustiel/power-route" : "^3.0.0",
         "mcustiel/php-simple-di" : "^1.2.1",
         "monolog/monolog" : "^1.17.2",
-        "mcustiel/phiremock-common" : "*"
+        "mcustiel/phiremock-common" : "dev-master"
     },
     "require-dev" : {
         "codeception/codeception" : "^2.2.10",
-        "mcustiel/phiremock-client" : "*"
+        "mcustiel/phiremock-client" : "dev-master"
     },
     "suggest" : {
         "ext-pcntl" : "Allows phiremock to handle system signals"

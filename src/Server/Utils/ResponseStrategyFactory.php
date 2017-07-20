@@ -16,6 +16,9 @@ class ResponseStrategyFactory
      */
     private $diService;
 
+    /**
+     * @param \Mcustiel\DependencyInjection\DependencyInjectionService $dependencyService
+     */
     public function __construct(DependencyInjectionService $dependencyService)
     {
         $this->diService = $dependencyService;
@@ -38,6 +41,11 @@ class ResponseStrategyFactory
         return $this->diService->get(HttpResponseStrategy::class);
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     *
+     * @return bool
+     */
     private function requestBodyOrUrlAreRegexp(Expectation $expectation)
     {
         return $expectation->getRequest()->getBody()

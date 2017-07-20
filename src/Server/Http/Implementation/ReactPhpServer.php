@@ -41,6 +41,9 @@ class ReactPhpServer implements ServerInterface
      */
     private $logger;
 
+    /**
+     * @param \Psr\Log\LoggerInterface
+     */
     public function __construct(LoggerInterface $logger)
     {
         $this->loop = EventLoop::create();
@@ -87,6 +90,11 @@ class ReactPhpServer implements ServerInterface
         $this->loop->stop();
     }
 
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     private function onRequest(ServerRequestInterface $request)
     {
         $start = microtime(true);
@@ -96,6 +104,11 @@ class ReactPhpServer implements ServerInterface
         return $psrResponse;
     }
 
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return \React\Promise\Promise
+     */
     private function createRequestManager(ServerRequestInterface $request)
     {
         return new Promise(function ($resolve, $reject) use ($request) {

@@ -4,6 +4,11 @@ namespace Mcustiel\Phiremock\Server\Utils;
 
 class HomePathService
 {
+    /**
+     * @throws \Exception
+     *
+     * @return string
+     */
     public function getHomePath()
     {
         $unixHome = getenv('HOME');

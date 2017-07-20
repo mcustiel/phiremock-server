@@ -26,6 +26,10 @@ abstract class AbstractRequestAction
      */
     protected $requestBuilder;
 
+    /**
+     * @param \Mcustiel\SimpleRequest\RequestBuilder $requestBuilder
+     * @param \Psr\Log\LoggerInterface               $logger
+     */
     public function __construct(
         RequestBuilder $requestBuilder,
         LoggerInterface $logger

@@ -14,6 +14,9 @@ class ListExpectationsAction implements ActionInterface
      */
     private $storage;
 
+    /**
+     * @param \Mcustiel\Phiremock\Server\Model\ExpectationStorage $storage
+     */
     public function __construct(ExpectationStorage $storage)
     {
         $this->storage = $storage;

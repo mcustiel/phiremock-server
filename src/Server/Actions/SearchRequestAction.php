@@ -25,6 +25,11 @@ class SearchRequestAction implements ActionInterface
      */
     private $logger;
 
+    /**
+     * @param \Mcustiel\Phiremock\Server\Model\ExpectationStorage           $storage
+     * @param \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator $comparator
+     * @param \Psr\Log\LoggerInterface                                      $logger
+     */
     public function __construct(
         ExpectationStorage $storage,
         RequestExpectationComparator $comparator,
@@ -54,6 +59,11 @@ class SearchRequestAction implements ActionInterface
         $transactionData->set('foundExpectation', $foundExpectation);
     }
 
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return \Mcustiel\Phiremock\Domain\Expectation|null
+     */
     private function searchForMatchingExpectation(ServerRequestInterface $request)
     {
         $lastFound = null;
@@ -64,6 +74,13 @@ class SearchRequestAction implements ActionInterface
         return $lastFound;
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation|null $lastFound
+     * @param \Psr\Http\Message\ServerRequestInterface    $request
+     * @param \\Mcustiel\Phiremock\Domain\Expectation     $expectation
+     *
+     * @return \Mcustiel\Phiremock\Domain\Expectation
+     */
     private function getNextMatchingExpectation($lastFound, ServerRequestInterface $request, Expectation $expectation)
     {
         if ($this->comparator->equals($request, $expectation)) {
@@ -75,10 +92,15 @@ class SearchRequestAction implements ActionInterface
         return $lastFound;
     }
 
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return string
+     */
     private function getLoggableRequest(ServerRequestInterface $request)
     {
         return $request->getMethod() . ': '
             . $request->getUri()->__toString() . ' || '
-                . preg_replace('|\s+|', ' ', $request->getBody()->__toString());
+            . preg_replace('|\s+|', ' ', $request->getBody()->__toString());
     }
 }

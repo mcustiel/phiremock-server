@@ -9,6 +9,10 @@ use Psr\Log\LoggerInterface;
 
 trait ExpectationValidator
 {
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     * @param \Psr\Log\LoggerInterface               $logger
+     */
     protected function validateExpectationOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
         $this->validateRequestOrThrowException($expectation, $logger);
@@ -16,6 +20,12 @@ trait ExpectationValidator
         $this->validateScenarioConfigOrThrowException($expectation, $logger);
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     * @param \Psr\Log\LoggerInterface               $logger
+     *
+     * @throws \RuntimeException
+     */
     protected function validateResponseOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
         if ($this->responseIsInvalid($expectation->getResponse())) {
@@ -24,6 +34,12 @@ trait ExpectationValidator
         }
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     * @param \Psr\Log\LoggerInterface               $logger
+     *
+     * @throws \RuntimeException
+     */
     protected function validateRequestOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
         if ($this->requestIsInvalid($expectation->getRequest())) {
@@ -32,17 +48,31 @@ trait ExpectationValidator
         }
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Response $response
+     *
+     * @return unknown
+     */
     protected function responseIsInvalid(Response $response)
     {
         return empty($response->getStatusCode());
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Request $request
+     *
+     * @return bool
+     */
     protected function requestIsInvalid(Request $request)
     {
         return empty($request->getBody()) && empty($request->getHeaders())
         && empty($request->getMethod()) && empty($request->getUrl());
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     * @param \Psr\Log\LoggerInterface               $logger
+     */
     protected function validateScenarioConfigOrThrowException(
         Expectation $expectation,
         LoggerInterface $logger
@@ -51,6 +81,12 @@ trait ExpectationValidator
         $this->validateScenarioStateOrThrowException($expectation, $logger);
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     * @param \Psr\Log\LoggerInterface               $logger
+     *
+     * @throws \RuntimeException
+     */
     protected function validateScenarioStateOrThrowException(
         Expectation $expectation,
         LoggerInterface $logger
@@ -63,6 +99,12 @@ trait ExpectationValidator
         }
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     * @param \Psr\Log\LoggerInterface               $logger
+     *
+     * @throws \RuntimeException
+     */
     protected function validateScenarioNameOrThrowException(
         Expectation $expectation,
         LoggerInterface $logger

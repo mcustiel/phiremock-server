@@ -8,8 +8,14 @@ use Mcustiel\PowerRoute\Common\TransactionData;
 
 class ResetRequestsCountAction implements ActionInterface
 {
+    /**
+     * @var \Mcustiel\Phiremock\Server\Model\RequestStorage
+     */
     private $storage;
 
+    /**
+     * @param \Mcustiel\Phiremock\Server\Model\RequestStorage $storage
+     */
     public function __construct(RequestStorage $storage)
     {
         $this->storage = $storage;

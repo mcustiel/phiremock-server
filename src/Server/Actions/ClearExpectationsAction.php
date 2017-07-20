@@ -8,8 +8,14 @@ use Mcustiel\PowerRoute\Common\TransactionData;
 
 class ClearExpectationsAction implements ActionInterface
 {
+    /**
+     * @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage
+     */
     private $storage;
 
+    /**
+     * @param \Mcustiel\Phiremock\Server\Model\ExpectationStorage $storage
+     */
     public function __construct(ExpectationStorage $storage)
     {
         $this->storage = $storage;

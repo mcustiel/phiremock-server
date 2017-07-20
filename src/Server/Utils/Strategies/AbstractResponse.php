@@ -13,13 +13,16 @@ class AbstractResponse
      */
     protected $logger;
 
+    /**
+     * @param \Psr\Log\LoggerInterface $logger
+     */
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
     /**
-     * @param $responseConfig
+     * @param \Mcustiel\Phiremock\Domain\Response $responseConfig
      */
     protected function processDelay(Response $responseConfig)
     {
@@ -31,6 +34,12 @@ class AbstractResponse
         }
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Response $responseConfig
+     * @param \Psr\Http\Message\ResponseInterface $httpResponse
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     protected function getResponseWithHeaders(Response $responseConfig, ResponseInterface $httpResponse)
     {
         if ($responseConfig->getHeaders()) {
@@ -42,6 +51,12 @@ class AbstractResponse
         return $httpResponse;
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Response $responseConfig
+     * @param \Psr\Http\Message\ResponseInterface $httpResponse
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     protected function getResponseWithStatusCode(Response $responseConfig, ResponseInterface $httpResponse)
     {
         if ($responseConfig->getStatusCode()) {

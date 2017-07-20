@@ -13,6 +13,9 @@ class StoreRequestAction implements ActionInterface
      */
     private $requestsStorage;
 
+    /**
+     * @param \Mcustiel\Phiremock\Server\Model\RequestStorage $requestsStorage
+     */
     public function __construct(RequestStorage $requestsStorage)
     {
         $this->requestsStorage = $requestsStorage;

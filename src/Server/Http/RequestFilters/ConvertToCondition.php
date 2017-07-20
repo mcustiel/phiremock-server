@@ -9,6 +9,11 @@ use Mcustiel\SimpleRequest\Interfaces\FilterInterface;
 
 class ConvertToCondition implements FilterInterface
 {
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Mcustiel\SimpleRequest\Interfaces\FilterInterface::filter()
+     */
     public function filter($value)
     {
         if ($value === null) {
@@ -32,6 +37,11 @@ class ConvertToCondition implements FilterInterface
     {
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @throws FilterErrorException
+     */
     private function validateValueOrThrowException($value)
     {
         if ($value === null) {
@@ -39,6 +49,11 @@ class ConvertToCondition implements FilterInterface
         }
     }
 
+    /**
+     * @param string $matcher
+     *
+     * @throws FilterErrorException
+     */
     private function validateMatcherOrThrowException($matcher)
     {
         if (!$this->isValidCondition($matcher)) {
@@ -46,6 +61,11 @@ class ConvertToCondition implements FilterInterface
         }
     }
 
+    /**
+     * @param string $matcherName
+     *
+     * @return bool
+     */
     private function isValidCondition($matcherName)
     {
         return $matcherName === Matchers::EQUAL_TO
@@ -54,6 +74,11 @@ class ConvertToCondition implements FilterInterface
             || $matcherName === Matchers::CONTAINS;
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @throws FilterErrorException
+     */
     private function checkValueIsValidOrThrowException($value)
     {
         if (!is_array($value) || count($value) !== 1) {

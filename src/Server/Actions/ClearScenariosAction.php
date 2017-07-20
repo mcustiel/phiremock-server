@@ -8,8 +8,14 @@ use Mcustiel\PowerRoute\Common\TransactionData;
 
 class ClearScenariosAction implements ActionInterface
 {
+    /**
+     * @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage
+     */
     private $storage;
 
+    /**
+     * @param \Mcustiel\Phiremock\Server\Model\ScenarioStorage $storage
+     */
     public function __construct(ScenarioStorage $storage)
     {
         $this->storage = $storage;

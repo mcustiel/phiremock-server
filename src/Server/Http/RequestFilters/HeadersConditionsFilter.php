@@ -17,6 +17,11 @@ class HeadersConditionsFilter implements FilterInterface
         $this->conditionFilter = new ConvertToCondition();
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Mcustiel\SimpleRequest\Interfaces\FilterInterface::filter()
+     */
     public function filter($value)
     {
         if ($value === null) {
@@ -42,6 +47,11 @@ class HeadersConditionsFilter implements FilterInterface
     {
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @throws FilterErrorException
+     */
     private function checkValueIsArrayOrThrowException($value)
     {
         if (!is_array($value)) {

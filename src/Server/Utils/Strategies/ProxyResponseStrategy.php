@@ -19,6 +19,10 @@ class ProxyResponseStrategy implements ResponseStrategyInterface
      */
     private $logger;
 
+    /**
+     * @param \Mcustiel\Phiremock\Common\Http\RemoteConnectionInterface $httpService
+     * @param \Psr\Log\LoggerInterface                                  $logger
+     */
     public function __construct(RemoteConnectionInterface $httpService, LoggerInterface $logger)
     {
         $this->httpService = $httpService;

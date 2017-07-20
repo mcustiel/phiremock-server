@@ -31,6 +31,12 @@ class RequestExpectationComparator
      */
     private $logger;
 
+    /**
+     * @param \Mcustiel\PowerRoute\Common\Factories\MatcherFactory     $matcherFactory
+     * @param \Mcustiel\PowerRoute\Common\Factories\InputSourceFactory $inputSourceFactory
+     * @param \Mcustiel\Phiremock\Server\Model\ScenarioStorage         $scenarioStorage
+     * @param \Psr\Log\LoggerInterface                                 $logger
+     */
     public function __construct(
         MatcherFactory $matcherFactory,
         InputSourceFactory $inputSourceFactory,
@@ -94,6 +100,11 @@ class RequestExpectationComparator
         return $atLeastOneExecution;
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     *
+     * @return bool
+     */
     private function isExpectedScenarioState(Expectation $expectation)
     {
         if ($expectation->getScenarioStateIs()) {
@@ -110,6 +121,11 @@ class RequestExpectationComparator
         return true;
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     *
+     * @throws \RuntimeException
+     */
     private function checkScenarioNameOrThrowException(Expectation $expectation)
     {
         if (!$expectation->getScenarioName()) {
@@ -119,8 +135,16 @@ class RequestExpectationComparator
         }
     }
 
-    private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
-    {
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
+     * @param \Mcustiel\Phiremock\Domain\Request       $expectedRequest
+     *
+     * @return unknown
+     */
+    private function requestMethodMatchesExpectation(
+        ServerRequestInterface $httpRequest,
+        Request $expectedRequest
+    ) {
         $inputSource = $this->inputSourceFactory->createFromConfig([
             'method' => null,
         ]);
@@ -131,8 +155,16 @@ class RequestExpectationComparator
         return $this->evaluate($inputSource, $matcher, $httpRequest);
     }
 
-    private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
-    {
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
+     * @param \Mcustiel\Phiremock\Domain\Request       $expectedRequest
+     *
+     * @return unknown
+     */
+    private function requestUrlMatchesExpectation(
+        ServerRequestInterface $httpRequest,
+        Request $expectedRequest
+    ) {
         $inputSource = $this->inputSourceFactory->createFromConfig([
             'url' => null,
         ]);
@@ -143,8 +175,16 @@ class RequestExpectationComparator
         return $this->evaluate($inputSource, $matcher, $httpRequest);
     }
 
-    private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
-    {
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
+     * @param \Mcustiel\Phiremock\Domain\Request       $expectedRequest
+     *
+     * @return unknown
+     */
+    private function requestBodyMatchesExpectation(
+        ServerRequestInterface $httpRequest,
+        Request $expectedRequest
+    ) {
         $inputSource = $this->inputSourceFactory->createFromConfig([
             'body' => null,
         ]);
@@ -155,8 +195,16 @@ class RequestExpectationComparator
         return $this->evaluate($inputSource, $matcher, $httpRequest);
     }
 
-    private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
-    {
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
+     * @param \Mcustiel\Phiremock\Domain\Request       $expectedRequest
+     *
+     * @return bool
+     */
+    private function requestHeadersMatchExpectation(
+        ServerRequestInterface $httpRequest,
+        Request $expectedRequest
+    ) {
         foreach ($expectedRequest->getHeaders() as $header => $headerCondition) {
             $inputSource = $this->inputSourceFactory->createFromConfig([
                 'header' => $header,
@@ -173,6 +221,13 @@ class RequestExpectationComparator
         return true;
     }
 
+    /**
+     * @param \Mcustiel\PowerRoute\Common\Conditions\ClassArgumentObject $inputSource
+     * @param \Mcustiel\PowerRoute\Common\Conditions\ClassArgumentObject $matcher
+     * @param \Psr\Http\Message\ServerRequestInterface                   $httpRequest
+     *
+     * @return unknown
+     */
     private function evaluate(
         ClassArgumentObject $inputSource,
         ClassArgumentObject $matcher,

@@ -23,6 +23,12 @@ class CountRequestsAction extends AbstractRequestAction implements ActionInterfa
      */
     private $comparator;
 
+    /**
+     * @param \Mcustiel\SimpleRequest\RequestBuilder                        $requestBuilder
+     * @param \Mcustiel\Phiremock\Server\Model\RequestStorage               $storage
+     * @param \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator $comparator
+     * @param \Psr\Log\LoggerInterface                                      $logger
+     */
     public function __construct(
         RequestBuilder $requestBuilder,
         RequestStorage $storage,
@@ -58,6 +64,11 @@ class CountRequestsAction extends AbstractRequestAction implements ActionInterfa
         );
     }
 
+    /**
+     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     *
+     * @return number
+     */
     private function searchForExecutionsCount(Expectation $expectation)
     {
         $count = 0;
