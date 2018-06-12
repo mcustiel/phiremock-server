@@ -1,6 +1,5 @@
 <?php
 
-
 use Mcustiel\Phiremock\Client\Phiremock as PhiremockClient;
 use Mcustiel\Phiremock\Client\Utils\A;
 use Mcustiel\Phiremock\Client\Utils\Is;
@@ -82,7 +81,7 @@ class ClientCest
 
         $expectations = $this->phiremock->listExpectations();
 
-        $I->assertTrue(gettype($expectations) === 'array');
+        $I->assertTrue('array' === gettype($expectations));
         $I->assertEquals(2, count($expectations));
         $I->assertEquals($expectation1, $expectations[0]);
         $I->assertEquals($expectation2, $expectations[1]);
@@ -158,6 +157,36 @@ class ClientCest
         $I->assertEquals(2, $count);
     }
 
+    public function listExecutionsTest(AcceptanceTester $I)
+    {
+        $I->sendDELETE('/__phiremock/executions');
+        $expectation = new Expectation();
+        $request = new Request();
+        $request->setMethod('get');
+        $request->setUrl(Is::matching('~^/(potato|tomato)~'));
+        $response = new Response();
+        $response->setStatusCode(201);
+        $response->setBody('Tomato!');
+        $expectation->setRequest($request)->setResponse($response);
+        $this->phiremock->createExpectation($expectation);
+
+        $I->sendGET('/potato');
+        $I->seeResponseCodeIs(201);
+        $I->seeResponseEquals('Tomato!');
+
+        $I->sendGET('/potato');
+        $I->sendGET('/tomato');
+
+        $executions = $this->phiremock->listExecutions(
+            A::getRequest()->andUrl(Is::equalTo('/potato'))
+        );
+        $I->assertEquals(2, count($executions));
+        foreach ($executions as $item) {
+            $I->assertEquals('GET', $item->method);
+            $I->assertContains('potato', $item->url);
+        }
+    }
+
     public function countExecutionsWhenNoExpectationIsSet(AcceptanceTester $I)
     {
         $I->sendDELETE('/__phiremock/executions');
@@ -212,5 +241,62 @@ class ClientCest
         $I->seeResponseCodeIs(202);
         $I->seeResponseEquals('Tomato!');
         $I->seeHttpHeader('X-Tomato', 'Potato-received');
+    }
+
+    public function shortcutShouldWorkAsExpected(AcceptanceTester $I)
+    {
+        $expectation = PhiremockClient::onRequest('get', '/potato')
+            ->thenRespond(200, 'Everything worked as expected');
+        $this->phiremock->createExpectation($expectation);
+        $I->sendGET('/potato');
+        $I->seeResponseCodeIs(200);
+        $I->seeResponseEquals('Everything worked as expected');
+    }
+
+    public function severalExpectationsAddedInOneCestTest(AcceptanceTester $I)
+    {
+        $expectation = new Expectation();
+        $request = new Request();
+        $request->setMethod('get');
+        $request->setUrl(new Condition('isEqualTo', '/potato'));
+        $response = new Response();
+        $response->setStatusCode(201);
+        $response->setBody('Tomato!');
+        $expectation->setRequest($request)->setResponse($response);
+        $this->phiremock->createExpectation($expectation);
+
+        $expectation = new Expectation();
+        $request = new Request();
+        $request->setMethod('post');
+        $request->setUrl(new Condition('isEqualTo', '/tomato'));
+        $response = new Response();
+        $response->setStatusCode(201);
+        $response->setBody('Potato!');
+        $expectation->setRequest($request)->setResponse($response);
+        $this->phiremock->createExpectation($expectation);
+
+        $expectation = new Expectation();
+        $request = new Request();
+        $request->setMethod('get');
+        $request->setUrl(new Condition('isEqualTo', '/coconut'));
+        $response = new Response();
+        $response->setStatusCode(201);
+        $response->setBody('Coconut!');
+        $expectation->setRequest($request)->setResponse($response);
+        $this->phiremock->createExpectation($expectation);
+
+        $expectation = new Expectation();
+        $request = new Request();
+        $request->setMethod('get');
+        $request->setUrl(new Condition('isEqualTo', '/banana'));
+        $response = new Response();
+        $response->setStatusCode(201);
+        $response->setBody('Banana!');
+        $expectation->setRequest($request)->setResponse($response);
+        $this->phiremock->createExpectation($expectation);
+
+        $expectations = $this->phiremock->listExpectations();
+
+        $I->assertCount(4, $expectations);
     }
 }

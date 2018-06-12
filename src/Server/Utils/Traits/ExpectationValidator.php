@@ -1,4 +1,20 @@
 <?php
+/**
+ * This file is part of Phiremock.
+ *
+ * Phiremock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Phiremock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace Mcustiel\Phiremock\Server\Utils\Traits;
 
@@ -10,8 +26,10 @@ use Psr\Log\LoggerInterface;
 trait ExpectationValidator
 {
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param Expectation     $expectation
+     * @param LoggerInterface $logger
+     *
+     * @throws \RuntimeException
      */
     protected function validateExpectationOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
@@ -21,8 +39,8 @@ trait ExpectationValidator
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param Expectation     $expectation
+     * @param LoggerInterface $logger
      *
      * @throws \RuntimeException
      */
@@ -35,8 +53,8 @@ trait ExpectationValidator
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param Expectation     $expectation
+     * @param LoggerInterface $logger
      *
      * @throws \RuntimeException
      */
@@ -49,9 +67,9 @@ trait ExpectationValidator
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Response $response
+     * @param Response $response
      *
-     * @return unknown
+     * @return bool
      */
     protected function responseIsInvalid(Response $response)
     {
@@ -59,7 +77,7 @@ trait ExpectationValidator
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Request $request
+     * @param Request $request
      *
      * @return bool
      */
@@ -70,8 +88,8 @@ trait ExpectationValidator
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param Expectation     $expectation
+     * @param LoggerInterface $logger
      */
     protected function validateScenarioConfigOrThrowException(
         Expectation $expectation,
@@ -82,8 +100,8 @@ trait ExpectationValidator
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param Expectation     $expectation
+     * @param LoggerInterface $logger
      *
      * @throws \RuntimeException
      */
@@ -100,8 +118,8 @@ trait ExpectationValidator
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param Expectation     $expectation
+     * @param LoggerInterface $logger
      *
      * @throws \RuntimeException
      */

@@ -10,16 +10,18 @@ use Mcustiel\Phiremock\Server\Actions\ClearExpectationsAction;
 use Mcustiel\Phiremock\Server\Actions\ClearScenariosAction;
 use Mcustiel\Phiremock\Server\Actions\CountRequestsAction;
 use Mcustiel\Phiremock\Server\Actions\ListExpectationsAction;
+use Mcustiel\Phiremock\Server\Actions\ListRequestsAction;
+use Mcustiel\Phiremock\Server\Actions\ReloadPreconfiguredExpectationsAction;
 use Mcustiel\Phiremock\Server\Actions\ResetRequestsCountAction;
 use Mcustiel\Phiremock\Server\Actions\SearchRequestAction;
+use Mcustiel\Phiremock\Server\Actions\SetScenarioStateAction;
 use Mcustiel\Phiremock\Server\Actions\StoreRequestAction;
 use Mcustiel\Phiremock\Server\Actions\VerifyRequestFound;
-use Mcustiel\Phiremock\Server\Config\Actions;
-use Mcustiel\Phiremock\Server\Config\InputSources;
 use Mcustiel\Phiremock\Server\Config\Matchers;
 use Mcustiel\Phiremock\Server\Config\RouterConfig;
 use Mcustiel\Phiremock\Server\Http\Implementation\ReactPhpServer;
 use Mcustiel\Phiremock\Server\Http\InputSources\UrlFromPath;
+use Mcustiel\Phiremock\Server\Http\Matchers\JsonObjectsEquals;
 use Mcustiel\Phiremock\Server\Model\Implementation\ExpectationAutoStorage;
 use Mcustiel\Phiremock\Server\Model\Implementation\RequestAutoStorage;
 use Mcustiel\Phiremock\Server\Model\Implementation\ScenarioAutoStorage;
@@ -27,7 +29,7 @@ use Mcustiel\Phiremock\Server\Phiremock;
 use Mcustiel\Phiremock\Server\Utils\FileExpectationsLoader;
 use Mcustiel\Phiremock\Server\Utils\HomePathService;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
-use Mcustiel\Phiremock\Server\Utils\ResponseStrategyFactory;
+use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
 use Mcustiel\Phiremock\Server\Utils\Strategies\HttpResponseStrategy;
 use Mcustiel\Phiremock\Server\Utils\Strategies\ProxyResponseStrategy;
 use Mcustiel\Phiremock\Server\Utils\Strategies\RegexResponseStrategy;
@@ -77,7 +79,7 @@ $di->register(ProxyResponseStrategy::class, function () use ($di) {
 });
 
 $di->register('responseStrategyFactory', function () use ($di) {
-    return new ResponseStrategyFactory($di);
+    return new ResponseStrategyLocator($di);
 });
 
 $di->register('config', function () {
@@ -99,6 +101,10 @@ $di->register('application', function () use ($di) {
 });
 
 $di->register('expectationStorage', function () {
+    return new ExpectationAutoStorage();
+});
+
+$di->register('expectationBackup', function () {
     return new ExpectationAutoStorage();
 });
 
@@ -127,6 +133,7 @@ $di->register('fileExpectationsLoader', function () use ($di) {
     return new FileExpectationsLoader(
         $di->get('requestBuilder'),
         $di->get('expectationStorage'),
+        $di->get('expectationBackup'),
         $di->get('logger')
     );
 });
@@ -140,10 +147,10 @@ $di->register('conditionsMatcherFactory', function () use ($di) {
 
 $di->register('inputSourceFactory', function () {
     return new InputSourceFactory([
-        InputSources::METHOD => new SingletonLazyCreator(Method::class),
-        InputSources::URL    => new SingletonLazyCreator(UrlFromPath::class),
-        InputSources::HEADER => new SingletonLazyCreator(Header::class),
-        InputSources::BODY   => new SingletonLazyCreator(Body::class),
+        'method' => new SingletonLazyCreator(Method::class),
+        'url'    => new SingletonLazyCreator(UrlFromPath::class),
+        'header' => new SingletonLazyCreator(Header::class),
+        'body'   => new SingletonLazyCreator(Body::class),
     ]);
 });
 
@@ -155,18 +162,19 @@ $di->register('router', function () use ($di) {
     );
 });
 
-$di->register('matcherFactory', function () {
+$di->register('matcherFactory', function () use ($di) {
     return new MatcherFactory([
         Matchers::EQUAL_TO    => new SingletonLazyCreator(Equals::class),
         Matchers::MATCHES     => new SingletonLazyCreator(RegExpMatcher::class),
         Matchers::SAME_STRING => new SingletonLazyCreator(CaseInsensitiveEquals::class),
         Matchers::CONTAINS    => new SingletonLazyCreator(ContainsMatcher::class),
+        Matchers::SAME_JSON   => new SingletonLazyCreator(JsonObjectsEquals::class, [$di->get('logger')]),
     ]);
 });
 
 $di->register('actionFactory', function () use ($di) {
     return new ActionFactory([
-        Actions::ADD_EXPECTATION => new SingletonLazyCreator(
+        'addExpectation' => new SingletonLazyCreator(
             AddExpectationAction::class,
             [
                 $di->get('requestBuilder'),
@@ -174,20 +182,38 @@ $di->register('actionFactory', function () use ($di) {
                 $di->get('logger'),
             ]
         ),
-        Actions::LIST_EXPECTATIONS => new SingletonLazyCreator(
+        'listExpectations' => new SingletonLazyCreator(
             ListExpectationsAction::class,
             [$di->get('expectationStorage')]
         ),
-        Actions::CLEAR_EXPECTATIONS => new SingletonLazyCreator(
+        'reloadExpectations' => new SingletonLazyCreator(
+            ReloadPreconfiguredExpectationsAction::class,
+            [
+                $di->get('expectationStorage'),
+                $di->get('expectationBackup'),
+                $di->get('logger'),
+            ]
+        ),
+        'clearExpectations' => new SingletonLazyCreator(
             ClearExpectationsAction::class,
             [$di->get('expectationStorage')]
         ),
-        Actions::SERVER_ERROR    => new SingletonLazyCreator(ServerError::class),
-        Actions::CLEAR_SCENARIOS => new SingletonLazyCreator(
+        'serverError' => new SingletonLazyCreator(
+            ServerError::class
+        ),
+        'setScenarioState' => new SingletonLazyCreator(
+            SetScenarioStateAction::class,
+            [
+                $di->get('requestBuilder'),
+                $di->get('scenarioStorage'),
+                $di->get('logger'),
+            ]
+        ),
+        'clearScenarios' => new SingletonLazyCreator(
             ClearScenariosAction::class,
             [$di->get('scenarioStorage')]
         ),
-        Actions::CHECK_EXPECTATIONS => new SingletonLazyCreator(
+        'checkExpectations' => new SingletonLazyCreator(
             SearchRequestAction::class,
             [
                 $di->get('expectationStorage'),
@@ -195,7 +221,7 @@ $di->register('actionFactory', function () use ($di) {
                 $di->get('logger'),
             ]
         ),
-        Actions::VERIFY_EXPECTATIONS => new SingletonLazyCreator(
+        'verifyExpectations' => new SingletonLazyCreator(
             VerifyRequestFound::class,
             [
                 $di->get('scenarioStorage'),
@@ -203,7 +229,7 @@ $di->register('actionFactory', function () use ($di) {
                 $di->get('responseStrategyFactory'),
             ]
         ),
-        Actions::COUNT_REQUESTS => new SingletonLazyCreator(
+        'countRequests' => new SingletonLazyCreator(
             CountRequestsAction::class,
             [
                 $di->get('requestBuilder'),
@@ -212,11 +238,20 @@ $di->register('actionFactory', function () use ($di) {
                 $di->get('logger'),
             ]
         ),
-        Actions::RESET_COUNT => new SingletonLazyCreator(
+        'listRequests' => new SingletonLazyCreator(
+            ListRequestsAction::class,
+            [
+                $di->get('requestBuilder'),
+                $di->get('requestStorage'),
+                $di->get('requestExpectationComparator'),
+                $di->get('logger'),
+            ]
+        ),
+        'resetCount' => new SingletonLazyCreator(
             ResetRequestsCountAction::class,
             [$di->get('requestStorage')]
         ),
-        Actions::STORE_REQUEST => new SingletonLazyCreator(
+        'storeRequest' => new SingletonLazyCreator(
             StoreRequestAction::class,
             [$di->get('requestStorage')]
         ),

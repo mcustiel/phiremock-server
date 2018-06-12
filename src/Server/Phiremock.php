@@ -1,4 +1,20 @@
 <?php
+/**
+ * This file is part of Phiremock.
+ *
+ * Phiremock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Phiremock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace Mcustiel\Phiremock\Server;
 
@@ -21,8 +37,8 @@ class Phiremock implements RequestHandlerInterface
     private $logger;
 
     /**
-     * @param \Mcustiel\PowerRoute\PowerRoute $router
-     * @param \Psr\Log\LoggerInterface        $logger
+     * @param PowerRoute      $router
+     * @param LoggerInterface $logger
      */
     public function __construct(PowerRoute $router, LoggerInterface $logger)
     {
@@ -33,7 +49,7 @@ class Phiremock implements RequestHandlerInterface
     /**
      * {@inheritdoc}
      *
-     * @see \Mcustiel\Phiremock\Server\Http\RequestHandler::execute()
+     * @see \Mcustiel\Phiremock\Server\Http\RequestHandlerInterface::execute()
      */
     public function execute(ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -41,6 +57,7 @@ class Phiremock implements RequestHandlerInterface
             return $this->router->start($request, $response);
         } catch (\Exception $e) {
             $this->logger->warning('Unexpected exception: ' . $e->getMessage());
+            $this->logger->debug($e->__toString());
 
             return $response->withStatus(500)
                 ->withBody(new StringStream($e->getMessage()));

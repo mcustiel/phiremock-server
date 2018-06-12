@@ -1,4 +1,20 @@
 <?php
+/**
+ * This file is part of Phiremock.
+ *
+ * Phiremock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Phiremock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace Mcustiel\Phiremock\Server\Actions;
 
@@ -26,9 +42,9 @@ class SearchRequestAction implements ActionInterface
     private $logger;
 
     /**
-     * @param \Mcustiel\Phiremock\Server\Model\ExpectationStorage           $storage
-     * @param \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator $comparator
-     * @param \Psr\Log\LoggerInterface                                      $logger
+     * @param ExpectationStorage           $storage
+     * @param RequestExpectationComparator $comparator
+     * @param LoggerInterface              $logger
      */
     public function __construct(
         ExpectationStorage $storage,
@@ -51,7 +67,7 @@ class SearchRequestAction implements ActionInterface
         $request = $transactionData->getRequest();
         $this->logger->info('Request received: ' . $this->getLoggableRequest($request));
         $foundExpectation = $this->searchForMatchingExpectation($request);
-        if ($foundExpectation === null) {
+        if (null === $foundExpectation) {
             $transactionData->set('foundExpectation', false);
 
             return;
@@ -60,9 +76,9 @@ class SearchRequestAction implements ActionInterface
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      *
-     * @return \Mcustiel\Phiremock\Domain\Expectation|null
+     * @return null|\Mcustiel\Phiremock\Domain\Expectation
      */
     private function searchForMatchingExpectation(ServerRequestInterface $request)
     {
@@ -75,16 +91,16 @@ class SearchRequestAction implements ActionInterface
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation|null $lastFound
-     * @param \Psr\Http\Message\ServerRequestInterface    $request
-     * @param \\Mcustiel\Phiremock\Domain\Expectation     $expectation
+     * @param null|\Mcustiel\Phiremock\Domain\Expectation $lastFound
+     * @param ServerRequestInterface                      $request
+     * @param Expectation                                 $expectation
      *
      * @return \Mcustiel\Phiremock\Domain\Expectation
      */
     private function getNextMatchingExpectation($lastFound, ServerRequestInterface $request, Expectation $expectation)
     {
         if ($this->comparator->equals($request, $expectation)) {
-            if ($lastFound === null || $expectation->getPriority() > $lastFound->getPriority()) {
+            if (null === $lastFound || $expectation->getPriority() > $lastFound->getPriority()) {
                 $lastFound = $expectation;
             }
         }
@@ -93,7 +109,7 @@ class SearchRequestAction implements ActionInterface
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      *
      * @return string
      */
@@ -101,6 +117,6 @@ class SearchRequestAction implements ActionInterface
     {
         return $request->getMethod() . ': '
             . $request->getUri()->__toString() . ' || '
-            . preg_replace('|\s+|', ' ', $request->getBody()->__toString());
+                . preg_replace('|\s+|', ' ', $request->getBody()->__toString());
     }
 }

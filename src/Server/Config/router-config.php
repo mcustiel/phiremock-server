@@ -1,20 +1,17 @@
 <?php
 
-use Mcustiel\Phiremock\Server\Config\Actions;
-use Mcustiel\Phiremock\Server\Config\InputSources;
-use Mcustiel\Phiremock\Server\Config\Matchers;
-
 return [
     'start' => 'expectationUrl',
     'nodes' => [
 // -------------------------------- API: expectations ---------------------------
+
         'expectationUrl' => [
             'condition' => [
                 'one-of' => [
                     [
-                        'input-source' => [InputSources::URL => 'path'],
+                        'input-source' => ['url' => 'path'],
                         'matcher'      => [
-                            Matchers::MATCHES => '/\\_\\_phiremock\/expectations\/?$/',
+                            'matches' => '/\\_\\_phiremock\/expectations\/?$/',
                         ],
                     ],
                 ],
@@ -32,18 +29,18 @@ return [
             'condition' => [
                 'all-of' => [
                     [
-                        'input-source' => [InputSources::METHOD => null],
-                        'matcher'      => [Matchers::EQUAL_TO => 'POST'],
+                        'input-source' => ['method' => null],
+                        'matcher'      => ['isEqualTo' => 'POST'],
                     ],
                     [
-                        'input-source' => [InputSources::HEADER => 'Content-Type'],
-                        'matcher'      => [Matchers::EQUAL_TO=> 'application/json'],
+                        'input-source' => ['header' => 'Content-Type'],
+                        'matcher'      => ['isEqualTo' => 'application/json'],
                     ],
                 ],
             ],
             'actions' => [
                 'if-matches' => [
-                    [Actions::ADD_EXPECTATION => null],
+                    ['addExpectation' => null],
                 ],
                 'else' => [
                     ['goto' => 'expectationMethodIsGet'],
@@ -54,14 +51,14 @@ return [
             'condition' => [
                 'one-of' => [
                     [
-                        'input-source' => [InputSources::METHOD => null],
-                        'matcher'      => [Matchers::EQUAL_TO => 'GET'],
+                        'input-source' => ['method' => null],
+                        'matcher'      => ['isEqualTo' => 'GET'],
                     ],
                 ],
             ],
             'actions' => [
                 'if-matches' => [
-                    [Actions::LIST_EXPECTATIONS => null],
+                    ['listExpectations' => null],
                 ],
                 'else' => [
                     ['goto' => 'expectationMethodIsDelete'],
@@ -72,14 +69,14 @@ return [
             'condition' => [
                 'one-of' => [
                     [
-                        'input-source' => [InputSources::METHOD => null],
-                        'matcher'      => [Matchers::EQUAL_TO => 'DELETE'],
+                        'input-source' => ['method' => null],
+                        'matcher'      => ['isEqualTo' => 'DELETE'],
                     ],
                 ],
             ],
             'actions' => [
                 'if-matches' => [
-                    [Actions::CLEAR_EXPECTATIONS => null],
+                    ['clearExpectations' => null],
                 ],
                 'else' => [
                     ['goto' => 'apiError'],
@@ -88,23 +85,42 @@ return [
         ],
 
 // -------------------------------- API: scenarios ---------------------------
+
         'scenariosUrl' => [
             'condition' => [
                 'one-of' => [
                     [
-                        'input-source' => [InputSources::URL => 'path'],
+                        'input-source' => ['url' => 'path'],
                         'matcher'      => [
-                            Matchers::MATCHES => '/\\_\\_phiremock\/scenarios\/?$/',
+                            'matches' => '/\\_\\_phiremock\/scenarios\/?$/',
                         ],
                     ],
                 ],
             ],
             'actions' => [
                 'if-matches' => [
-                    ['goto' => 'scenariosMethodIsDelete'],
+                    ['goto' => 'scenariosMethodIsPut'],
                 ],
                 'else' => [
                     ['goto' => 'verifyUrl'],
+                ],
+            ],
+        ],
+        'scenariosMethodIsPut' => [
+            'condition' => [
+                'one-of' => [
+                    [
+                        'input-source' => ['method' => null],
+                        'matcher'      => ['isEqualTo' => 'PUT'],
+                    ],
+                ],
+            ],
+            'actions' => [
+                'if-matches' => [
+                    ['setScenarioState' => null],
+                ],
+                'else' => [
+                    ['goto' => 'scenariosMethodIsDelete'],
                 ],
             ],
         ],
@@ -112,14 +128,14 @@ return [
             'condition' => [
                 'one-of' => [
                     [
-                        'input-source' => [InputSources::METHOD => null],
-                        'matcher'      => [Matchers::EQUAL_TO => 'DELETE'],
+                        'input-source' => ['method' => null],
+                        'matcher'      => ['isEqualTo' => 'DELETE'],
                     ],
                 ],
             ],
             'actions' => [
                 'if-matches' => [
-                    [Actions::CLEAR_SCENARIOS => null],
+                    ['clearScenarios' => null],
                 ],
                 'else' => [
                     ['goto' => 'apiError'],
@@ -133,9 +149,9 @@ return [
             'condition' => [
                 'one-of' => [
                     [
-                        'input-source' => [InputSources::URL => 'path'],
+                        'input-source' => ['url' => 'path'],
                         'matcher'      => [
-                            Matchers::MATCHES => '/\\_\\_phiremock\/executions\/?$/',
+                            'matches' => '/\\_\\_phiremock\/executions\/?$/',
                         ],
                     ],
                 ],
@@ -145,7 +161,7 @@ return [
                     ['goto' => 'verifyMethodIsPost'],
                 ],
                 'else' => [
-                    ['goto' => 'default'],
+                    ['goto' => 'resetUrl'],
                 ],
             ],
         ],
@@ -153,18 +169,40 @@ return [
             'condition' => [
                 'all-of' => [
                     [
-                        'input-source' => [InputSources::METHOD => null],
-                        'matcher'      => [Matchers::EQUAL_TO => 'POST'],
+                        'input-source' => ['method' => null],
+                        'matcher'      => ['isEqualTo' => 'POST'],
                     ],
                     [
-                        'input-source' => [InputSources::HEADER => 'Content-Type'],
-                        'matcher'      => [Matchers::EQUAL_TO => 'application/json'],
+                        'input-source' => ['header' => 'Content-Type'],
+                        'matcher'      => ['isEqualTo' => 'application/json'],
                     ],
                 ],
             ],
             'actions' => [
                 'if-matches' => [
-                    [Actions::COUNT_REQUESTS => null],
+                    ['countRequests' => null],
+                ],
+                'else' => [
+                    ['goto' => 'verifyMethodIsPut'],
+                ],
+            ],
+        ],
+        'verifyMethodIsPut' => [
+            'condition' => [
+                'all-of' => [
+                    [
+                        'input-source' => ['method' => null],
+                        'matcher'      => ['isEqualTo' => 'PUT'],
+                    ],
+                    [
+                        'input-source' => ['header' => 'Content-Type'],
+                        'matcher'      => ['isEqualTo' => 'application/json'],
+                    ],
+                ],
+            ],
+            'actions' => [
+                'if-matches' => [
+                    ['listRequests' => null],
                 ],
                 'else' => [
                     ['goto' => 'verifyMethodIsDelete'],
@@ -175,14 +213,58 @@ return [
             'condition' => [
                 'all-of' => [
                     [
-                        'input-source' => [InputSources::METHOD => null],
-                        'matcher'      => [Matchers::EQUAL_TO => 'DELETE'],
+                        'input-source' => ['method' => null],
+                        'matcher'      => ['isEqualTo' => 'DELETE'],
                     ],
                 ],
             ],
             'actions' => [
                 'if-matches' => [
-                    [Actions::RESET_COUNT => null],
+                    ['resetCount' => null],
+                ],
+                'else' => [
+                    ['goto' => 'apiError'],
+                ],
+            ],
+        ],
+
+// -------------------------------- API: reset ---------------------------
+
+        'resetUrl' => [
+            'condition' => [
+                'one-of' => [
+                    [
+                        'input-source' => ['url' => 'path'],
+                        'matcher'      => [
+                            'matches' => '~\\_\\_phiremock/reset/?$~',
+                        ],
+                    ],
+                ],
+            ],
+            'actions' => [
+                'if-matches' => [
+                    ['goto' => 'resetMethodIsPost'],
+                ],
+                'else' => [
+                    ['goto' => 'default'],
+                ],
+            ],
+        ],
+        'resetMethodIsPost' => [
+            'condition' => [
+                'one-of' => [
+                    [
+                        'input-source' => ['method' => null],
+                        'matcher'      => ['isEqualTo' => 'POST'],
+                    ],
+                ],
+            ],
+            'actions' => [
+                'if-matches' => [
+                    ['clearScenarios' => null],
+                    ['resetCount'         => null],
+                    ['clearExpectations'  => null],
+                    ['reloadExpectations' => null],
                 ],
                 'else' => [
                     ['goto' => 'apiError'],
@@ -191,24 +273,26 @@ return [
         ],
 
 // -------------------------------- API: error happened ---------------------------
+
         'apiError' => [
             'condition' => [],
             'actions'   => [
                 'if-matches' => [
-                    [Actions::SERVER_ERROR => null],
+                    ['serverError' => null],
                 ],
                 'else' => [],
             ],
         ],
 
 // ---------------------------- Verify configured expectations -----------------------
+
         'default' => [
             'condition' => [],
             'actions'   => [
                 'if-matches' => [
-                    [Actions::STORE_REQUEST => null],
-                    [Actions::CHECK_EXPECTATIONS  => null],
-                    [Actions::VERIFY_EXPECTATIONS => null],
+                    ['storeRequest' => null],
+                    ['checkExpectations'  => null],
+                    ['verifyExpectations' => null],
                 ],
                 'else' => [],
             ],

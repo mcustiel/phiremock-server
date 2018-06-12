@@ -1,9 +1,25 @@
 <?php
+/**
+ * This file is part of Phiremock.
+ *
+ * Phiremock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Phiremock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
-use Mcustiel\Phiremock\Server\Utils\ResponseStrategyFactory;
+use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
 use Mcustiel\PowerRoute\Actions\NotFound;
 use Mcustiel\PowerRoute\Common\TransactionData;
@@ -21,30 +37,25 @@ class VerifyRequestFound implements ActionInterface
      */
     private $logger;
     /**
-     * @var \Mcustiel\Phiremock\Server\Utils\ResponseStrategyFactory
+     * @var \Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator
      */
     private $responseStrategyFactory;
 
     /**
-     * @param \Mcustiel\Phiremock\Server\Model\ScenarioStorage         $scenarioStorage
-     * @param \Psr\Log\LoggerInterface                                 $logger
-     * @param \Mcustiel\Phiremock\Server\Utils\ResponseStrategyFactory $responseStrategyFactory
+     * @param ScenarioStorage         $scenarioStorage
+     * @param LoggerInterface         $logger
+     * @param ResponseStrategyLocator $responseStrategyFactory
      */
     public function __construct(
         ScenarioStorage $scenarioStorage,
         LoggerInterface $logger,
-        ResponseStrategyFactory $responseStrategyFactory
+        ResponseStrategyLocator $responseStrategyFactory
     ) {
         $this->scenarioStorage = $scenarioStorage;
         $this->logger = $logger;
         $this->responseStrategyFactory = $responseStrategyFactory;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\PowerRoute\Actions\ActionInterface::execute()
-     */
     public function execute(TransactionData $transactionData, $argument = null)
     {
         /**
@@ -68,14 +79,16 @@ class VerifyRequestFound implements ActionInterface
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param ResponseInterface $response
      *
      * @return string
      */
     private function getLoggableResponse(ResponseInterface $response)
     {
+        $body = $response->getBody()->__toString();
+
         return $response->getStatusCode() . ' / '
-            . preg_replace('|\s+|', ' ', $response->getBody()->__toString());
+            . strlen($body) > 5000 ? '--VERY LONG CONTENTS--' : preg_replace('|\s+|', ' ', $body);
     }
 
     /**

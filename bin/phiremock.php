@@ -1,7 +1,23 @@
 <?php
-declare(ticks = 1);
+/**
+ * This file is part of Phiremock.
+ *
+ * Phiremock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Phiremock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
+ */
+declare(ticks=1);
 
-if (PHP_SAPI != 'cli') {
+if (\PHP_SAPI !== 'cli') {
     throw new \Exception('This is a standalone CLI application');
 }
 
@@ -12,10 +28,10 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 }
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Mcustiel\Phiremock\Server\Config\Dependencies;
 use Mcustiel\Phiremock\Common\Utils\FileSystem;
+use Mcustiel\Phiremock\Server\Config\Dependencies;
 
-AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
+AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
 $options = getopt('p:i:e:d' /* p:i:p:e:r */, ['port:', 'ip:', 'debug', 'expectations-dir:']);
 
@@ -23,7 +39,7 @@ $port = isset($options['port']) ? $options['port'] : (isset($options['p']) ? $op
 $interface = isset($options['ip']) ? $options['ip'] : (isset($options['i']) ? $options['i'] : '0.0.0.0');
 $debug = isset($options['debug']) || isset($options['d']);
 
-define('LOG_LEVEL', $debug? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO);
+define('LOG_LEVEL', $debug ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO);
 define('APP_ROOT', dirname(__DIR__));
 
 $di = Dependencies::init();
@@ -34,8 +50,8 @@ $expectationsDirParam = isset($options['expectations-dir'])
     ? $options['expectations-dir']
     : (isset($options['e']) ? $options['e'] : null);
 $expectationsDir = $expectationsDirParam
-    ? (new FileSystem)->getRealPath($expectationsDirParam)
-    : $di->get('homePathService')->getHomePath() . DIRECTORY_SEPARATOR . '.phiremock/expectations';
+    ? (new FileSystem())->getRealPath($expectationsDirParam)
+    : $di->get('homePathService')->getHomePath() . \DIRECTORY_SEPARATOR . '.phiremock/expectations';
 
 $logger->debug("Phiremock's expectation dir: $expectationsDir");
 

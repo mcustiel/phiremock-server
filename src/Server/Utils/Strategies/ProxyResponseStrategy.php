@@ -1,4 +1,20 @@
 <?php
+/**
+ * This file is part of Phiremock.
+ *
+ * Phiremock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Phiremock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
@@ -20,8 +36,8 @@ class ProxyResponseStrategy implements ResponseStrategyInterface
     private $logger;
 
     /**
-     * @param \Mcustiel\Phiremock\Common\Http\RemoteConnectionInterface $httpService
-     * @param \Psr\Log\LoggerInterface                                  $logger
+     * @param RemoteConnectionInterface $httpService
+     * @param LoggerInterface           $logger
      */
     public function __construct(RemoteConnectionInterface $httpService, LoggerInterface $logger)
     {
@@ -32,7 +48,7 @@ class ProxyResponseStrategy implements ResponseStrategyInterface
     /**
      * {@inheritdoc}
      *
-     * @see \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseCreatorInterface::createResponse()
+     * @see \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface::createResponse()
      */
     public function createResponse(Expectation $expectation, TransactionData $transactionData)
     {

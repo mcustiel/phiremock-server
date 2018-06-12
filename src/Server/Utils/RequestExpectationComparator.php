@@ -1,4 +1,20 @@
 <?php
+/**
+ * This file is part of Phiremock.
+ *
+ * Phiremock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Phiremock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
@@ -32,10 +48,10 @@ class RequestExpectationComparator
     private $logger;
 
     /**
-     * @param \Mcustiel\PowerRoute\Common\Factories\MatcherFactory     $matcherFactory
-     * @param \Mcustiel\PowerRoute\Common\Factories\InputSourceFactory $inputSourceFactory
-     * @param \Mcustiel\Phiremock\Server\Model\ScenarioStorage         $scenarioStorage
-     * @param \Psr\Log\LoggerInterface                                 $logger
+     * @param MatcherFactory     $matcherFactory
+     * @param InputSourceFactory $inputSourceFactory
+     * @param ScenarioStorage    $scenarioStorage
+     * @param LoggerInterface    $logger
      */
     public function __construct(
         MatcherFactory $matcherFactory,
@@ -52,6 +68,8 @@ class RequestExpectationComparator
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
      * @param \Mcustiel\Phiremock\Domain\Expectation   $expectation
+     *
+     * @return bool
      */
     public function equals(ServerRequestInterface $httpRequest, Expectation $expectation)
     {
@@ -65,7 +83,7 @@ class RequestExpectationComparator
 
         $atLeastOneExecution = $this->compareRequestParts($httpRequest, $expectedRequest);
 
-        if ($atLeastOneExecution !== null && $expectedRequest->getHeaders()) {
+        if (null !== $atLeastOneExecution && $expectedRequest->getHeaders()) {
             $this->logger->debug('Checking headers against expectation');
 
             return $this->requestHeadersMatchExpectation($httpRequest, $expectedRequest);
@@ -101,7 +119,7 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     * @param Expectation $expectation
      *
      * @return bool
      */
@@ -122,7 +140,7 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     * @param Expectation $expectation
      *
      * @throws \RuntimeException
      */
@@ -136,15 +154,13 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\Request       $expectedRequest
+     * @param ServerRequestInterface $httpRequest
+     * @param Request                $expectedRequest
      *
-     * @return unknown
+     * @return bool
      */
-    private function requestMethodMatchesExpectation(
-        ServerRequestInterface $httpRequest,
-        Request $expectedRequest
-    ) {
+    private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
+    {
         $inputSource = $this->inputSourceFactory->createFromConfig([
             'method' => null,
         ]);
@@ -156,15 +172,13 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\Request       $expectedRequest
+     * @param ServerRequestInterface $httpRequest
+     * @param Request                $expectedRequest
      *
-     * @return unknown
+     * @return bool
      */
-    private function requestUrlMatchesExpectation(
-        ServerRequestInterface $httpRequest,
-        Request $expectedRequest
-    ) {
+    private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
+    {
         $inputSource = $this->inputSourceFactory->createFromConfig([
             'url' => null,
         ]);
@@ -176,15 +190,13 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\Request       $expectedRequest
+     * @param ServerRequestInterface $httpRequest
+     * @param Request                $expectedRequest
      *
-     * @return unknown
+     * @return bool
      */
-    private function requestBodyMatchesExpectation(
-        ServerRequestInterface $httpRequest,
-        Request $expectedRequest
-    ) {
+    private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
+    {
         $inputSource = $this->inputSourceFactory->createFromConfig([
             'body' => null,
         ]);
@@ -196,15 +208,13 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\Request       $expectedRequest
+     * @param ServerRequestInterface $httpRequest
+     * @param Request                $expectedRequest
      *
      * @return bool
      */
-    private function requestHeadersMatchExpectation(
-        ServerRequestInterface $httpRequest,
-        Request $expectedRequest
-    ) {
+    private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
+    {
         foreach ($expectedRequest->getHeaders() as $header => $headerCondition) {
             $inputSource = $this->inputSourceFactory->createFromConfig([
                 'header' => $header,
@@ -222,11 +232,11 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param \Mcustiel\PowerRoute\Common\Conditions\ClassArgumentObject $inputSource
-     * @param \Mcustiel\PowerRoute\Common\Conditions\ClassArgumentObject $matcher
-     * @param \Psr\Http\Message\ServerRequestInterface                   $httpRequest
+     * @param ClassArgumentObject    $inputSource
+     * @param ClassArgumentObject    $matcher
+     * @param ServerRequestInterface $httpRequest
      *
-     * @return unknown
+     * @return bool
      */
     private function evaluate(
         ClassArgumentObject $inputSource,

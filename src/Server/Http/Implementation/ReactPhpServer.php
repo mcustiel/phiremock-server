@@ -1,10 +1,27 @@
 <?php
+/**
+ * This file is part of Phiremock.
+ *
+ * Phiremock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Phiremock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace Mcustiel\Phiremock\Server\Http\Implementation;
 
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
 use Mcustiel\Phiremock\Server\Http\ServerInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as EventLoop;
@@ -42,7 +59,7 @@ class ReactPhpServer implements ServerInterface
     private $logger;
 
     /**
-     * @param \Psr\Log\LoggerInterface
+     * @param LoggerInterface $logger
      */
     public function __construct(LoggerInterface $logger)
     {
@@ -91,9 +108,9 @@ class ReactPhpServer implements ServerInterface
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     private function onRequest(ServerRequestInterface $request)
     {
@@ -105,7 +122,7 @@ class ReactPhpServer implements ServerInterface
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      *
      * @return \React\Promise\Promise
      */
@@ -118,16 +135,14 @@ class ReactPhpServer implements ServerInterface
                 $bodyStream .= $data;
             });
             $request->getBody()->on('end', function () use ($resolve, $request, &$bodyStream) {
-                /** @var ServerRequestInterface $request */
                 $response = $this->onRequest($request->withBody(new StringStream($bodyStream)));
                 $resolve($response);
             });
-            // an error occures e.g. on invalid chunked encoded data or an unexpected 'end' event
             $request->getBody()->on('error', function (\Exception $exception) use ($resolve) {
                 $response = new ReactResponse(
                     400,
                     ['Content-Type' => 'text/plain'],
-                    'An error occured while reading: '
+                    'An error occured while reading: ' . $exception->getMessage()
                 );
                 $resolve($response);
             });
