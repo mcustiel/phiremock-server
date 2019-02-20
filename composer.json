@@ -30,7 +30,7 @@
         "mcustiel/power-route" : "^3.0.0",
         "mcustiel/php-simple-di" : "^1.2.1",
         "monolog/monolog" : "^1.17.2",
-        "mcustiel/phiremock-common" : "^1.0"
+        "phiremock/phiremock-common" : "^1.0"
     },
     "suggest" : {
         "ext-pcntl" : "Allows phiremock to handle system signals"
