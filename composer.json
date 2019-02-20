@@ -17,10 +17,10 @@
     ],
     "autoload" : {
         "psr-4" : {
-            "Mcustiel\\Phiremock\\" : "src"
+            "Mcustiel\\Phiremock\\Server\\" : "src"
         }
     },
-    "name" : "phiremock/phiremock-server",
+    "name" : "mcustiel/phiremock-server",
     "type" : "project",
     "description" : "A mocker for HTTP and REST services",
     "license" : "GPL-3.0-or-later",
@@ -30,7 +30,7 @@
         "mcustiel/power-route" : "^3.0.0",
         "mcustiel/php-simple-di" : "^1.2.1",
         "monolog/monolog" : "^1.17.2",
-        "phiremock/phiremock-common" : "^1.0"
+        "mcustiel/phiremock-common" : "^1.0"
     },
     "suggest" : {
         "ext-pcntl" : "Allows phiremock to handle system signals"
