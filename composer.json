@@ -20,7 +20,7 @@
             "Mcustiel\\Phiremock\\" : "src"
         }
     },
-    "name" : "mcustiel/phiremock-server",
+    "name" : "phiremock/phiremock-server",
     "type" : "project",
     "description" : "A mocker for HTTP and REST services",
     "license" : "GPL-3.0-or-later",
