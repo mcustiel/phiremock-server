@@ -26,7 +26,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as EventLoop;
 use React\Http\Response as ReactResponse;
-use React\Http\Server as ReactServer;
 use React\Promise\Promise;
 use React\Socket\Server as ReactSocket;
 use Zend\Diactoros\Response as PsrResponse;
@@ -83,7 +82,8 @@ class ReactPhpServer implements ServerInterface
      */
     public function listen($port, $host)
     {
-        $this->http = new ReactServer(
+        $serverClass = $this->getReactServerClass();
+        $this->http = new $serverClass(
             function (ServerRequestInterface $request) {
                 return $this->createRequestManager($request);
             }
@@ -94,7 +94,7 @@ class ReactPhpServer implements ServerInterface
         $this->http->listen($this->socket);
 
         // Dispatch pending signals periodically
-        if (function_exists('pcntl_signal_dispatch')) {
+        if (\function_exists('pcntl_signal_dispatch')) {
             $this->loop->addPeriodicTimer(0.5, function () {
                 pcntl_signal_dispatch();
             });
@@ -105,6 +105,15 @@ class ReactPhpServer implements ServerInterface
     public function shutdown()
     {
         $this->loop->stop();
+    }
+
+    private function getReactServerClass()
+    {
+        if (class_exists('\React\Http\StreamingServer')) {
+            return '\React\Http\StreamingServer';
+        }
+
+        return '\React\Http\Server';
     }
 
     /**
