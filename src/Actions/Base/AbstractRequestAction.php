@@ -18,11 +18,9 @@
 
 namespace Mcustiel\Phiremock\Server\Actions\Base;
 
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
 use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
 use Mcustiel\PowerRoute\Common\TransactionData;
-use Mcustiel\SimpleRequest\Exception\InvalidRequestException;
-use Mcustiel\SimpleRequest\RequestBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -38,16 +36,16 @@ abstract class AbstractRequestAction
     protected $logger;
 
     /**
-     * @var \Mcustiel\SimpleRequest\RequestBuilder
+     * @var ArrayToExpectationConverter
      */
     protected $requestBuilder;
 
     /**
-     * @param RequestBuilder  $requestBuilder
-     * @param LoggerInterface $logger
+     * @param ArrayToExpectationConverter $requestBuilder
+     * @param LoggerInterface             $logger
      */
     public function __construct(
-        RequestBuilder $requestBuilder,
+        ArrayToExpectationConverter $requestBuilder,
         LoggerInterface $logger
     ) {
         $this->requestBuilder = $requestBuilder;
@@ -64,6 +62,7 @@ abstract class AbstractRequestAction
     protected function parseJsonBody(ServerRequestInterface $request)
     {
         $body = $request->getBody()->__toString();
+        $this->logger->debug($body);
         if ($request->hasHeader('Content-Encoding') && 'base64' === $request->getHeader('Content-Encoding')) {
             $body = base64_decode($body, true);
         }
@@ -104,10 +103,6 @@ abstract class AbstractRequestAction
     {
         try {
             return $this->createObjectFromRequestAndProcess($transactionData, $process);
-        } catch (InvalidRequestException $e) {
-            $this->logger->warning('Invalid request received');
-
-            return $this->constructErrorResponse($e->getErrors(), $transactionData->getResponse());
         } catch (\Exception $e) {
             $this->logger->error('An unexpected exception occurred: ' . $e->getMessage());
             $this->logger->debug($e->__toString());
@@ -124,10 +119,8 @@ abstract class AbstractRequestAction
     protected function parseRequestObject(ServerRequestInterface $request)
     {
         /** @var \Mcustiel\Phiremock\Domain\Expectation $object */
-        $object = $this->requestBuilder->parseRequest(
-            $this->parseJsonBody($request),
-            Expectation::class,
-            RequestBuilder::RETURN_ALL_ERRORS_IN_EXCEPTION
+        $object = $this->requestBuilder->convert(
+            $this->parseJsonBody($request)
         );
         $this->logger->debug('Parsed expectation: ' . $object);
 

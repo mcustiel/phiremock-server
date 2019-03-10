@@ -41,6 +41,7 @@ class ExpectationAutoStorage implements ExpectationStorage
     public function addExpectation(Expectation $expectation)
     {
         $this->expectations[] = $expectation;
+        var_export($this->expectations);
     }
 
     /**

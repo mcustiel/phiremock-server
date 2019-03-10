@@ -29,6 +29,7 @@
         "react/http" : "~0.7.0 || ~0.8.0",
         "mcustiel/power-route" : "^3.0.0",
         "monolog/monolog" : "^1.17.2",
+        "symfony/console" : "^3.4.23",
         "mcustiel/phiremock-common" : "dev-master"
     },
     "suggest" : {

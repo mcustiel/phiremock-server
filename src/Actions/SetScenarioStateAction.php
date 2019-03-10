@@ -19,33 +19,39 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
-use Mcustiel\Phiremock\Domain\ScenarioState;
-use Mcustiel\Phiremock\Server\Actions\Base\AbstractRequestAction;
+use Mcustiel\Phiremock\Common\Utils\ArrayToScenarioStateInfoConverter;
+use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
 use Mcustiel\PowerRoute\Common\TransactionData;
-use Mcustiel\SimpleRequest\RequestBuilder;
+use Monolog\Logger;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class SetScenarioStateAction extends AbstractRequestAction implements ActionInterface
+class SetScenarioStateAction implements ActionInterface
 {
     /**
      * @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage
      */
     private $storage;
 
+    /** @var ArrayToScenarioStateInfoConverter */
+    private $converter;
+
+    /** @var \Psr\Log\LoggerInterface */
+    private $logger;
+
     /**
-     * @param \Mcustiel\SimpleRequest\RequestBuilder           $requestBuilder
-     * @param \Mcustiel\Phiremock\Server\Model\ScenarioStorage $storage
-     * @param \Psr\Log\LoggerInterface                         $logger
+     * @param \Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter $requestBuilder
+     * @param \Mcustiel\Phiremock\Server\Model\ScenarioStorage             $storage
+     * @param \Psr\Log\LoggerInterface                                     $logger
      */
     public function __construct(
-        RequestBuilder $requestBuilder,
+        ArrayToScenarioStateInfoConverter $requestBuilder,
         ScenarioStorage $storage,
         LoggerInterface $logger
     ) {
-        parent::__construct($requestBuilder, $logger);
+        $this->converter = $requestBuilder;
         $this->storage = $storage;
     }
 
@@ -59,7 +65,7 @@ class SetScenarioStateAction extends AbstractRequestAction implements ActionInte
         $transactionData->setResponse(
             $this->processAndGetResponse(
                 $transactionData,
-                function (TransactionData $transaction, ScenarioState $state) {
+                function (TransactionData $transaction, ScenarioStateInfo $state) {
                     $this->storage->setScenarioState($state->getScenarioName(), $state->getScenarioState());
                     $this->logger->debug(
                         'Scenario ' . $state->getScenarioName() . ' state is set to ' . $state->getScenarioState()
@@ -74,18 +80,11 @@ class SetScenarioStateAction extends AbstractRequestAction implements ActionInte
         );
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\Phiremock\Server\Actions\Base\AbstractRequestAction::parseRequestObject()
-     */
     protected function parseRequestObject(ServerRequestInterface $request)
     {
         /** @var \Mcustiel\Phiremock\Domain\ScenarioState $object */
-        $object = $this->requestBuilder->parseRequest(
-            $this->parseJsonBody($request),
-            ScenarioState::class,
-            RequestBuilder::RETURN_ALL_ERRORS_IN_EXCEPTION
+        $object = $this->converter->convert(
+            $this->parseJsonBody($request)
         );
         $this->logger->debug('Parsed scenario state: ' . var_export($object, true));
 

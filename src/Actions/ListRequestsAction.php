@@ -19,13 +19,13 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
+use Mcustiel\Phiremock\Common\Utils\ArrayToRequestConverter;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Actions\Base\AbstractRequestAction;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
 use Mcustiel\PowerRoute\Common\TransactionData;
-use Mcustiel\SimpleRequest\RequestBuilder;
 use Psr\Log\LoggerInterface;
 
 class ListRequestsAction extends AbstractRequestAction implements ActionInterface
@@ -40,13 +40,13 @@ class ListRequestsAction extends AbstractRequestAction implements ActionInterfac
     private $comparator;
 
     /**
-     * @param RequestBuilder               $requestBuilder
+     * @param ArrayToRequestConverter      $requestBuilder
      * @param RequestStorage               $storage
      * @param RequestExpectationComparator $comparator
      * @param LoggerInterface              $logger
      */
     public function __construct(
-        RequestBuilder $requestBuilder,
+        ArrayToRequestConverter $requestBuilder,
         RequestStorage $storage,
         RequestExpectationComparator $comparator,
         LoggerInterface $logger

@@ -27,11 +27,9 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     $loader = require __DIR__ . '/../../../autoload.php';
 }
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Mcustiel\Phiremock\Common\Utils\FileSystem;
-use Mcustiel\Phiremock\Server\Config\Dependencies;
-
-AnnotationRegistry::registerLoader([$loader, 'loadClass']);
+use Mcustiel\Phiremock\Factory as PhiremockFactory;
+use Mcustiel\Phiremock\Server\Factory\Factory as PhiremockServerFactory;
 
 $options = getopt('p:i:e:d' /* p:i:p:e:r */, ['port:', 'ip:', 'debug', 'expectations-dir:']);
 
@@ -42,8 +40,8 @@ $debug = isset($options['debug']) || isset($options['d']);
 define('LOG_LEVEL', $debug ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO);
 define('APP_ROOT', dirname(__DIR__));
 
-$di = Dependencies::init();
-$logger = $di->get('logger');
+$factory = new PhiremockServerFactory(new PhiremockFactory());
+$logger = $factory->createLogger();
 $logger->info('Starting Phiremock' . ($debug ? ' in debug mode' : '') . '...');
 
 $expectationsDirParam = isset($options['expectations-dir'])
@@ -51,16 +49,16 @@ $expectationsDirParam = isset($options['expectations-dir'])
     : (isset($options['e']) ? $options['e'] : null);
 $expectationsDir = $expectationsDirParam
     ? (new FileSystem())->getRealPath($expectationsDirParam)
-    : $di->get('homePathService')->getHomePath() . \DIRECTORY_SEPARATOR . '.phiremock/expectations';
+    : $factory->createHomePathService()->getHomePath() . \DIRECTORY_SEPARATOR . '.phiremock/expectations';
 
 $logger->debug("Phiremock's expectation dir: $expectationsDir");
 
 if (is_dir($expectationsDir)) {
-    $di->get('fileExpectationsLoader')->loadExpectationsFromDirectory($expectationsDir);
+    $factory->createFileExpectationsLoader()->loadExpectationsFromDirectory($expectationsDir);
 }
 
-$server = $di->get('server');
-$server->setRequestHandler($di->get('application'));
+$server = $factory->createHttpServer();
+$server->setRequestHandler($factory->createPhiremockApplication());
 
 $handleTermination = function ($signal = 0) use ($server, $logger) {
     $logger->info('Stopping Phiremock...');

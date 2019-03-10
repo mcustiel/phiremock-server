@@ -33,6 +33,7 @@ trait ExpectationValidator
      */
     protected function validateExpectationOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
+        $this->logger->debug('Adding Expectation->validateExpectationOrThrowException');
         $this->validateRequestOrThrowException($expectation, $logger);
         $this->validateResponseOrThrowException($expectation, $logger);
         $this->validateScenarioConfigOrThrowException($expectation, $logger);

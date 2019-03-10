@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Mcustiel\Phiremock\Server\Config\Dependencies;
+use Mcustiel\Phiremock\Factory as PhiremockFactory;
+use Mcustiel\Phiremock\Server\Factory\Factory as PhiremockServerFactory;
 
 if (\PHP_SAPI !== 'cli') {
     throw new \Exception('This is a standalone CLI application');
@@ -48,8 +49,8 @@ function deleteDirectoryRecursively($dir)
     rmdir($dir);
 }
 
-$di = Dependencies::init();
-$logger = $di->get('logger');
+$factory = new PhiremockServerFactory(new PhiremockFactory());
+$logger = $factory->createLogger();
 $cacheDirectory = sys_get_temp_dir() . '/phiremock/cache/requests/';
 if (is_dir($cacheDirectory)) {
     $logger->info('Clearing phiremock cache...');
