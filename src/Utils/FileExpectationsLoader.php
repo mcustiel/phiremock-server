@@ -18,46 +18,37 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
-use Mcustiel\SimpleRequest\RequestBuilder;
 use Psr\Log\LoggerInterface;
 
 class FileExpectationsLoader
 {
     use ExpectationValidator;
 
-    /**
-     * @var \Mcustiel\SimpleRequest\RequestBuilder
-     */
-    private $requestBuilder;
-    /**
-     * @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage
-     */
+    /** @var \Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter */
+    private $converter;
+    /** @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage */
     private $storage;
-    /**
-     * @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage
-     */
+    /** @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage */
     private $backup;
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
+    /** @var \Psr\Log\LoggerInterface */
     private $logger;
 
     /**
-     * @param RequestBuilder     $requestBuilder
-     * @param ExpectationStorage $storage
-     * @param ExpectationStorage $backup
-     * @param LoggerInterface    $logger
+     * @param ArrayToExpectationConverter $requestBuilder
+     * @param ExpectationStorage          $storage
+     * @param ExpectationStorage          $backup
+     * @param LoggerInterface             $logger
      */
     public function __construct(
-        RequestBuilder $requestBuilder,
+        ArrayToExpectationConverter $requestBuilder,
         ExpectationStorage $storage,
         ExpectationStorage $backup,
         LoggerInterface $logger
     ) {
-        $this->requestBuilder = $requestBuilder;
+        $this->converter = $requestBuilder;
         $this->storage = $storage;
         $this->backup = $backup;
         $this->logger = $logger;
@@ -77,11 +68,7 @@ class FileExpectationsLoader
             throw new \Exception(json_last_error_msg());
         }
         /** @var Mcustiel\Phiremock\Domain\Expectation $expectation */
-        $expectation = $this->requestBuilder->parseRequest(
-            $data,
-            Expectation::class,
-            RequestBuilder::RETURN_ALL_ERRORS_IN_EXCEPTION
-        );
+        $expectation = $this->converter->convert($data);
         $this->validateExpectationOrThrowException($expectation, $this->logger);
 
         $this->logger->debug('Parsed expectation: ' . var_export($expectation, true));

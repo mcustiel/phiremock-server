@@ -2,26 +2,19 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
-use Mcustiel\DependencyInjection\DependencyInjectionService;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Config\Matchers;
-use Mcustiel\Phiremock\Server\Utils\Strategies\HttpResponseStrategy;
-use Mcustiel\Phiremock\Server\Utils\Strategies\ProxyResponseStrategy;
-use Mcustiel\Phiremock\Server\Utils\Strategies\RegexResponseStrategy;
+use Mcustiel\Phiremock\Server\Factory\Factory;
 
 class ResponseStrategyFactory
 {
-    /**
-     * @var \Mcustiel\DependencyInjection\DependencyInjectionService
-     */
-    private $diService;
+    /** @var Factory */
+    private $factory;
 
-    /**
-     * @param \Mcustiel\DependencyInjection\DependencyInjectionService $dependencyService
-     */
-    public function __construct(DependencyInjectionService $dependencyService)
+    /** @param Factory $dependencyService */
+    public function __construct(Factory $dependencyService)
     {
-        $this->diService = $dependencyService;
+        $this->factory = $dependencyService;
     }
 
     /**
@@ -32,13 +25,13 @@ class ResponseStrategyFactory
     public function getStrategyForExpectation(Expectation $expectation)
     {
         if (!empty($expectation->getProxyTo())) {
-            return $this->diService->get(ProxyResponseStrategy::class);
+            return $this->factory->createProxyResponseStrategy();
         }
         if ($this->requestBodyOrUrlAreRegexp($expectation)) {
-            return $this->diService->get(RegexResponseStrategy::class);
+            return $this->factory->createRegexResponseStrategy();
         }
 
-        return $this->diService->get(HttpResponseStrategy::class);
+        return $this->factory->createHttpResponseStrategy();
     }
 
     /**
