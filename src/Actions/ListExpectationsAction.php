@@ -22,20 +22,22 @@ use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
 use Mcustiel\PowerRoute\Common\TransactionData;
+use Mcustiel\Phiremock\Common\Utils\ExpectationToArrayConverter;
 
 class ListExpectationsAction implements ActionInterface
 {
-    /**
-     * @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage
-     */
+    /** @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage */
     private $storage;
+    /** @var ExpectationToArrayConverter */
+    private $converter;
 
     /**
      * @param ExpectationStorage $storage
      */
-    public function __construct(ExpectationStorage $storage)
+    public function __construct(ExpectationStorage $storage, ExpectationToArrayConverter $converter)
     {
         $this->storage = $storage;
+        $this->converter = $converter;
     }
 
     /**
@@ -45,11 +47,14 @@ class ListExpectationsAction implements ActionInterface
      */
     public function execute(TransactionData $transactionData, $argument = null)
     {
-        $list = json_encode($this->storage->listExpectations());
-
+        $list = [];
+        foreach ($this->storage->listExpectations() as $expectation) {
+            $list[] = $this->converter->convert($expectation);
+        }
+        $jsonList = json_encode($list);
         $transactionData->setResponse(
             $transactionData->getResponse()
-            ->withBody(new StringStream($list))
+            ->withBody(new StringStream($jsonList))
             ->withHeader('Content-type', 'application/json')
         );
     }

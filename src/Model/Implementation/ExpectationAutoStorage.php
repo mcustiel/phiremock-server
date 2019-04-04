@@ -18,13 +18,13 @@
 
 namespace Mcustiel\Phiremock\Server\Model\Implementation;
 
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 
 class ExpectationAutoStorage implements ExpectationStorage
 {
     /**
-     * @var \Mcustiel\Phiremock\Domain\Expectation[]
+     * @var \Mcustiel\Phiremock\Domain\MockConfig[]
      */
     private $expectations;
 
@@ -38,7 +38,7 @@ class ExpectationAutoStorage implements ExpectationStorage
      *
      * @see \Mcustiel\Phiremock\Server\Model\ExpectationStorage::addExpectation()
      */
-    public function addExpectation(Expectation $expectation)
+    public function addExpectation(MockConfig $expectation)
     {
         $this->expectations[] = $expectation;
     }

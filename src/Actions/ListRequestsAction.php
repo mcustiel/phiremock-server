@@ -19,14 +19,14 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
-use Mcustiel\Phiremock\Common\Utils\ArrayToRequestConverter;
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Actions\Base\AbstractRequestAction;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
 use Mcustiel\PowerRoute\Common\TransactionData;
 use Psr\Log\LoggerInterface;
+use Mcustiel\Phiremock\Common\Utils\ArrayToRequestConditionConverter;
 
 class ListRequestsAction extends AbstractRequestAction implements ActionInterface
 {
@@ -40,13 +40,13 @@ class ListRequestsAction extends AbstractRequestAction implements ActionInterfac
     private $comparator;
 
     /**
-     * @param ArrayToRequestConverter      $requestBuilder
+     * @param ArrayToRequestConditionConverter $requestBuilder
      * @param RequestStorage               $storage
      * @param RequestExpectationComparator $comparator
      * @param LoggerInterface              $logger
      */
     public function __construct(
-        ArrayToRequestConverter $requestBuilder,
+        ArrayToRequestConditionConverter $requestBuilder,
         RequestStorage $storage,
         RequestExpectationComparator $comparator,
         LoggerInterface $logger
@@ -66,7 +66,7 @@ class ListRequestsAction extends AbstractRequestAction implements ActionInterfac
         $transactionData->setResponse(
             $this->processAndGetResponse(
                 $transactionData,
-                function (TransactionData $transaction, Expectation $expectation) {
+                function (TransactionData $transaction, MockConfig $expectation) {
                     $this->validateRequestOrThrowException($expectation, $this->logger);
                     $executions = $this->searchForExecutionsCount($expectation);
                     $this->logger->debug('Listed ' . \count($executions) . ' request matching the expectation');
@@ -81,11 +81,11 @@ class ListRequestsAction extends AbstractRequestAction implements ActionInterfac
     }
 
     /**
-     * @param Expectation $expectation
+     * @param MockConfig $expectation
      *
      * @return array[]
      */
-    private function searchForExecutionsCount(Expectation $expectation)
+    private function searchForExecutionsCount(MockConfig $expectation)
     {
         $executions = [];
         foreach ($this->requestsStorage->listRequests() as $request) {

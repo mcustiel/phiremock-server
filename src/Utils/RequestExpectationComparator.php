@@ -18,8 +18,8 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
-use Mcustiel\Phiremock\Domain\Expectation;
-use Mcustiel\Phiremock\Domain\Request;
+use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\RequestConditions;
 use Mcustiel\Phiremock\Server\Config\Matchers;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\PowerRoute\Common\Conditions\ClassArgumentObject;
@@ -67,11 +67,11 @@ class RequestExpectationComparator
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\Expectation   $expectation
+     * @param \Mcustiel\Phiremock\Domain\MockConfig   $expectation
      *
      * @return bool
      */
-    public function equals(ServerRequestInterface $httpRequest, Expectation $expectation)
+    public function equals(ServerRequestInterface $httpRequest, MockConfig $expectation)
     {
         $this->logger->debug('Checking if request matches an expectation');
 
@@ -94,11 +94,11 @@ class RequestExpectationComparator
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\Request       $expectedRequest
+     * @param \Mcustiel\Phiremock\Domain\RequestConditions       $expectedRequest
      *
      * @return null|bool
      */
-    private function compareRequestParts(ServerRequestInterface $httpRequest, Request $expectedRequest)
+    private function compareRequestParts(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
         $atLeastOneExecution = false;
         $requestParts = ['Method', 'Url', 'Body'];
@@ -119,11 +119,11 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param Expectation $expectation
+     * @param MockConfig $expectation
      *
      * @return bool
      */
-    private function isExpectedScenarioState(Expectation $expectation)
+    private function isExpectedScenarioState(MockConfig $expectation)
     {
         if ($expectation->getScenarioStateIs()) {
             $this->checkScenarioNameOrThrowException($expectation);
@@ -140,11 +140,11 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param Expectation $expectation
+     * @param MockConfig $expectation
      *
      * @throws \RuntimeException
      */
-    private function checkScenarioNameOrThrowException(Expectation $expectation)
+    private function checkScenarioNameOrThrowException(MockConfig $expectation)
     {
         if (!$expectation->getScenarioName()) {
             throw new \RuntimeException(
@@ -155,11 +155,11 @@ class RequestExpectationComparator
 
     /**
      * @param ServerRequestInterface $httpRequest
-     * @param Request                $expectedRequest
+     * @param RequestConditions                $expectedRequest
      *
      * @return bool
      */
-    private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
+    private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
         $inputSource = $this->inputSourceFactory->createFromConfig([
             'method' => null,
@@ -173,11 +173,11 @@ class RequestExpectationComparator
 
     /**
      * @param ServerRequestInterface $httpRequest
-     * @param Request                $expectedRequest
+     * @param RequestConditions                $expectedRequest
      *
      * @return bool
      */
-    private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
+    private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
         $inputSource = $this->inputSourceFactory->createFromConfig([
             'url' => null,
@@ -191,11 +191,11 @@ class RequestExpectationComparator
 
     /**
      * @param ServerRequestInterface $httpRequest
-     * @param Request                $expectedRequest
+     * @param RequestConditions                $expectedRequest
      *
      * @return bool
      */
-    private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
+    private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
         $inputSource = $this->inputSourceFactory->createFromConfig([
             'body' => null,
@@ -209,11 +209,11 @@ class RequestExpectationComparator
 
     /**
      * @param ServerRequestInterface $httpRequest
-     * @param Request                $expectedRequest
+     * @param RequestConditions                $expectedRequest
      *
      * @return bool
      */
-    private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, Request $expectedRequest)
+    private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
         foreach ($expectedRequest->getHeaders() as $header => $headerCondition) {
             $inputSource = $this->inputSourceFactory->createFromConfig([

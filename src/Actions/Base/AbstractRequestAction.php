@@ -114,11 +114,11 @@ abstract class AbstractRequestAction
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
-     * @return \Mcustiel\Phiremock\Domain\Expectation
+     * @return \Mcustiel\Phiremock\Domain\MockConfig
      */
     protected function parseRequestObject(ServerRequestInterface $request)
     {
-        /** @var \Mcustiel\Phiremock\Domain\Expectation $object */
+        /** @var \Mcustiel\Phiremock\Domain\MockConfig $object */
         $object = $this->requestBuilder->convert(
             $this->parseJsonBody($request)
         );

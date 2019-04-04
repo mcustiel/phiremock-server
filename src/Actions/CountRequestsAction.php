@@ -20,7 +20,7 @@ namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Actions\Base\AbstractRequestAction;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
@@ -66,7 +66,7 @@ class CountRequestsAction extends AbstractRequestAction implements ActionInterfa
         $transactionData->setResponse(
             $this->processAndGetResponse(
                 $transactionData,
-                function (TransactionData $transaction, Expectation $expectation) {
+                function (TransactionData $transaction, MockConfig $expectation) {
                     $this->validateRequestOrThrowException($expectation, $this->logger);
                     $count = $this->searchForExecutionsCount($expectation);
                     $this->logger->debug('Found ' . $count . ' request matching the expectation');
@@ -81,11 +81,11 @@ class CountRequestsAction extends AbstractRequestAction implements ActionInterfa
     }
 
     /**
-     * @param Expectation $expectation
+     * @param MockConfig $expectation
      *
      * @return int
      */
-    private function searchForExecutionsCount(Expectation $expectation)
+    private function searchForExecutionsCount(MockConfig $expectation)
     {
         $count = 0;
         foreach ($this->requestsStorage->listRequests() as $request) {

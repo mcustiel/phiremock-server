@@ -18,7 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Actions;
 
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
@@ -78,7 +78,7 @@ class SearchRequestAction implements ActionInterface
     /**
      * @param ServerRequestInterface $request
      *
-     * @return null|\Mcustiel\Phiremock\Domain\Expectation
+     * @return null|\Mcustiel\Phiremock\Domain\MockConfig
      */
     private function searchForMatchingExpectation(ServerRequestInterface $request)
     {
@@ -91,13 +91,13 @@ class SearchRequestAction implements ActionInterface
     }
 
     /**
-     * @param null|\Mcustiel\Phiremock\Domain\Expectation $lastFound
+     * @param null|\Mcustiel\Phiremock\Domain\MockConfig $lastFound
      * @param ServerRequestInterface                      $request
-     * @param Expectation                                 $expectation
+     * @param MockConfig                                 $expectation
      *
-     * @return \Mcustiel\Phiremock\Domain\Expectation
+     * @return \Mcustiel\Phiremock\Domain\MockConfig
      */
-    private function getNextMatchingExpectation($lastFound, ServerRequestInterface $request, Expectation $expectation)
+    private function getNextMatchingExpectation($lastFound, ServerRequestInterface $request, MockConfig $expectation)
     {
         if ($this->comparator->equals($request, $expectation)) {
             if (null === $lastFound || $expectation->getPriority() > $lastFound->getPriority()) {

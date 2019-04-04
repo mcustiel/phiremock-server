@@ -20,7 +20,7 @@ namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
@@ -72,7 +72,7 @@ class AddExpectationAction implements ActionInterface
         );
     }
 
-    private function process(TransactionData $transaction, Expectation $expectation)
+    private function process(TransactionData $transaction, MockConfig $expectation)
     {
         $this->logger->debug('process');
         $this->validateExpectationOrThrowException($expectation, $this->logger);
@@ -120,12 +120,12 @@ class AddExpectationAction implements ActionInterface
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
-     * @return \Mcustiel\Phiremock\Domain\Expectation
+     * @return \Mcustiel\Phiremock\Domain\MockConfig
      */
     private function parseRequestObject(ServerRequestInterface $request)
     {
         $this->logger->debug('Adding Expectation->parseRequestObject');
-        /** @var \Mcustiel\Phiremock\Domain\Expectation $object */
+        /** @var \Mcustiel\Phiremock\Domain\MockConfig $object */
         $object = $this->converter->convert(
             $this->parseJsonBody($request)
         );

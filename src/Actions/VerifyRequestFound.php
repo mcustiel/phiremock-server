@@ -18,7 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Actions;
 
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
@@ -60,7 +60,7 @@ class VerifyRequestFound implements ActionInterface
     public function execute(TransactionData $transactionData, $argument = null)
     {
         /**
-         * @var \Mcustiel\Phiremock\Domain\Expectation
+         * @var \Mcustiel\Phiremock\Domain\MockConfig
          */
         $foundExpectation = $transactionData->get('foundExpectation');
         if (!$foundExpectation) {
@@ -93,9 +93,9 @@ class VerifyRequestFound implements ActionInterface
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $foundExpectation
+     * @param \Mcustiel\Phiremock\Domain\MockConfig $foundExpectation
      */
-    private function processScenario(Expectation $foundExpectation)
+    private function processScenario(MockConfig $foundExpectation)
     {
         if ($foundExpectation->getNewScenarioState()) {
             if (!$foundExpectation->getScenarioName()) {

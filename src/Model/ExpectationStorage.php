@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Phiremock.
+ * This file is part of ExpectationPhiremock.
  *
  * Phiremock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,19 +18,19 @@
 
 namespace Mcustiel\Phiremock\Server\Model;
 
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\MockConfig;
 
 interface ExpectationStorage
 {
     /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation $expectation
+     * @param \Mcustiel\Phiremock\Domain\MockConfig $expectation
      */
-    public function addExpectation(Expectation $expectation);
+    public function addExpectation(MockConfig $expectation);
 
     public function clearExpectations();
 
     /**
-     * @return \Mcustiel\Phiremock\Domain\Expectation[]
+     * @return \Mcustiel\Phiremock\Domain\MockConfig[]
      */
     public function listExpectations();
 }

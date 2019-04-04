@@ -19,7 +19,7 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\Http\RemoteConnectionInterface;
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\PowerRoute\Common\TransactionData;
 use Psr\Log\LoggerInterface;
 use Zend\Diactoros\Uri;
@@ -50,7 +50,7 @@ class ProxyResponseStrategy implements ResponseStrategyInterface
      *
      * @see \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface::createResponse()
      */
-    public function createResponse(Expectation $expectation, TransactionData $transactionData)
+    public function createResponse(MockConfig $expectation, TransactionData $transactionData)
     {
         $url = $expectation->getProxyTo();
         $this->logger->debug('Proxying request to : ' . $url);

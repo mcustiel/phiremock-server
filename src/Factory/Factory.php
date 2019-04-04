@@ -343,7 +343,7 @@ class Factory
                     ),
                     'listExpectations' => new SingletonLazyCreator(
                         ListExpectationsAction::class,
-                        [$this->createExpectationStorage()]
+                        [$this->createExpectationStorage(), $this->phiremockFactory->createExpectationToArrayConverter()]
                     ),
                     'reloadExpectations' => new SingletonLazyCreator(
                         ReloadPreconfiguredExpectationsAction::class,

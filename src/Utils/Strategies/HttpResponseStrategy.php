@@ -19,7 +19,7 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
-use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Domain\Response;
 use Mcustiel\PowerRoute\Common\TransactionData;
 use Psr\Http\Message\ResponseInterface;
@@ -31,7 +31,7 @@ class HttpResponseStrategy extends AbstractResponse implements ResponseStrategyI
      *
      * @see \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface::createResponse()
      */
-    public function createResponse(Expectation $expectation, TransactionData $transactionData)
+    public function createResponse(MockConfig $expectation, TransactionData $transactionData)
     {
         $responseConfig = $expectation->getResponse();
         $httpResponse = $transactionData->getResponse();
