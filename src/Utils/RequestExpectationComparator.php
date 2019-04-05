@@ -67,7 +67,7 @@ class RequestExpectationComparator
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\MockConfig   $expectation
+     * @param \Mcustiel\Phiremock\Domain\MockConfig    $expectation
      *
      * @return bool
      */
@@ -93,8 +93,8 @@ class RequestExpectationComparator
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\RequestConditions       $expectedRequest
+     * @param \Psr\Http\Message\ServerRequestInterface     $httpRequest
+     * @param \Mcustiel\Phiremock\Domain\RequestConditions $expectedRequest
      *
      * @return null|bool
      */
@@ -155,7 +155,7 @@ class RequestExpectationComparator
 
     /**
      * @param ServerRequestInterface $httpRequest
-     * @param RequestConditions                $expectedRequest
+     * @param RequestConditions      $expectedRequest
      *
      * @return bool
      */
@@ -173,7 +173,7 @@ class RequestExpectationComparator
 
     /**
      * @param ServerRequestInterface $httpRequest
-     * @param RequestConditions                $expectedRequest
+     * @param RequestConditions      $expectedRequest
      *
      * @return bool
      */
@@ -191,7 +191,7 @@ class RequestExpectationComparator
 
     /**
      * @param ServerRequestInterface $httpRequest
-     * @param RequestConditions                $expectedRequest
+     * @param RequestConditions      $expectedRequest
      *
      * @return bool
      */
@@ -209,7 +209,7 @@ class RequestExpectationComparator
 
     /**
      * @param ServerRequestInterface $httpRequest
-     * @param RequestConditions                $expectedRequest
+     * @param RequestConditions      $expectedRequest
      *
      * @return bool
      */

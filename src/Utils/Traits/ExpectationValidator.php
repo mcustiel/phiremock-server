@@ -26,7 +26,7 @@ use Psr\Log\LoggerInterface;
 trait ExpectationValidator
 {
     /**
-     * @param MockConfig     $expectation
+     * @param MockConfig      $expectation
      * @param LoggerInterface $logger
      *
      * @throws \RuntimeException
@@ -40,7 +40,7 @@ trait ExpectationValidator
     }
 
     /**
-     * @param MockConfig     $expectation
+     * @param MockConfig      $expectation
      * @param LoggerInterface $logger
      *
      * @throws \RuntimeException
@@ -54,7 +54,7 @@ trait ExpectationValidator
     }
 
     /**
-     * @param MockConfig     $expectation
+     * @param MockConfig      $expectation
      * @param LoggerInterface $logger
      *
      * @throws \RuntimeException
@@ -89,7 +89,7 @@ trait ExpectationValidator
     }
 
     /**
-     * @param MockConfig     $expectation
+     * @param MockConfig      $expectation
      * @param LoggerInterface $logger
      */
     protected function validateScenarioConfigOrThrowException(
@@ -101,7 +101,7 @@ trait ExpectationValidator
     }
 
     /**
-     * @param MockConfig     $expectation
+     * @param MockConfig      $expectation
      * @param LoggerInterface $logger
      *
      * @throws \RuntimeException
@@ -119,7 +119,7 @@ trait ExpectationValidator
     }
 
     /**
-     * @param MockConfig     $expectation
+     * @param MockConfig      $expectation
      * @param LoggerInterface $logger
      *
      * @throws \RuntimeException

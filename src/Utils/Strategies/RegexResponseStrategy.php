@@ -49,7 +49,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
     }
 
     /**
-     * @param MockConfig            $expectation
+     * @param MockConfig             $expectation
      * @param ResponseInterface      $httpResponse
      * @param ServerRequestInterface $httpRequest
      *
@@ -72,7 +72,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
     }
 
     /**
-     * @param MockConfig            $expectation
+     * @param MockConfig             $expectation
      * @param ServerRequestInterface $httpRequest
      * @param string                 $responseBody
      *
@@ -104,7 +104,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
     }
 
     /**
-     * @param MockConfig            $expectation
+     * @param MockConfig             $expectation
      * @param ServerRequestInterface $httpRequest
      * @param string                 $responseBody
      *

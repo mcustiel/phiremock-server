@@ -18,13 +18,14 @@
 
 namespace Mcustiel\Phiremock\Server\Model\Implementation;
 
+use Mcustiel\Phiremock\Domain\Options\ScenarioName;
+use Mcustiel\Phiremock\Domain\Options\ScenarioState;
+use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 
 class ScenarioAutoStorage implements ScenarioStorage
 {
-    /**
-     * @var string[]
-     */
+    /** @var ScenarioStateInfo[] */
     private $scenarios;
 
     public function __construct()
@@ -37,9 +38,9 @@ class ScenarioAutoStorage implements ScenarioStorage
      *
      * @see \Mcustiel\Phiremock\Server\Model\ScenarioStorage::setScenarioState()
      */
-    public function setScenarioState($name, $state)
+    public function setScenarioState(ScenarioStateInfo $scenarioState)
     {
-        $this->scenarios[$name] = $state;
+        $this->scenarios[$scenarioState->getScenarioName()->asString()] = $scenarioState->getScenarioState();
     }
 
     /**
@@ -47,13 +48,14 @@ class ScenarioAutoStorage implements ScenarioStorage
      *
      * @see \Mcustiel\Phiremock\Server\Model\ScenarioStorage::getScenarioState()
      */
-    public function getScenarioState($name)
+    public function getScenarioState(ScenarioName $name)
     {
-        if (!isset($this->scenarios[$name])) {
-            $this->scenarios[$name] = self::INITIAL_SCENARIO;
+        $nameString = $name->asString();
+        if (!isset($this->scenarios[$nameString])) {
+            $this->scenarios[$nameString] = new ScenarioState(self::INITIAL_SCENARIO);
         }
 
-        return $this->scenarios[$name];
+        return $this->scenarios[$nameString];
     }
 
     /**

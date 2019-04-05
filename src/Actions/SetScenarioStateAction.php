@@ -53,6 +53,7 @@ class SetScenarioStateAction implements ActionInterface
     ) {
         $this->converter = $requestBuilder;
         $this->storage = $storage;
+        $this->logger = $logger;
     }
 
     /**
@@ -65,29 +66,73 @@ class SetScenarioStateAction implements ActionInterface
         $transactionData->setResponse(
             $this->processAndGetResponse(
                 $transactionData,
-                function (TransactionData $transaction, ScenarioStateInfo $state) {
-                    $this->storage->setScenarioState($state->getScenarioName(), $state->getScenarioState());
-                    $this->logger->debug(
-                        'Scenario ' . $state->getScenarioName() . ' state is set to ' . $state->getScenarioState()
-                    );
-
-                    return $transaction->getResponse()
-                        ->withStatus(200)
-                        ->withHeader('Content-Type', 'application/json')
-                        ->withBody(new StringStream(json_encode($state)));
-                }
+                $this->parseRequestObject($transactionData->getRequest())
             )
         );
     }
 
-    protected function parseRequestObject(ServerRequestInterface $request)
+    private function processAndGetResponse(
+        TransactionData $transaction,
+        ScenarioStateInfo $state
+    ) {
+        if ($state->getScenarioName() === null || $state->getScenarioState() === null) {
+            return $transaction->getResponse()
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody(new StringStream(json_encode(['error' => 'Scenario name or state is not set'])));
+        }
+
+        $this->storage->setScenarioState($state);
+        $this->logger->debug(
+            sprintf(
+                'Scenario %s state is set to %s',
+                $state->getScenarioName()->asString(),
+                $state->getScenarioState()->asString()
+            )
+        );
+
+        return $transaction->getResponse()
+            ->withStatus(200)
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody($transaction->getRequest()->getBody());
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return \Mcustiel\Phiremock\Domain\ScenarioStateInfo
+     */
+    private function parseRequestObject(ServerRequestInterface $request)
     {
-        /** @var \Mcustiel\Phiremock\Domain\ScenarioState $object */
+        /** @var \Mcustiel\Phiremock\Domain\ScenarioStateInfo $object */
         $object = $this->converter->convert(
             $this->parseJsonBody($request)
         );
         $this->logger->debug('Parsed scenario state: ' . var_export($object, true));
 
         return $object;
+    }
+
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @throws \Exception
+     *
+     * @return array
+     */
+    private function parseJsonBody(ServerRequestInterface $request)
+    {
+        $body = $request->getBody()->__toString();
+        $this->logger->debug($body);
+        if ($request->hasHeader('Content-Encoding') && 'base64' === $request->getHeader('Content-Encoding')) {
+            $body = base64_decode($body, true);
+        }
+
+        $bodyJson = @json_decode($body, true);
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new \Exception(json_last_error_msg());
+        }
+
+        return $bodyJson;
     }
 }

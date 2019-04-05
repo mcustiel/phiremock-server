@@ -363,7 +363,7 @@ class Factory
                     'setScenarioState' => new SingletonLazyCreator(
                         SetScenarioStateAction::class,
                         [
-                            $this->phiremockFactory->createArrayToExpectationConverter(),
+                            $this->phiremockFactory->createArrayToScenarioStateInfoConverter(),
                             $this->createScenarioStorage(),
                             $this->createLogger(),
                         ]

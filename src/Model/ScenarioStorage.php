@@ -18,22 +18,22 @@
 
 namespace Mcustiel\Phiremock\Server\Model;
 
+use Mcustiel\Phiremock\Domain\Options\ScenarioName;
+use Mcustiel\Phiremock\Domain\Options\ScenarioState;
+use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
+
 interface ScenarioStorage
 {
     const INITIAL_SCENARIO = 'Scenario.START';
 
-    /**
-     * @param string $name
-     * @param string $state
-     */
-    public function setScenarioState($name, $state);
+    public function setScenarioState(ScenarioStateInfo $scenarioState);
 
     /**
      * @param string $name
      *
-     * @return string
+     * @return ScenarioState
      */
-    public function getScenarioState($name);
+    public function getScenarioState(ScenarioName $name);
 
     public function clearScenarios();
 }

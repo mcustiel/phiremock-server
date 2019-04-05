@@ -19,6 +19,7 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
+use Mcustiel\Phiremock\Common\Utils\ArrayToRequestConditionConverter;
 use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Actions\Base\AbstractRequestAction;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
@@ -26,7 +27,6 @@ use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
 use Mcustiel\PowerRoute\Common\TransactionData;
 use Psr\Log\LoggerInterface;
-use Mcustiel\Phiremock\Common\Utils\ArrayToRequestConditionConverter;
 
 class ListRequestsAction extends AbstractRequestAction implements ActionInterface
 {
@@ -41,9 +41,9 @@ class ListRequestsAction extends AbstractRequestAction implements ActionInterfac
 
     /**
      * @param ArrayToRequestConditionConverter $requestBuilder
-     * @param RequestStorage               $storage
-     * @param RequestExpectationComparator $comparator
-     * @param LoggerInterface              $logger
+     * @param RequestStorage                   $storage
+     * @param RequestExpectationComparator     $comparator
+     * @param LoggerInterface                  $logger
      */
     public function __construct(
         ArrayToRequestConditionConverter $requestBuilder,

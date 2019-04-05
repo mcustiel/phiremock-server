@@ -92,7 +92,7 @@ class SearchRequestAction implements ActionInterface
 
     /**
      * @param null|\Mcustiel\Phiremock\Domain\MockConfig $lastFound
-     * @param ServerRequestInterface                      $request
+     * @param ServerRequestInterface                     $request
      * @param MockConfig                                 $expectation
      *
      * @return \Mcustiel\Phiremock\Domain\MockConfig
