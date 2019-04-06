@@ -125,13 +125,13 @@ class RequestExpectationComparator
      */
     private function isExpectedScenarioState(MockConfig $expectation)
     {
-        if ($expectation->getScenarioStateIs()) {
+        if ($expectation->getStateConditions()->getScenarioStateIs() !== null) {
             $this->checkScenarioNameOrThrowException($expectation);
             $this->logger->debug('Checking scenario state again expectation');
             $scenarioState = $this->scenarioStorage->getScenarioState(
-                $expectation->getScenarioName()
+                $expectation->getStateConditions()->getScenarioName()
             );
-            if ($expectation->getScenarioStateIs() !== $scenarioState) {
+            if (!$expectation->getStateConditions()->getScenarioStateIs()->equals($scenarioState)) {
                 return false;
             }
         }
@@ -146,8 +146,8 @@ class RequestExpectationComparator
      */
     private function checkScenarioNameOrThrowException(MockConfig $expectation)
     {
-        if (!$expectation->getScenarioName()) {
-            throw new \RuntimeException(
+        if ($expectation->getStateConditions()->getScenarioName() === null) {
+            throw new \InvalidArgumentException(
                 'Expecting scenario state without specifying scenario name'
             );
         }
@@ -165,7 +165,7 @@ class RequestExpectationComparator
             'method' => null,
         ]);
         $matcher = $this->matcherFactory->createFromConfig([
-            Matchers::SAME_STRING => $expectedRequest->getMethod(),
+            Matchers::SAME_STRING => $expectedRequest->getMethod()->asString(),
         ]);
 
         return $this->evaluate($inputSource, $matcher, $httpRequest);
@@ -183,7 +183,7 @@ class RequestExpectationComparator
             'url' => null,
         ]);
         $matcher = $this->matcherFactory->createFromConfig([
-            $expectedRequest->getUrl()->getMatcher() => $expectedRequest->getUrl()->getValue(),
+            $expectedRequest->getUrl()->getMatcher()->asString() => $expectedRequest->getUrl()->getValue()->asString(),
         ]);
 
         return $this->evaluate($inputSource, $matcher, $httpRequest);
@@ -201,7 +201,7 @@ class RequestExpectationComparator
             'body' => null,
         ]);
         $matcher = $this->matcherFactory->createFromConfig([
-            $expectedRequest->getBody()->getMatcher() => $expectedRequest->getBody()->getValue(),
+            $expectedRequest->getBody()->getMatcher()->asString() => $expectedRequest->getBody()->getValue()->asString(),
         ]);
 
         return $this->evaluate($inputSource, $matcher, $httpRequest);
@@ -217,10 +217,10 @@ class RequestExpectationComparator
     {
         foreach ($expectedRequest->getHeaders() as $header => $headerCondition) {
             $inputSource = $this->inputSourceFactory->createFromConfig([
-                'header' => $header,
+                'header' => $header->asString(),
             ]);
             $matcher = $this->matcherFactory->createFromConfig([
-                $headerCondition->getMatcher() => $headerCondition->getValue(),
+                $headerCondition->getMatcher()->asString() => $headerCondition->getValue()->asString(),
             ]);
 
             if (!$this->evaluate($inputSource, $matcher, $httpRequest)) {
@@ -243,6 +243,8 @@ class RequestExpectationComparator
         ClassArgumentObject $matcher,
         ServerRequestInterface $httpRequest
     ) {
+        var_export($matcher);
+
         return $matcher->getInstance()->match(
             $inputSource->getInstance()->getValue($httpRequest, $inputSource->getArgument()),
             $matcher->getArgument()

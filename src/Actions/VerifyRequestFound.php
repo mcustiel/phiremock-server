@@ -19,6 +19,7 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
@@ -97,16 +98,16 @@ class VerifyRequestFound implements ActionInterface
      */
     private function processScenario(MockConfig $foundExpectation)
     {
-        if ($foundExpectation->getNewScenarioState()) {
-            if (!$foundExpectation->getScenarioName()) {
+        if ($foundExpectation->getResponse()->getNewScenarioState() !== null) {
+            if ($foundExpectation->getStateConditions()->getScenarioName() === null) {
                 throw new \RuntimeException(
                     'Expecting scenario state without specifying scenario name'
                 );
             }
-            $this->scenarioStorage->setScenarioState(
-                $foundExpectation->getScenarioName(),
-                $foundExpectation->getNewScenarioState()
-            );
+            $this->scenarioStorage->setScenarioState(new ScenarioStateInfo(
+                $foundExpectation->getStateConditions()->getScenarioName(),
+                $foundExpectation->getResponse()->getNewScenarioState()
+            ));
         }
     }
 }

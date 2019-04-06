@@ -44,7 +44,7 @@ class ResponseStrategyLocator
      */
     public function getStrategyForExpectation(MockConfig $expectation)
     {
-        if (!empty($expectation->getProxyTo())) {
+        if ($expectation->getResponse()->isProxyResponse()) {
             return $this->factory->createProxyResponseStrategy();
         }
         if ($this->requestBodyOrUrlAreRegexp($expectation)) {
@@ -62,8 +62,8 @@ class ResponseStrategyLocator
     private function requestBodyOrUrlAreRegexp(MockConfig $expectation)
     {
         return $expectation->getRequest()->getBody()
-            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()
+            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->asString()
             || $expectation->getRequest()->getUrl()
-            && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher();
+            && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->asString();
     }
 }
