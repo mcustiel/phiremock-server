@@ -37,12 +37,13 @@ $port = isset($options['port']) ? $options['port'] : (isset($options['p']) ? $op
 $interface = isset($options['ip']) ? $options['ip'] : (isset($options['i']) ? $options['i'] : '0.0.0.0');
 $debug = isset($options['debug']) || isset($options['d']);
 
-define('LOG_LEVEL', $debug ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO);
+define('IS_DEBUG_MODE', $debug);
+define('LOG_LEVEL', IS_DEBUG_MODE ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO);
 define('APP_ROOT', dirname(__DIR__));
 
 $factory = new PhiremockServerFactory(new PhiremockFactory());
 $logger = $factory->createLogger();
-$logger->info('Starting Phiremock' . ($debug ? ' in debug mode' : '') . '...');
+$logger->info('Starting Phiremock' . (IS_DEBUG_MODE ? ' in debug mode' : '') . '...');
 
 $expectationsDirParam = isset($options['expectations-dir'])
     ? $options['expectations-dir']

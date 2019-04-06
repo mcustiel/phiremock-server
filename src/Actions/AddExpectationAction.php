@@ -23,8 +23,7 @@ use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
 use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
-use Mcustiel\PowerRoute\Actions\ActionInterface;
-use Mcustiel\PowerRoute\Common\TransactionData;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -57,28 +56,28 @@ class AddExpectationAction implements ActionInterface
         $this->storage = $storage;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\PowerRoute\Actions\ActionInterface::execute()
-     */
-    public function execute(TransactionData $transactionData, $argument = null)
+    public function execute(RequestInterface $request, ResponseInterface $response)
     {
         $this->logger->debug('Adding Expectation->execute');
-        $transactionData->setResponse(
-            $this->processAndGetResponse(
-                $transactionData
-            )
-        );
+        try {
+            $this->logger->debug('Adding Expectation->processAndGetResponse');
+
+            return $this->createObjectFromRequestAndProcess($request, $response);
+        } catch (\Exception $e) {
+            $this->logger->error('An unexpected exception occurred: ' . $e->getMessage());
+            $this->logger->debug($e->__toString());
+
+            return $this->constructErrorResponse([$e->getMessage()], $response);
+        }
     }
 
-    private function process(TransactionData $transaction, MockConfig $expectation)
+    private function process(ResponseInterface $response, MockConfig $expectation)
     {
         $this->logger->debug('process');
         $this->validateExpectationOrThrowException($expectation, $this->logger);
         $this->storage->addExpectation($expectation);
 
-        return $this->constructResponse([], $transaction->getResponse());
+        return $this->constructResponse([], $response);
     }
 
     /**
@@ -95,26 +94,6 @@ class AddExpectationAction implements ActionInterface
         }
 
         return $this->constructErrorResponse($listOfErrors, $response);
-    }
-
-    /**
-     * @param TransactionData $transactionData
-     * @param callable        $process
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    private function processAndGetResponse(TransactionData $transactionData)
-    {
-        try {
-            $this->logger->debug('Adding Expectation->processAndGetResponse');
-
-            return $this->createObjectFromRequestAndProcess($transactionData);
-        } catch (\Exception $e) {
-            $this->logger->error('An unexpected exception occurred: ' . $e->getMessage());
-            $this->logger->debug($e->__toString());
-
-            return $this->constructErrorResponse([$e->getMessage()], $transactionData->getResponse());
-        }
     }
 
     /**
@@ -159,18 +138,12 @@ class AddExpectationAction implements ActionInterface
         return $bodyJson;
     }
 
-    /**
-     * @param TransactionData $transactionData
-     * @param callable        $process
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    private function createObjectFromRequestAndProcess(TransactionData $transactionData)
+    private function createObjectFromRequestAndProcess(RequestInterface $request, ResponseInterface $response)
     {
         $this->logger->debug('Adding Expectation->createObjectFromRequestAndProcess');
-        $object = $this->parseRequestObject($transactionData->getRequest());
+        $object = $this->parseRequestObject($request);
 
-        return $this->process($transactionData, $object);
+        return $this->process($response, $object);
     }
 
     /**

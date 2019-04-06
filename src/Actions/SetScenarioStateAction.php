@@ -24,7 +24,6 @@ use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\PowerRoute\Actions\ActionInterface;
 use Mcustiel\PowerRoute\Common\TransactionData;
-use Monolog\Logger;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 

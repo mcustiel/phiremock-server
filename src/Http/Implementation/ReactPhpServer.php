@@ -107,6 +107,7 @@ class ReactPhpServer implements ServerInterface
         $this->loop->stop();
     }
 
+    /** @return \React\Http\Server|\React\Http\StreamingServer */
     private function getReactServerClass()
     {
         if (class_exists('\React\Http\StreamingServer')) {

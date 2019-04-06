@@ -19,7 +19,6 @@
 namespace Mcustiel\Phiremock\Server\Http\Matchers;
 
 use Mcustiel\Phiremock\Server\Utils\ArraysHelper;
-use Mcustiel\PowerRoute\Matchers\MatcherInterface;
 use Psr\Log\LoggerInterface;
 
 class JsonObjectsEquals implements MatcherInterface

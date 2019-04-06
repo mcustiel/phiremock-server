@@ -18,13 +18,65 @@
 
 namespace Mcustiel\Phiremock\Server\Config;
 
+use FastRoute\Dispatcher;
+use FastRoute\RouteCollector;
+use Mcustiel\Phiremock\Server\Actions\ActionsFactory;
+use Psr\Http\Message\ServerRequestInterface;
+
 class RouterConfig
 {
-    /**
-     * @return array
-     */
-    public static function get()
+    /** @var Dispatcher */
+    private $dispatcher;
+
+    public function __construct(ActionsFactory $factory)
     {
-        return require __DIR__ . '/router-config.php';
+        $this->dispatcher = \FastRoute\simpleDispatcher(
+            [$this, 'dispatcherConfig'],
+            [
+                'cacheFile'     => __DIR__ . '/route.cache',
+                'cacheDisabled' => IS_DEBUG_MODE,
+            ]
+        );
+    }
+
+    public function dispatch(ServerRequestInterface $request)
+    {
+        $method = $request->getMethod();
+        $uri = $request->getUri()->getPath();
+
+        $routeInfo = $this->dispatcher->dispatch($method, $uri);
+        switch ($routeInfo[0]) {
+            case Dispatcher::NOT_FOUND:
+                // ... 404 Not Found
+                // CALL THE REQUEST MANAGER
+
+                break;
+            case Dispatcher::METHOD_NOT_ALLOWED:
+                $allowedMethods = $routeInfo[1];
+                // ... 405 Method Not Allowed
+                // API ERROR
+                break;
+            case Dispatcher::FOUND:
+                $handler = $routeInfo[1];
+                $vars = $routeInfo[2];
+                // ... call $handler with $vars
+                break;
+        }
+    }
+
+    private function dispatcherConfig(RouteCollector $r)
+    {
+        $r->addRoute('GET', '^/__phiremock/expectations/?$', 'get_all_users_handler');
+        $r->addRoute('POST', '^/__phiremock/expectations/?$', 'get_all_users_handler');
+        $r->addRoute('DELETE', '^/__phiremock/expectations/?$', 'get_all_users_handler');
+
+        $r->addRoute('PUT', '^/__phiremock/scenarios/?$', 'get_all_users_handler');
+        $r->addRoute('DELETE', '^/__phiremock/scenarios/?$', 'get_all_users_handler');
+
+        $r->addRoute('POST', '^/__phiremock/executions/?$', 'get_all_users_handler');
+        $r->addRoute('PUT', '^/__phiremock/executions/?$', 'get_all_users_handler');
+        $r->addRoute('DELETE', '^/__phiremock/executions/?$', 'get_all_users_handler');
+
+        $r->addRoute('POST', '^/__phiremock/reset/?$', 'get_all_users_handler');
     }
 }

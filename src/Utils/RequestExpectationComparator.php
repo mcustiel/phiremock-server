@@ -20,9 +20,11 @@ namespace Mcustiel\Phiremock\Server\Utils;
 
 use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Domain\RequestConditions;
+use Mcustiel\Phiremock\Server\Config\InputSources;
 use Mcustiel\Phiremock\Server\Config\Matchers;
+use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
+use Mcustiel\Phiremock\Server\Http\Matchers\MatcherLocator;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
-use Mcustiel\PowerRoute\Common\Conditions\ClassArgumentObject;
 use Mcustiel\PowerRoute\Common\Factories\InputSourceFactory;
 use Mcustiel\PowerRoute\Common\Factories\MatcherFactory;
 use Psr\Http\Message\ServerRequestInterface;
@@ -31,13 +33,13 @@ use Psr\Log\LoggerInterface;
 class RequestExpectationComparator
 {
     /**
-     * @var \Mcustiel\PowerRoute\Common\Factories\MatcherFactory
+     * @var MatcherLocator
      */
-    private $matcherFactory;
+    private $matcherLocator;
     /**
-     * @var \Mcustiel\PowerRoute\Common\Factories\InputSourceFactory
+     * @var InputSourceLocator
      */
-    private $inputSourceFactory;
+    private $inputSourceLocator;
     /**
      * @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage
      */
@@ -48,19 +50,19 @@ class RequestExpectationComparator
     private $logger;
 
     /**
-     * @param MatcherFactory     $matcherFactory
-     * @param InputSourceFactory $inputSourceFactory
+     * @param MatcherFactory     $matcherLocator
+     * @param InputSourceFactory $inputSourceLocator
      * @param ScenarioStorage    $scenarioStorage
      * @param LoggerInterface    $logger
      */
     public function __construct(
-        MatcherFactory $matcherFactory,
-        InputSourceFactory $inputSourceFactory,
+        MatcherLocator $matcherLocator,
+        InputSourceLocator $inputSourceLocator,
         ScenarioStorage $scenarioStorage,
         LoggerInterface $logger
     ) {
-        $this->matcherFactory = $matcherFactory;
-        $this->inputSourceFactory = $inputSourceFactory;
+        $this->matcherLocator = $matcherLocator;
+        $this->inputSourceLocator = $inputSourceLocator;
         $this->scenarioStorage = $scenarioStorage;
         $this->logger = $logger;
     }
@@ -161,14 +163,13 @@ class RequestExpectationComparator
      */
     private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
-        $inputSource = $this->inputSourceFactory->createFromConfig([
-            'method' => null,
-        ]);
-        $matcher = $this->matcherFactory->createFromConfig([
-            Matchers::SAME_STRING => $expectedRequest->getMethod()->asString(),
-        ]);
+        $inputSource = $this->inputSourceLocator->locate(InputSources::METHOD);
+        $matcher = $this->matcherLocator->locate(Matchers::SAME_STRING);
 
-        return $this->evaluate($inputSource, $matcher, $httpRequest);
+        return $matcher->match(
+            $inputSource->getValue($httpRequest),
+            $expectedRequest->getMethod()->asString()
+        );
     }
 
     /**
@@ -179,14 +180,13 @@ class RequestExpectationComparator
      */
     private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
-        $inputSource = $this->inputSourceFactory->createFromConfig([
-            'url' => null,
-        ]);
-        $matcher = $this->matcherFactory->createFromConfig([
-            $expectedRequest->getUrl()->getMatcher()->asString() => $expectedRequest->getUrl()->getValue()->asString(),
-        ]);
+        $inputSource = $this->inputSourceLocator->locate('url');
+        $matcher = $this->matcherLocator->locate($expectedRequest->getUrl()->getMatcher()->asString());
 
-        return $this->evaluate($inputSource, $matcher, $httpRequest);
+        return $matcher->match(
+            $inputSource->getValue($httpRequest),
+            $expectedRequest->getUrl()->getValue()->asString()
+        );
     }
 
     /**
@@ -197,14 +197,15 @@ class RequestExpectationComparator
      */
     private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
-        $inputSource = $this->inputSourceFactory->createFromConfig([
-            'body' => null,
-        ]);
-        $matcher = $this->matcherFactory->createFromConfig([
-            $expectedRequest->getBody()->getMatcher()->asString() => $expectedRequest->getBody()->getValue()->asString(),
-        ]);
+        $inputSource = $this->inputSourceLocator->locate('body');
+        $matcher = $this->matcherLocator->locate(
+            $expectedRequest->getBody()->getMatcher()->asString()
+        );
 
-        return $this->evaluate($inputSource, $matcher, $httpRequest);
+        return $matcher->match(
+            $inputSource->getValue($httpRequest),
+            $expectedRequest->getBody()->getValue()->asString()
+        );
     }
 
     /**
@@ -215,39 +216,21 @@ class RequestExpectationComparator
      */
     private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
+        $inputSource = $this->inputSourceLocator->locate('header');
         foreach ($expectedRequest->getHeaders() as $header => $headerCondition) {
-            $inputSource = $this->inputSourceFactory->createFromConfig([
-                'header' => $header->asString(),
-            ]);
-            $matcher = $this->matcherFactory->createFromConfig([
-                $headerCondition->getMatcher()->asString() => $headerCondition->getValue()->asString(),
-            ]);
+            $matcher = $this->matcherLocator->locate(
+                $headerCondition->getMatcher()->asString()
+            );
 
-            if (!$this->evaluate($inputSource, $matcher, $httpRequest)) {
+            $matches = $matcher->match(
+                $inputSource->getValue($httpRequest, $header->asString()),
+                $headerCondition->getValue()->asString()
+            );
+            if (!$matches) {
                 return false;
             }
         }
 
         return true;
-    }
-
-    /**
-     * @param ClassArgumentObject    $inputSource
-     * @param ClassArgumentObject    $matcher
-     * @param ServerRequestInterface $httpRequest
-     *
-     * @return bool
-     */
-    private function evaluate(
-        ClassArgumentObject $inputSource,
-        ClassArgumentObject $matcher,
-        ServerRequestInterface $httpRequest
-    ) {
-        var_export($matcher);
-
-        return $matcher->getInstance()->match(
-            $inputSource->getInstance()->getValue($httpRequest, $inputSource->getArgument()),
-            $matcher->getArgument()
-        );
     }
 }
