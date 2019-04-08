@@ -21,19 +21,16 @@ namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Config\Matchers;
-use Mcustiel\PowerRoute\Common\TransactionData;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class RegexResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface::createResponse()
-     */
-    public function createResponse(MockConfig $expectation, TransactionData $transactionData)
-    {
+    public function createResponse(
+        MockConfig $expectation,
+        ResponseInterface $transactionData,
+        ServerRequestInterface $request
+    ) {
         $responseConfig = $expectation->getResponse();
         $httpResponse = $transactionData->getResponse();
         $httpResponse = $this->getResponseWithBody(

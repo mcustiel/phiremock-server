@@ -20,59 +20,68 @@ namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
+use Mcustiel\Phiremock\Server\Model\RequestStorage;
+use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
-use Mcustiel\PowerRoute\Actions\ActionInterface;
-use Mcustiel\PowerRoute\Common\TransactionData;
+use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class SearchRequestAction implements ActionInterface
 {
-    /**
-     * @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage
-     */
-    private $storage;
-    /**
-     * @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator
-     */
+    /** @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage */
+    private $expectationsStorage;
+    /** @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator */
     private $comparator;
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
+    /** @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage */
+    private $scenariosStorage;
+    /** @var \Psr\Log\LoggerInterface */
     private $logger;
+    /** @var \Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator */
+    private $responseStrategyFactory;
+    /** @var \Mcustiel\Phiremock\Server\Model\RequestStorage */
+    private $requestsStorage;
 
     /**
-     * @param ExpectationStorage           $storage
+     * @param ExpectationStorage           $expectationsStorage
      * @param RequestExpectationComparator $comparator
      * @param LoggerInterface              $logger
      */
     public function __construct(
-        ExpectationStorage $storage,
+        ExpectationStorage $expectationsStorage,
         RequestExpectationComparator $comparator,
+        ScenarioStorage $scenariosStorage,
+        ResponseStrategyLocator $responseStrategyLocator,
+        RequestStorage $requestsStorage,
         LoggerInterface $logger
     ) {
-        $this->storage = $storage;
+        $this->expectationsStorage = $expectationsStorage;
         $this->comparator = $comparator;
         $this->logger = $logger;
+        $this->requestsStorage = $requestsStorage;
+        $this->responseStrategyFactory = $responseStrategyLocator;
+        $this->scenariosStorage = $scenariosStorage;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\PowerRoute\Actions\ActionInterface::execute()
-     */
-    public function execute(TransactionData $transactionData, $argument = null)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->logger->debug('Searching matching expectation for request');
-        $request = $transactionData->getRequest();
         $this->logger->info('Request received: ' . $this->getLoggableRequest($request));
+        $this->requestsStorage->addRequest($request);
         $foundExpectation = $this->searchForMatchingExpectation($request);
         if (null === $foundExpectation) {
-            $transactionData->set('foundExpectation', false);
-
-            return;
+            return $response->withStatus(404, 'Not Found');
         }
-        $transactionData->set('foundExpectation', $foundExpectation);
+        $this->processScenario($foundExpectation);
+
+        $response = $this->responseStrategyFactory
+            ->getStrategyForExpectation($foundExpectation)
+            ->createResponse($foundExpectation, $response);
+
+        $this->logger->debug('Responding: ' . $this->getLoggableResponse($response));
+
+        return $response;
     }
 
     /**
@@ -83,7 +92,7 @@ class SearchRequestAction implements ActionInterface
     private function searchForMatchingExpectation(ServerRequestInterface $request)
     {
         $lastFound = null;
-        foreach ($this->storage->listExpectations() as $expectation) {
+        foreach ($this->expectationsStorage->listExpectations() as $expectation) {
             $lastFound = $this->getNextMatchingExpectation($lastFound, $request, $expectation);
         }
 

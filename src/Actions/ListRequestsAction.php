@@ -19,65 +19,54 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
-use Mcustiel\Phiremock\Common\Utils\ArrayToRequestConditionConverter;
 use Mcustiel\Phiremock\Domain\MockConfig;
-use Mcustiel\Phiremock\Server\Actions\Base\AbstractRequestAction;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
-use Mcustiel\PowerRoute\Actions\ActionInterface;
-use Mcustiel\PowerRoute\Common\TransactionData;
+use Mcustiel\Phiremock\Server\Utils\RequestToMockConfigMapper;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ListRequestsAction extends AbstractRequestAction implements ActionInterface
+class ListRequestsAction implements ActionInterface
 {
-    /**
-     * @var \Mcustiel\Phiremock\Server\Model\RequestStorage
-     */
+    /** @var \Mcustiel\Phiremock\Server\Model\RequestStorage */
     private $requestsStorage;
-    /**
-     * @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator
-     */
+    /** @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator */
     private $comparator;
+    /** @var RequestToMockConfigMapper */
+    private $converter;
+    /** @var LoggerInterface */
+    private $logger;
 
-    /**
-     * @param ArrayToRequestConditionConverter $requestBuilder
-     * @param RequestStorage                   $storage
-     * @param RequestExpectationComparator     $comparator
-     * @param LoggerInterface                  $logger
-     */
     public function __construct(
-        ArrayToRequestConditionConverter $requestBuilder,
+        RequestToMockConfigMapper $converter,
         RequestStorage $storage,
         RequestExpectationComparator $comparator,
         LoggerInterface $logger
     ) {
-        parent::__construct($requestBuilder, $logger);
         $this->requestsStorage = $storage;
         $this->comparator = $comparator;
+        $this->converter = $converter;
+        $this->logger = $logger;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\PowerRoute\Actions\ActionInterface::execute()
-     */
-    public function execute(TransactionData $transactionData, $argument = null)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $transactionData->setResponse(
-            $this->processAndGetResponse(
-                $transactionData,
-                function (TransactionData $transaction, MockConfig $expectation) {
-                    $this->validateRequestOrThrowException($expectation, $this->logger);
-                    $executions = $this->searchForExecutionsCount($expectation);
-                    $this->logger->debug('Listed ' . \count($executions) . ' request matching the expectation');
+        $object = $this->converter->map($request);
 
-                    return $transaction->getResponse()
-                        ->withStatus(200)
-                        ->withHeader('Content-Type', 'application/json')
-                        ->withBody(new StringStream(json_encode($executions)));
-                }
-            )
-        );
+        return $this->process($response, $object);
+    }
+
+    public function process(ResponseInterface $response, MockConfig $expectation)
+    {
+        $this->validateRequestOrThrowException($expectation, $this->logger);
+        $executions = $this->searchForExecutionsCount($expectation);
+        $this->logger->debug('Listed ' . \count($executions) . ' request matching the expectation');
+
+        return $response
+            ->withStatus(200)
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody(new StringStream(json_encode($executions)));
     }
 
     /**

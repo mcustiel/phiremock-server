@@ -19,8 +19,8 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
-use Mcustiel\PowerRoute\Actions\ActionInterface;
-use Mcustiel\PowerRoute\Common\TransactionData;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class ReloadPreconfiguredExpectationsAction implements ActionInterface
@@ -53,20 +53,13 @@ class ReloadPreconfiguredExpectationsAction implements ActionInterface
         $this->logger = $logger;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\PowerRoute\Actions\ActionInterface::execute()
-     */
-    public function execute(TransactionData $transactionData, $argument = null)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response)
     {
         foreach ($this->expectationBackup->listExpectations() as $expectation) {
             $this->expectationStorage->addExpectation($expectation);
         }
         $this->logger->debug('Pre-defined expectations are restored, scenarios and requests history are cleared.');
 
-        $transactionData->setResponse(
-            $transactionData->getResponse()->withStatus(200)
-        );
+        return $response->withStatus(200);
     }
 }

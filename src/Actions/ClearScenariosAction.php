@@ -19,8 +19,8 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
-use Mcustiel\PowerRoute\Actions\ActionInterface;
-use Mcustiel\PowerRoute\Common\TransactionData;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class ClearScenariosAction implements ActionInterface
 {
@@ -37,17 +37,10 @@ class ClearScenariosAction implements ActionInterface
         $this->storage = $storage;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\PowerRoute\Actions\ActionInterface::execute()
-     */
-    public function execute(TransactionData $transactionData, $argument = null)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->storage->clearScenarios();
 
-        $transactionData->setResponse(
-            $transactionData->getResponse()->withStatus(200)
-        );
+        return $response->withStatus(200);
     }
 }

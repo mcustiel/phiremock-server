@@ -25,8 +25,6 @@ use Mcustiel\Phiremock\Server\Config\Matchers;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
 use Mcustiel\Phiremock\Server\Http\Matchers\MatcherLocator;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
-use Mcustiel\PowerRoute\Common\Factories\InputSourceFactory;
-use Mcustiel\PowerRoute\Common\Factories\MatcherFactory;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
@@ -49,12 +47,6 @@ class RequestExpectationComparator
      */
     private $logger;
 
-    /**
-     * @param MatcherFactory     $matcherLocator
-     * @param InputSourceFactory $inputSourceLocator
-     * @param ScenarioStorage    $scenarioStorage
-     * @param LoggerInterface    $logger
-     */
     public function __construct(
         MatcherLocator $matcherLocator,
         InputSourceLocator $inputSourceLocator,

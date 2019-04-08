@@ -16,24 +16,13 @@
  * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Mcustiel\Phiremock\Server\Http\InputSources;
+namespace Mcustiel\Phiremock\Server\Utils\Router;
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class UrlFromPath implements InputSourceInterface
+interface RouterInterface
 {
-    /** @return string */
-    public function getValue(ServerRequestInterface $request, $argument = null)
-    {
-        $url = $request->getUri();
-        $return = $url->getPath();
-        if ($url->getQuery()) {
-            $return .= '?' . $url->getQuery();
-        }
-        if ($url->getFragment()) {
-            $return .= '#' . $url->getFragment();
-        }
-
-        return $return;
-    }
+    /** @return ResponseInterface */
+    public function dispatch(ServerRequestInterface $request);
 }

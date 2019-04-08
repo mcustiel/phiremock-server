@@ -3,8 +3,8 @@
 namespace Mcustiel\Phiremock\Server\Factory;
 
 use Mcustiel\Phiremock\Factory as PhiremockFactory;
+use Mcustiel\Phiremock\Server\Actions\ActionLocator;
 use Mcustiel\Phiremock\Server\Actions\ActionsFactory;
-use Mcustiel\Phiremock\Server\Config\RouterConfig;
 use Mcustiel\Phiremock\Server\Http\Implementation\ReactPhpServer;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceFactory as PhiremockInputSourceFactory;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
@@ -19,6 +19,7 @@ use Mcustiel\Phiremock\Server\Utils\FileExpectationsLoader;
 use Mcustiel\Phiremock\Server\Utils\HomePathService;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
 use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
+use Mcustiel\Phiremock\Server\Utils\Router\FastRouterRouter;
 use Mcustiel\Phiremock\Server\Utils\Strategies\HttpResponseStrategy;
 use Mcustiel\Phiremock\Server\Utils\Strategies\ProxyResponseStrategy;
 use Mcustiel\Phiremock\Server\Utils\Strategies\RegexResponseStrategy;
@@ -32,9 +33,6 @@ class Factory
 
     /** @var StringObjectArrayMap */
     private $factoryCache;
-
-    /** @var array */
-    private $routerConfigCache;
 
     public function __construct(PhiremockFactory $factory)
     {
@@ -108,13 +106,16 @@ class Factory
         return $this->factoryCache->get('responseStrategyLocator');
     }
 
-    public function createRouterConfig()
+    public function createRouter()
     {
-        if ($this->routerConfigCache === null) {
-            $this->routerConfigCache = RouterConfig::get();
+        if (!$this->factoryCache->has('router')) {
+            $this->factoryCache->set(
+                'router',
+                new FastRouterRouter($this->createActionLocator())
+            );
         }
 
-        return $this->routerConfigCache;
+        return $this->factoryCache->get('router');
     }
 
     public function createHomePathService()
@@ -283,16 +284,16 @@ class Factory
         return $this->factoryCache->get('inputSourceLocator');
     }
 
-    public function createRouter()
+    public function createActionLocator()
     {
-        if (!$this->factoryCache->has('router')) {
+        if (!$this->factoryCache->has('actionLocator')) {
             $this->factoryCache->set(
-                'router',
-                new RouterConfig($this->createActionFactory())
-            );
+                'actionLocator',
+                new ActionLocator($this->createActionFactory())
+                );
         }
 
-        return $this->factoryCache->get('router');
+        return $this->factoryCache->get('actionLocator');
     }
 
     public function createActionFactory()

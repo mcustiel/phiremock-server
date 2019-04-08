@@ -33,11 +33,7 @@ class JsonObjectsEquals implements MatcherInterface
         $this->logger = $logger;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\PowerRoute\Matchers\MatcherInterface::match()
-     */
+    /** @return bool */
     public function match($value, $argument = null)
     {
         if (\is_string($value)) {

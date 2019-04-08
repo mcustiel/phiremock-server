@@ -88,8 +88,11 @@ class ActionsFactory
     public function createSearchRequest()
     {
         return new SearchRequestAction(
-            $this->serverFactory->createRequestStorage(),
+            $this->serverFactory->createExpectationStorage(),
             $this->serverFactory->createRequestExpectationComparator(),
+            $this->serverFactory->createScenarioStorage(),
+            $this->serverFactory->createResponseStrategyLocator(),
+            $this->serverFactory->createRequestStorage(),
             $this->serverFactory->createLogger()
         );
     }
@@ -100,20 +103,6 @@ class ActionsFactory
             $this->phiremockFactory->createArrayToScenarioStateInfoConverter(),
             $this->serverFactory->createScenarioStorage(),
             $this->serverFactory->createLogger()
-        );
-    }
-
-    public function createStoreRequest()
-    {
-        return new StoreRequestAction($this->serverFactory->createRequestStorage());
-    }
-
-    public function createVerifyRequestFound()
-    {
-        return new VerifyRequestFound(
-            $this->serverFactory->createScenarioStorage(),
-            $this->serverFactory->createLogger(),
-            $this->serverFactory->createResponseStrategyLocator()
         );
     }
 }

@@ -19,18 +19,15 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Domain\MockConfig;
-use Mcustiel\PowerRoute\Common\TransactionData;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 interface ResponseStrategyInterface
 {
-    /**
-     * Executes the strategy configured for the given
-     * response config and returns the modified http response.
-     *
-     * @param \Mcustiel\Phiremock\Domain\MockConfig       $expectation
-     * @param \Mcustiel\PowerRoute\Common\TransactionData $transactionData
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    public function createResponse(MockConfig $expectation, TransactionData $transactionData);
+    /** @return \Psr\Http\Message\ResponseInterface */
+    public function createResponse(
+        MockConfig $expectation,
+        ResponseInterface $transactionData,
+        ServerRequestInterface $request
+    );
 }

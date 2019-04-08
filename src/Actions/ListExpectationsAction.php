@@ -21,8 +21,8 @@ namespace Mcustiel\Phiremock\Server\Actions;
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Common\Utils\ExpectationToArrayConverter;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
-use Mcustiel\PowerRoute\Actions\ActionInterface;
-use Mcustiel\PowerRoute\Common\TransactionData;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class ListExpectationsAction implements ActionInterface
 {
@@ -34,28 +34,23 @@ class ListExpectationsAction implements ActionInterface
     /**
      * @param ExpectationStorage $storage
      */
-    public function __construct(ExpectationStorage $storage, ExpectationToArrayConverter $converter)
-    {
+    public function __construct(
+        ExpectationStorage $storage,
+        ExpectationToArrayConverter $converter
+    ) {
         $this->storage = $storage;
         $this->converter = $converter;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\PowerRoute\Actions\ActionInterface::execute()
-     */
-    public function execute(TransactionData $transactionData, $argument = null)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response)
     {
         $list = [];
         foreach ($this->storage->listExpectations() as $expectation) {
             $list[] = $this->converter->convert($expectation);
         }
         $jsonList = json_encode($list);
-        $transactionData->setResponse(
-            $transactionData->getResponse()
-            ->withBody(new StringStream($jsonList))
-            ->withHeader('Content-type', 'application/json')
-        );
+
+        return $response->withBody(new StringStream($jsonList))
+            ->withHeader('Content-type', 'application/json');
     }
 }

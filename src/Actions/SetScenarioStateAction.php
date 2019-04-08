@@ -20,18 +20,14 @@ namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Common\Utils\ArrayToScenarioStateInfoConverter;
-use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
-use Mcustiel\PowerRoute\Actions\ActionInterface;
-use Mcustiel\PowerRoute\Common\TransactionData;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class SetScenarioStateAction implements ActionInterface
 {
-    /**
-     * @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage
-     */
+    /** @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage */
     private $storage;
 
     /** @var ArrayToScenarioStateInfoConverter */
@@ -55,30 +51,18 @@ class SetScenarioStateAction implements ActionInterface
         $this->logger = $logger;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\PowerRoute\Actions\ActionInterface::execute()
-     */
-    public function execute(TransactionData $transactionData, $argument = null)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $transactionData->setResponse(
-            $this->processAndGetResponse(
-                $transactionData,
-                $this->parseRequestObject($transactionData->getRequest())
-            )
-        );
-    }
-
-    private function processAndGetResponse(
-        TransactionData $transaction,
-        ScenarioStateInfo $state
-    ) {
+        $state = $this->parseRequestObject($request);
         if ($state->getScenarioName() === null || $state->getScenarioState() === null) {
-            return $transaction->getResponse()
+            return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json')
-                ->withBody(new StringStream(json_encode(['error' => 'Scenario name or state is not set'])));
+                ->withBody(
+                    new StringStream(
+                        json_encode(['error' => 'Scenario name or state is not set'])
+                    )
+                );
         }
 
         $this->storage->setScenarioState($state);
@@ -90,10 +74,10 @@ class SetScenarioStateAction implements ActionInterface
             )
         );
 
-        return $transaction->getResponse()
+        return $response
             ->withStatus(200)
             ->withHeader('Content-Type', 'application/json')
-            ->withBody($transaction->getRequest()->getBody());
+            ->withBody($request->getBody());
     }
 
     /**

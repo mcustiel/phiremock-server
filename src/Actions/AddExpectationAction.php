@@ -22,8 +22,8 @@ use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
 use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
+use Mcustiel\Phiremock\Server\Utils\RequestToMockConfigMapper;
 use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -34,10 +34,8 @@ class AddExpectationAction implements ActionInterface
 
     /** @var ExpectationStorage */
     private $storage;
-
-    /** @var ArrayToExpectationConverter */
+    /** @var RequestToMockConfigMapper */
     private $converter;
-
     /** @var LoggerInterface */
     private $logger;
 
@@ -47,7 +45,7 @@ class AddExpectationAction implements ActionInterface
      * @param LoggerInterface             $logger
      */
     public function __construct(
-        ArrayToExpectationConverter $converter,
+        RequestToMockConfigMapper $converter,
         ExpectationStorage $storage,
         LoggerInterface $logger
     ) {
@@ -56,13 +54,13 @@ class AddExpectationAction implements ActionInterface
         $this->storage = $storage;
     }
 
-    public function execute(RequestInterface $request, ResponseInterface $response)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->logger->debug('Adding Expectation->execute');
         try {
-            $this->logger->debug('Adding Expectation->processAndGetResponse');
+            $object = $this->converter->map($request);
 
-            return $this->createObjectFromRequestAndProcess($request, $response);
+            return $this->process($response, $object);
         } catch (\Exception $e) {
             $this->logger->error('An unexpected exception occurred: ' . $e->getMessage());
             $this->logger->debug($e->__toString());
@@ -94,56 +92,6 @@ class AddExpectationAction implements ActionInterface
         }
 
         return $this->constructErrorResponse($listOfErrors, $response);
-    }
-
-    /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     *
-     * @return \Mcustiel\Phiremock\Domain\MockConfig
-     */
-    private function parseRequestObject(ServerRequestInterface $request)
-    {
-        $this->logger->debug('Adding Expectation->parseRequestObject');
-        /** @var \Mcustiel\Phiremock\Domain\MockConfig $object */
-        $object = $this->converter->convert(
-            $this->parseJsonBody($request)
-        );
-        $this->logger->debug(var_export($object, true));
-
-        return $object;
-    }
-
-    /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     *
-     * @throws \Exception
-     *
-     * @return array
-     */
-    private function parseJsonBody(ServerRequestInterface $request)
-    {
-        $this->logger->debug('Adding Expectation->parseJsonBody');
-        $body = $request->getBody()->__toString();
-        $this->logger->debug($body);
-        if ($request->hasHeader('Content-Encoding') && 'base64' === $request->getHeader('Content-Encoding')) {
-            $body = base64_decode($body, true);
-        }
-
-        $bodyJson = @json_decode($body, true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \Exception(json_last_error_msg());
-        }
-        $this->logger->debug(var_export($bodyJson, true));
-
-        return $bodyJson;
-    }
-
-    private function createObjectFromRequestAndProcess(RequestInterface $request, ResponseInterface $response)
-    {
-        $this->logger->debug('Adding Expectation->createObjectFromRequestAndProcess');
-        $object = $this->parseRequestObject($request);
-
-        return $this->process($response, $object);
     }
 
     /**
