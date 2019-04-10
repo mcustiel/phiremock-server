@@ -27,7 +27,7 @@ class ActionsFactory
     public function createAddExpectation()
     {
         return new AddExpectationAction(
-            $this->phiremockFactory->createArrayToExpectationConverter(),
+            $this->serverFactory->createRequestToMockConfigMapper(),
             $this->serverFactory->createExpectationStorage(),
             $this->serverFactory->createLogger()
         );
@@ -90,7 +90,6 @@ class ActionsFactory
         return new SearchRequestAction(
             $this->serverFactory->createExpectationStorage(),
             $this->serverFactory->createRequestExpectationComparator(),
-            $this->serverFactory->createScenarioStorage(),
             $this->serverFactory->createResponseStrategyLocator(),
             $this->serverFactory->createRequestStorage(),
             $this->serverFactory->createLogger()

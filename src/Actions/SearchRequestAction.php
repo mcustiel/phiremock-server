@@ -21,7 +21,6 @@ namespace Mcustiel\Phiremock\Server\Actions;
 use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
-use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
 use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
 use Psr\Http\Message\ResponseInterface;
@@ -35,8 +34,6 @@ class SearchRequestAction implements ActionInterface
     /** @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator */
     private $comparator;
     /** @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage */
-    private $scenariosStorage;
-    /** @var \Psr\Log\LoggerInterface */
     private $logger;
     /** @var \Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator */
     private $responseStrategyFactory;
@@ -51,7 +48,6 @@ class SearchRequestAction implements ActionInterface
     public function __construct(
         ExpectationStorage $expectationsStorage,
         RequestExpectationComparator $comparator,
-        ScenarioStorage $scenariosStorage,
         ResponseStrategyLocator $responseStrategyLocator,
         RequestStorage $requestsStorage,
         LoggerInterface $logger
@@ -61,7 +57,6 @@ class SearchRequestAction implements ActionInterface
         $this->logger = $logger;
         $this->requestsStorage = $requestsStorage;
         $this->responseStrategyFactory = $responseStrategyLocator;
-        $this->scenariosStorage = $scenariosStorage;
     }
 
     public function execute(ServerRequestInterface $request, ResponseInterface $response)
@@ -73,11 +68,9 @@ class SearchRequestAction implements ActionInterface
         if (null === $foundExpectation) {
             return $response->withStatus(404, 'Not Found');
         }
-        $this->processScenario($foundExpectation);
-
         $response = $this->responseStrategyFactory
             ->getStrategyForExpectation($foundExpectation)
-            ->createResponse($foundExpectation, $response);
+            ->createResponse($foundExpectation, $response, $request);
 
         $this->logger->debug('Responding: ' . $this->getLoggableResponse($response));
 
@@ -127,5 +120,18 @@ class SearchRequestAction implements ActionInterface
         return $request->getMethod() . ': '
             . $request->getUri()->__toString() . ' || '
                 . preg_replace('|\s+|', ' ', $request->getBody()->__toString());
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @return string
+     */
+    private function getLoggableResponse(ResponseInterface $response)
+    {
+        $body = $response->getBody()->__toString();
+
+        return $response->getStatusCode() . ' / '
+            . \strlen($body) > 5000 ? '--VERY LONG CONTENTS--' : preg_replace('|\s+|', ' ', $body);
     }
 }

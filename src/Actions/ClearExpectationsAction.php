@@ -41,6 +41,6 @@ class ClearExpectationsAction implements ActionInterface
     {
         $this->storage->clearExpectations();
 
-        return $$response->withStatus(200);
+        return $response->withStatus(200);
     }
 }

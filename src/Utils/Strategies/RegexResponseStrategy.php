@@ -40,6 +40,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         );
         $httpResponse = $this->getResponseWithStatusCode($responseConfig, $httpResponse);
         $httpResponse = $this->getResponseWithHeaders($responseConfig, $httpResponse);
+        $this->processScenario($expectation);
         $this->processDelay($responseConfig);
 
         return $httpResponse;

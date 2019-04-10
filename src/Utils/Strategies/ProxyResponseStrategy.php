@@ -20,31 +20,24 @@ namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\Http\RemoteConnectionInterface;
 use Mcustiel\Phiremock\Domain\MockConfig;
-use Mcustiel\Phiremock\Domain\Response;
+use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Zend\Diactoros\Uri;
 
-class ProxyResponseStrategy implements ResponseStrategyInterface
+class ProxyResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
-    /**
-     * @var \Mcustiel\Phiremock\Common\Http\RemoteConnectionInterface
-     */
+    /** @var \Mcustiel\Phiremock\Common\Http\RemoteConnectionInterface */
     private $httpService;
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    private $logger;
 
-    /**
-     * @param RemoteConnectionInterface $httpService
-     * @param LoggerInterface           $logger
-     */
-    public function __construct(RemoteConnectionInterface $httpService, LoggerInterface $logger)
-    {
+    public function __construct(
+        RemoteConnectionInterface $httpService,
+        ScenarioStorage $scenarioStorage,
+        LoggerInterface $logger
+    ) {
+        parent::__construct($scenarioStorage, $logger);
         $this->httpService = $httpService;
-        $this->logger = $logger;
     }
 
     /**
@@ -59,20 +52,11 @@ class ProxyResponseStrategy implements ResponseStrategyInterface
     ) {
         $url = $expectation->getProxyTo();
         $this->logger->debug('Proxying request to : ' . $url);
+        $this->processScenario($expectation);
         $this->processDelay($expectation->getResponse());
 
         return $this->httpService->send(
             $request->withUri(new Uri($url))
         );
-    }
-
-    private function processDelay(Response $responseConfig)
-    {
-        if ($responseConfig->getDelayMillis()) {
-            $this->logger->debug(
-                'Delaying the response for ' . $responseConfig->getDelayMillis()->saInt . ' milliseconds'
-                );
-            usleep($responseConfig->getDelayMillis() * 1000);
-        }
     }
 }

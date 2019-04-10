@@ -23,6 +23,7 @@ use Mcustiel\Phiremock\Domain\HttpResponse;
 use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Domain\Response;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class HttpResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
@@ -31,13 +32,17 @@ class HttpResponseStrategy extends AbstractResponse implements ResponseStrategyI
      *
      * @see \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface::createResponse()
      */
-    public function createResponse(MockConfig $expectation, ResponseInterface $httpResponse)
-    {
+    public function createResponse(
+        MockConfig $expectation,
+        ResponseInterface $httpResponse,
+        ServerRequestInterface $request
+    ) {
         /** @var HttpResponse $responseConfig */
         $responseConfig = $expectation->getResponse();
         $httpResponse = $this->getResponseWithBody($responseConfig, $httpResponse);
         $httpResponse = $this->getResponseWithStatusCode($responseConfig, $httpResponse);
         $httpResponse = $this->getResponseWithHeaders($responseConfig, $httpResponse);
+        $this->processScenario($expectation);
         $this->processDelay($responseConfig);
 
         return $httpResponse;

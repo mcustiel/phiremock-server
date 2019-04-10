@@ -18,6 +18,7 @@ use Mcustiel\Phiremock\Server\Utils\DataStructures\StringObjectArrayMap;
 use Mcustiel\Phiremock\Server\Utils\FileExpectationsLoader;
 use Mcustiel\Phiremock\Server\Utils\HomePathService;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
+use Mcustiel\Phiremock\Server\Utils\RequestToMockConfigMapper;
 use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
 use Mcustiel\Phiremock\Server\Utils\Router\FastRouterRouter;
 use Mcustiel\Phiremock\Server\Utils\Strategies\HttpResponseStrategy;
@@ -59,7 +60,10 @@ class Factory
         if (!$this->factoryCache->has('httpResponseStrategy')) {
             $this->factoryCache->set(
                 'httpResponseStrategy',
-                new HttpResponseStrategy($this->createLogger())
+                new HttpResponseStrategy(
+                    $this->createScenarioStorage(),
+                    $this->createLogger()
+                )
             );
         }
 
@@ -72,7 +76,10 @@ class Factory
         if (!$this->factoryCache->has('regexResponseStrategy')) {
             $this->factoryCache->set(
                 'regexResponseStrategy',
-                new RegexResponseStrategy($this->createLogger())
+                new RegexResponseStrategy(
+                    $this->createScenarioStorage(),
+                    $this->createLogger()
+                )
             );
         }
 
@@ -86,6 +93,7 @@ class Factory
                 'proxyResponseStrategy',
                 new ProxyResponseStrategy(
                     $this->phiremockFactory->createRemoteConnectionInterface(),
+                    $this->createScenarioStorage(),
                     $this->createLogger()
                 )
             );
@@ -306,5 +314,20 @@ class Factory
         }
 
         return $this->factoryCache->get('actionFactory');
+    }
+
+    public function createRequestToMockConfigMapper()
+    {
+        if (!$this->factoryCache->has('requestToMockConfigMapper')) {
+            $this->factoryCache->set(
+                'requestToMockConfigMapper',
+                new RequestToMockConfigMapper(
+                    $this->phiremockFactory->createArrayToExpectationConverter(),
+                    $this->createLogger()
+                )
+            );
+        }
+
+        return $this->factoryCache->get('requestToMockConfigMapper');
     }
 }

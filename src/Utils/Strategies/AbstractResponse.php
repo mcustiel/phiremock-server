@@ -19,22 +19,23 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Domain\HttpResponse;
+use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Domain\Response;
+use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
+use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 class AbstractResponse
 {
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
+    /** @var \Psr\Log\LoggerInterface */
     protected $logger;
+    /** @var ScenarioStorage */
+    private $scenariosStorage;
 
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(ScenarioStorage $scenarioStorage, LoggerInterface $logger)
     {
+        $this->scenariosStorage = $scenarioStorage;
         $this->logger = $logger;
     }
 
@@ -48,6 +49,26 @@ class AbstractResponse
                 'Delaying the response for ' . $responseConfig->getDelayMillis()->saInt . ' milliseconds'
             );
             usleep($responseConfig->getDelayMillis() * 1000);
+        }
+    }
+
+    /**
+     * @param MockConfig $foundExpectation
+     */
+    protected function processScenario(MockConfig $foundExpectation)
+    {
+        if ($foundExpectation->getResponse()->getNewScenarioState()) {
+            if (!$foundExpectation->getStateConditions()->getScenarioName()) {
+                throw new \RuntimeException(
+                    'Expecting scenario state without specifying scenario name'
+                );
+            }
+            $this->scenariosStorage->setScenarioState(
+                new ScenarioStateInfo(
+                    $foundExpectation->getStateConditions()->getScenarioName(),
+                    $foundExpectation->getResponse()->getNewScenarioState()
+                )
+            );
         }
     }
 
