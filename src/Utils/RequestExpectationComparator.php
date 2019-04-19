@@ -119,13 +119,13 @@ class RequestExpectationComparator
      */
     private function isExpectedScenarioState(MockConfig $expectation)
     {
-        if ($expectation->getStateConditions()->getScenarioStateIs() !== null) {
+        if ($expectation->getRequest()->hasScenarioState()) {
             $this->checkScenarioNameOrThrowException($expectation);
             $this->logger->debug('Checking scenario state again expectation');
             $scenarioState = $this->scenarioStorage->getScenarioState(
-                $expectation->getStateConditions()->getScenarioName()
+                $expectation->getScenarioName()
             );
-            if (!$expectation->getStateConditions()->getScenarioStateIs()->equals($scenarioState)) {
+            if (!$expectation->getRequest()->getScenarioState()->equals($scenarioState)) {
                 return false;
             }
         }
@@ -140,7 +140,7 @@ class RequestExpectationComparator
      */
     private function checkScenarioNameOrThrowException(MockConfig $expectation)
     {
-        if ($expectation->getStateConditions()->getScenarioName() === null) {
+        if (!$expectation->hasScenarioName()) {
             throw new \InvalidArgumentException(
                 'Expecting scenario state without specifying scenario name'
             );

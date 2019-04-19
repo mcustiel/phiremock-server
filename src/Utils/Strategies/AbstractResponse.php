@@ -57,15 +57,22 @@ class AbstractResponse
      */
     protected function processScenario(MockConfig $foundExpectation)
     {
-        if ($foundExpectation->getResponse()->getNewScenarioState()) {
-            if (!$foundExpectation->getStateConditions()->getScenarioName()) {
+        if ($foundExpectation->getResponse()->hasNewScenarioState()) {
+            if (!$foundExpectation->hasScenarioName()) {
                 throw new \RuntimeException(
                     'Expecting scenario state without specifying scenario name'
                 );
             }
+            $this->logger->debug(
+                sprintf(
+                    'Setting scenario %s to %s',
+                    $foundExpectation->getScenarioName()->asString(),
+                    $foundExpectation->getResponse()->getNewScenarioState()->asString()
+                )
+            );
             $this->scenariosStorage->setScenarioState(
                 new ScenarioStateInfo(
-                    $foundExpectation->getStateConditions()->getScenarioName(),
+                    $foundExpectation->getScenarioName(),
                     $foundExpectation->getResponse()->getNewScenarioState()
                 )
             );

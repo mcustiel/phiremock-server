@@ -110,7 +110,7 @@ trait ExpectationValidator
         MockConfig $expectation,
         LoggerInterface $logger
     ) {
-        if ($expectation->getResponse()->getNewScenarioState() && !$expectation->getStateConditions()->getScenarioStateIs()) {
+        if ($expectation->getResponse()->hasNewScenarioState() && !$expectation->getRequest()->hasScenarioState()) {
             $logger->error('Scenario states misconfiguration');
             throw new \RuntimeException(
                 'Trying to set scenario state without specifying scenario previous state'
@@ -128,8 +128,8 @@ trait ExpectationValidator
         MockConfig $expectation,
         LoggerInterface $logger
     ) {
-        if (!$expectation->getStateConditions()->getScenarioName()
-            && ($expectation->getStateConditions()->getScenarioStateIs() || $expectation->getStateConditions()->getNewScenarioState())
+        if (!$expectation->hasScenarioName()
+            && ($expectation->getRequest()->hasScenarioState() || $expectation->getResponse()->hasNewScenarioState())
         ) {
             $logger->error('Scenario name related misconfiguration');
             throw new \RuntimeException(
