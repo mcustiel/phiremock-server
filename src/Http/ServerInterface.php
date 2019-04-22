@@ -18,10 +18,12 @@
 
 namespace Mcustiel\Phiremock\Server\Http;
 
+use Mcustiel\Phiremock\Server\Cli\Options\HostInterface;
+use Mcustiel\Phiremock\Server\Cli\Options\Port;
+
 interface ServerInterface
 {
-    /**
-     * @param RequestHandlerInterface $handler
-     */
-    public function setRequestHandler(RequestHandlerInterface $handler);
+    public function listen(HostInterface $interface, Port $port);
+
+    public function shutdown();
 }

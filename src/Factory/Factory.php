@@ -2,30 +2,37 @@
 
 namespace Mcustiel\Phiremock\Server\Factory;
 
+use Mcustiel\Phiremock\Common\Utils\FileSystem;
 use Mcustiel\Phiremock\Factory as PhiremockFactory;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
 use Mcustiel\Phiremock\Server\Actions\ActionsFactory;
+use Mcustiel\Phiremock\Server\Http\Implementation\FastRouterHandler;
 use Mcustiel\Phiremock\Server\Http\Implementation\ReactPhpServer;
+use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceFactory;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceFactory as PhiremockInputSourceFactory;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
+use Mcustiel\Phiremock\Server\Http\Matchers\MatcherFactory;
 use Mcustiel\Phiremock\Server\Http\Matchers\MatcherFactory as PhiremockMatcherFactory;
 use Mcustiel\Phiremock\Server\Http\Matchers\MatcherLocator;
+use Mcustiel\Phiremock\Server\Http\ServerInterface;
+use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Model\Implementation\ExpectationAutoStorage;
 use Mcustiel\Phiremock\Server\Model\Implementation\RequestAutoStorage;
 use Mcustiel\Phiremock\Server\Model\Implementation\ScenarioAutoStorage;
-use Mcustiel\Phiremock\Server\Phiremock;
+use Mcustiel\Phiremock\Server\Model\RequestStorage;
+use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\Phiremock\Server\Utils\DataStructures\StringObjectArrayMap;
 use Mcustiel\Phiremock\Server\Utils\FileExpectationsLoader;
 use Mcustiel\Phiremock\Server\Utils\HomePathService;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
 use Mcustiel\Phiremock\Server\Utils\RequestToMockConfigMapper;
 use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
-use Mcustiel\Phiremock\Server\Utils\Router\FastRouterRouter;
 use Mcustiel\Phiremock\Server\Utils\Strategies\HttpResponseStrategy;
 use Mcustiel\Phiremock\Server\Utils\Strategies\ProxyResponseStrategy;
 use Mcustiel\Phiremock\Server\Utils\Strategies\RegexResponseStrategy;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 class Factory
 {
@@ -39,22 +46,32 @@ class Factory
     {
         $this->phiremockFactory = $factory;
         $this->factoryCache = new StringObjectArrayMap();
-        $this->matchersFactory = new \Mcustiel\Phiremock\Server\Http\Matchers\MatcherFactory($this);
     }
 
-    /** @return \Monolog\Logger */
+    /** @return FileSystem */
+    public function createFileSystemService()
+    {
+        if (!$this->factoryCache->has('fileSystem')) {
+            $this->factoryCache->set('fileSystem', new FileSystem());
+        }
+
+        return $this->factoryCache->get('fileSystem');
+    }
+
+    /** @return LoggerInterface */
     public function createLogger()
     {
         if (!$this->factoryCache->has('logger')) {
-            $log = new Logger('stdoutLogger');
-            $log->pushHandler(new StreamHandler(STDOUT, LOG_LEVEL));
-            $this->factoryCache->set('logger', $log);
+            $logger = new Logger('stdoutLogger');
+            $logLevel = IS_DEBUG_MODE ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
+            $logger->pushHandler(new StreamHandler(STDOUT, $logLevel));
+            $this->factoryCache->set('logger', $logger);
         }
 
         return $this->factoryCache->get('logger');
     }
 
-    /** @return \Mcustiel\Phiremock\Server\Utils\Strategies\HttpResponseStrategy */
+    /** @return HttpResponseStrategy */
     public function createHttpResponseStrategy()
     {
         if (!$this->factoryCache->has('httpResponseStrategy')) {
@@ -70,7 +87,7 @@ class Factory
         return $this->factoryCache->get('httpResponseStrategy');
     }
 
-    /** @return \Mcustiel\Phiremock\Server\Utils\Strategies\RegexResponseStrategy */
+    /** @return RegexResponseStrategy */
     public function createRegexResponseStrategy()
     {
         if (!$this->factoryCache->has('regexResponseStrategy')) {
@@ -86,6 +103,7 @@ class Factory
         return $this->factoryCache->get('regexResponseStrategy');
     }
 
+    /** @return ProxyResponseStrategy */
     public function createProxyResponseStrategy()
     {
         if (!$this->factoryCache->has('proxyResponseStrategy')) {
@@ -102,6 +120,7 @@ class Factory
         return $this->factoryCache->get('proxyResponseStrategy');
     }
 
+    /** @return ResponseStrategyLocator */
     public function createResponseStrategyLocator()
     {
         if (!$this->factoryCache->has('responseStrategyLocator')) {
@@ -114,18 +133,20 @@ class Factory
         return $this->factoryCache->get('responseStrategyLocator');
     }
 
-    public function createRouter()
+    /** @return FastRouterHandler */
+    public function createRequestsRouter()
     {
         if (!$this->factoryCache->has('router')) {
             $this->factoryCache->set(
                 'router',
-                new FastRouterRouter($this->createActionLocator())
+                new FastRouterHandler($this->createActionLocator())
             );
         }
 
         return $this->factoryCache->get('router');
     }
 
+    /** @return HomePathService */
     public function createHomePathService()
     {
         if (!$this->factoryCache->has('homePathService')) {
@@ -138,30 +159,20 @@ class Factory
         return $this->factoryCache->get('homePathService');
     }
 
+    /** @return ServerInterface */
     public function createHttpServer()
     {
         if (!$this->factoryCache->has('httpServer')) {
             $this->factoryCache->set(
                 'httpServer',
-                new ReactPhpServer($this->createLogger())
+                new ReactPhpServer($this->createRequestsRouter(), $this->createLogger())
             );
         }
 
         return $this->factoryCache->get('httpServer');
     }
 
-    public function createPhiremockApplication()
-    {
-        if (!$this->factoryCache->has('phiremockApp')) {
-            $this->factoryCache->set(
-                'phiremockApp',
-                new Phiremock($this->createRouter(), $this->createLogger())
-            );
-        }
-
-        return $this->factoryCache->get('phiremockApp');
-    }
-
+    /** @return ExpectationStorage */
     public function createExpectationStorage()
     {
         if (!$this->factoryCache->has('expectationsStorage')) {
@@ -174,18 +185,20 @@ class Factory
         return $this->factoryCache->get('expectationsStorage');
     }
 
+    /** @return ExpectationStorage */
     public function createExpectationBackup()
     {
         if (!$this->factoryCache->has('expectationsBackup')) {
             $this->factoryCache->set(
                 'expectationsBackup',
                 new ExpectationAutoStorage()
-                );
+            );
         }
 
         return $this->factoryCache->get('expectationsBackup');
     }
 
+    /** @return RequestStorage */
     public function createRequestStorage()
     {
         if (!$this->factoryCache->has('requestsStorage')) {
@@ -198,6 +211,7 @@ class Factory
         return $this->factoryCache->get('requestsStorage');
     }
 
+    /** @return ScenarioStorage */
     public function createScenarioStorage()
     {
         if (!$this->factoryCache->has('scenariosStorage')) {
@@ -210,6 +224,7 @@ class Factory
         return $this->factoryCache->get('scenariosStorage');
     }
 
+    /** @return RequestExpectationComparator */
     public function createRequestExpectationComparator()
     {
         if (!$this->factoryCache->has('requestExpectationComparator')) {
@@ -227,6 +242,7 @@ class Factory
         return $this->factoryCache->get('requestExpectationComparator');
     }
 
+    /** @return FileExpectationsLoader */
     public function createFileExpectationsLoader()
     {
         if (!$this->factoryCache->has('fileExpectationsLoader')) {
@@ -244,6 +260,7 @@ class Factory
         return $this->factoryCache->get('fileExpectationsLoader');
     }
 
+    /** @return MatcherFactory */
     public function createMatcherFactory()
     {
         if (!$this->factoryCache->has('matcherFactory')) {
@@ -256,6 +273,7 @@ class Factory
         return $this->factoryCache->get('matcherFactory');
     }
 
+    /** @return MatcherLocator */
     public function createMatcherLocator()
     {
         if (!$this->factoryCache->has('matcherLocator')) {
@@ -268,6 +286,7 @@ class Factory
         return $this->factoryCache->get('matcherLocator');
     }
 
+    /** @return InputSourceFactory */
     public function createInputSourceFactory()
     {
         if (!$this->factoryCache->has('inputSourceFactory')) {
@@ -280,6 +299,7 @@ class Factory
         return $this->factoryCache->get('inputSourceFactory');
     }
 
+    /** @return InputSourceLocator */
     public function createInputSourceLocator()
     {
         if (!$this->factoryCache->has('inputSourceLocator')) {
@@ -292,6 +312,7 @@ class Factory
         return $this->factoryCache->get('inputSourceLocator');
     }
 
+    /** @return ActionLocator */
     public function createActionLocator()
     {
         if (!$this->factoryCache->has('actionLocator')) {
@@ -304,6 +325,7 @@ class Factory
         return $this->factoryCache->get('actionLocator');
     }
 
+    /** @return ActionsFactory */
     public function createActionFactory()
     {
         if (!$this->factoryCache->has('actionFactory')) {
@@ -316,6 +338,7 @@ class Factory
         return $this->factoryCache->get('actionFactory');
     }
 
+    /** @return RequestToMockConfigMapper */
     public function createRequestToMockConfigMapper()
     {
         if (!$this->factoryCache->has('requestToMockConfigMapper')) {

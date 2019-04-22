@@ -25,9 +25,8 @@ interface RequestHandlerInterface
 {
     /**
      * @param ServerRequestInterface $request
-     * @param ResponseInterface      $response
      *
      * @return ResponseInterface
      */
-    public function execute(ServerRequestInterface $request, ResponseInterface $response);
+    public function dispatch(ServerRequestInterface $request);
 }

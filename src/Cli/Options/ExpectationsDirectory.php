@@ -1,4 +1,5 @@
 <?php
+
 namespace Mcustiel\Phiremock\Server\Cli\Options;
 
 class ExpectationsDirectory
@@ -13,13 +14,13 @@ class ExpectationsDirectory
         $this->expectationsDir = $expectationsDir;
     }
 
-    /** @return boolean */
+    /** @return bool */
     public function exists()
     {
         return file_exists($this->expectationsDir);
     }
 
-    /** @return boolean */
+    /** @return bool */
     public function isDirectory()
     {
         return is_dir($this->expectationsDir);
@@ -38,15 +39,15 @@ class ExpectationsDirectory
 
     /**
      * @param string $expectationsDir
+     *
      * @throws \InvalidArgumentException
      */
     private function ensureIsString($expectationsDir)
     {
-        if (!is_string($expectationsDir)) {
+        if (!\is_string($expectationsDir)) {
             throw new \InvalidArgumentException(
-                sprintf('Expected string argument. Got %s', gettype($expectationsDir))
+                sprintf('Expected string argument. Got %s', \gettype($expectationsDir))
             );
         }
     }
 }
-

@@ -16,15 +16,16 @@
  * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Mcustiel\Phiremock\Server\Utils\Router;
+namespace Mcustiel\Phiremock\Server\Http\Implementation;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
+use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 
-class FastRouterRouter implements RouterInterface
+class FastRouterHandler implements RequestHandlerInterface
 {
     /** @var Dispatcher */
     private $dispatcher;

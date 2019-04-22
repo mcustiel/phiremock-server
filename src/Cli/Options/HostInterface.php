@@ -22,13 +22,14 @@ class HostInterface
 
     /**
      * @param string $interface
+     *
      * @throws \InvalidArgumentException
      */
     private function ensureIsString($interface)
     {
-        if (!is_string($interface)) {
+        if (!\is_string($interface)) {
             throw new \InvalidArgumentException(
-                sprintf('Expected string argument. Got %s', gettype($interface))
+                sprintf('Expected string argument. Got %s', \gettype($interface))
             );
         }
     }

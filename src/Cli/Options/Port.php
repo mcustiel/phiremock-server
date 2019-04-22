@@ -22,6 +22,7 @@ class Port
 
     /**
      * @param int $port
+     *
      * @throws \InvalidArgumentException
      */
     private function ensureIsValidPort($port)

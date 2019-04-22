@@ -19,6 +19,8 @@
 namespace Mcustiel\Phiremock\Server\Http\Implementation;
 
 use Mcustiel\Phiremock\Common\StringStream;
+use Mcustiel\Phiremock\Server\Cli\Options\HostInterface;
+use Mcustiel\Phiremock\Server\Cli\Options\Port;
 use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
 use Mcustiel\Phiremock\Server\Http\ServerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -28,59 +30,32 @@ use React\EventLoop\Factory as EventLoop;
 use React\Http\Response as ReactResponse;
 use React\Promise\Promise;
 use React\Socket\Server as ReactSocket;
-use Zend\Diactoros\Response as PsrResponse;
 
 class ReactPhpServer implements ServerInterface
 {
-    /**
-     * @var \Mcustiel\Phiremock\Server\Http\RequestHandlerInterface
-     */
+    /** @var \Mcustiel\Phiremock\Server\Http\RequestHandlerInterface */
     private $requestHandler;
 
-    /**
-     * @var \React\EventLoop\LoopInterface
-     */
+    /** @var \React\EventLoop\LoopInterface */
     private $loop;
 
-    /**
-     * @var \React\Socket\Server
-     */
+    /** @var \React\Socket\Server */
     private $socket;
 
-    /**
-     * @var \React\Http\Server
-     */
+    /** @var \React\Http\Server */
     private $http;
 
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
+    /** @var \Psr\Log\LoggerInterface */
     private $logger;
 
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(RequestHandlerInterface $requestHandler, LoggerInterface $logger)
     {
         $this->loop = EventLoop::create();
         $this->logger = $logger;
+        $this->requestHandler = $requestHandler;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\Phiremock\Server\Http\ServerInterface::setRequestHandler()
-     */
-    public function setRequestHandler(RequestHandlerInterface $handler)
-    {
-        $this->requestHandler = $handler;
-    }
-
-    /**
-     * @param int    $port
-     * @param string $host
-     */
-    public function listen($port, $host)
+    public function listen(HostInterface $host, Port $port)
     {
         $serverClass = $this->getReactServerClass();
         $this->http = new $serverClass(
@@ -89,8 +64,9 @@ class ReactPhpServer implements ServerInterface
             }
         );
 
-        $this->logger->info("Phiremock http server listening on {$host}:{$port}");
-        $this->socket = new ReactSocket("{$host}:{$port}", $this->loop);
+        $listenConfig = "{$host->asString()}:{$port->asInt()}";
+        $this->logger->info("Phiremock http server listening on {$listenConfig}");
+        $this->socket = new ReactSocket($listenConfig, $this->loop);
         $this->http->listen($this->socket);
 
         // Dispatch pending signals periodically
@@ -125,7 +101,7 @@ class ReactPhpServer implements ServerInterface
     private function onRequest(ServerRequestInterface $request)
     {
         $start = microtime(true);
-        $psrResponse = $this->requestHandler->execute($request, new PsrResponse());
+        $psrResponse = $this->requestHandler->dispatch($request);
         $this->logger->debug('Processing took ' . number_format((microtime(true) - $start) * 1000, 3) . ' milliseconds');
 
         return $psrResponse;
