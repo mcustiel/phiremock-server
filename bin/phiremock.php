@@ -34,6 +34,8 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 }
 
 $factory = new PhiremockServerFactory(new PhiremockFactory());
-$application = new Application();
-$application->add(new PhiremockServerCommand($factory));
+$application = new Application('Phiremock', '');
+$phiremockServerCommand = new PhiremockServerCommand($factory);
+$application->add($phiremockServerCommand);
+$application->setDefaultCommand($phiremockServerCommand->getName());
 $application->run();
