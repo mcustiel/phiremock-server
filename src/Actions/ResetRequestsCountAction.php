@@ -41,6 +41,6 @@ class ResetRequestsCountAction implements ActionInterface
     {
         $this->storage->clearRequests();
 
-        return $response()->withStatus(200);
+        return $response->withStatus(200);
     }
 }
