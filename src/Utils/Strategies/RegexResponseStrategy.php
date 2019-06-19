@@ -28,15 +28,14 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
 {
     public function createResponse(
         MockConfig $expectation,
-        ResponseInterface $transactionData,
+        ResponseInterface $httpResponse,
         ServerRequestInterface $request
     ) {
         $responseConfig = $expectation->getResponse();
-        $httpResponse = $transactionData->getResponse();
         $httpResponse = $this->getResponseWithBody(
             $expectation,
             $httpResponse,
-            $transactionData->getRequest()
+            $request
         );
         $httpResponse = $this->getResponseWithStatusCode($responseConfig, $httpResponse);
         $httpResponse = $this->getResponseWithHeaders($responseConfig, $httpResponse);
