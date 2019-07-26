@@ -50,7 +50,7 @@ class ActionLocator
      */
     public function locate($actionIdentifier)
     {
-        if (array_key_exists($actionIdentifier, self::ACTION_FACTORY_METHOD_MAP)) {
+        if (\array_key_exists($actionIdentifier, self::ACTION_FACTORY_METHOD_MAP)) {
             return $this->factory->{self::ACTION_FACTORY_METHOD_MAP[$actionIdentifier]}();
         }
         throw new \InvalidArgumentException(

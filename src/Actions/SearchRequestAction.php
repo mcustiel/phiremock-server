@@ -80,7 +80,7 @@ class SearchRequestAction implements ActionInterface
     /**
      * @param ServerRequestInterface $request
      *
-     * @return null|\Mcustiel\Phiremock\Domain\MockConfig
+     * @return \Mcustiel\Phiremock\Domain\MockConfig|null
      */
     private function searchForMatchingExpectation(ServerRequestInterface $request)
     {
@@ -93,7 +93,7 @@ class SearchRequestAction implements ActionInterface
     }
 
     /**
-     * @param null|\Mcustiel\Phiremock\Domain\MockConfig $lastFound
+     * @param \Mcustiel\Phiremock\Domain\MockConfig|null $lastFound
      * @param ServerRequestInterface                     $request
      * @param MockConfig                                 $expectation
      *

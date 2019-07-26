@@ -90,7 +90,7 @@ class RequestExpectationComparator
      * @param \Psr\Http\Message\ServerRequestInterface     $httpRequest
      * @param \Mcustiel\Phiremock\Domain\RequestConditions $expectedRequest
      *
-     * @return null|bool
+     * @return bool|null
      */
     private function compareRequestParts(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
