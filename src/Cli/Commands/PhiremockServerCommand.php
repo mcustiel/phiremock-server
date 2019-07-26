@@ -160,7 +160,7 @@ class PhiremockServerCommand extends Command
                 );
                 throw new \ErrorException($message, 0, $severity, $file, $line);
             }
-            $this->logger->warning($message);
+            $this->logger->warning(sprintf('%s:%s (%s)', $file, $line, $message));
         };
         set_error_handler($errorHandler);
     }
