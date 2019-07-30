@@ -21,7 +21,6 @@ namespace Mcustiel\Phiremock\Server\Utils;
 use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Domain\RequestConditions;
 use Mcustiel\Phiremock\Server\Config\InputSources;
-use Mcustiel\Phiremock\Server\Config\Matchers;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
 use Mcustiel\Phiremock\Server\Http\Matchers\MatcherLocator;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
@@ -156,11 +155,11 @@ class RequestExpectationComparator
     private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
         $inputSource = $this->inputSourceLocator->locate(InputSources::METHOD);
-        $matcher = $this->matcherLocator->locate(Matchers::SAME_STRING);
+        $matcher = $this->matcherLocator->locate($expectedRequest->getMethod()->getMatcher()->asString());
 
         return $matcher->match(
             $inputSource->getValue($httpRequest),
-            $expectedRequest->getMethod()->asString()
+            $expectedRequest->getMethod()->getValue()->asString()
         );
     }
 
@@ -172,7 +171,7 @@ class RequestExpectationComparator
      */
     private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
-        $inputSource = $this->inputSourceLocator->locate('url');
+        $inputSource = $this->inputSourceLocator->locate(InputSources::URL);
         $matcher = $this->matcherLocator->locate($expectedRequest->getUrl()->getMatcher()->asString());
 
         return $matcher->match(
@@ -189,7 +188,7 @@ class RequestExpectationComparator
      */
     private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
-        $inputSource = $this->inputSourceLocator->locate('body');
+        $inputSource = $this->inputSourceLocator->locate(InputSources::BODY);
         $matcher = $this->matcherLocator->locate(
             $expectedRequest->getBody()->getMatcher()->asString()
         );
@@ -208,7 +207,7 @@ class RequestExpectationComparator
      */
     private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
     {
-        $inputSource = $this->inputSourceLocator->locate('header');
+        $inputSource = $this->inputSourceLocator->locate(InputSources::HEADER);
         foreach ($expectedRequest->getHeaders() as $header => $headerCondition) {
             $matcher = $this->matcherLocator->locate(
                 $headerCondition->getMatcher()->asString()

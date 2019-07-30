@@ -19,7 +19,9 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
+use Mcustiel\Phiremock\Domain\Http\Body;
 use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Server\Config\InputSources;
 use Mcustiel\Phiremock\Server\Config\Matchers;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -79,8 +81,8 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
     {
         if ($this->bodyConditionIsRegex($expectation)) {
             return $this->replaceMatches(
-                'body',
-                $expectation->getRequest()->getBody()->getValue(),
+                InputSources::BODY,
+                $expectation->getRequest()->getBody()->getValue()->asString(),
                 $httpRequest->getBody()->__toString(),
                 $responseBody
             );
@@ -97,7 +99,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
     private function bodyConditionIsRegex(MockConfig $expectation)
     {
         return $expectation->getRequest()->getBody()
-            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher();
+            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->asString();
     }
 
     /**
@@ -107,12 +109,12 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
      *
      * @return string
      */
-    private function fillWithUrlMatches(MockConfig $expectation, ServerRequestInterface $httpRequest, $responseBody)
+    private function fillWithUrlMatches(MockConfig $expectation, ServerRequestInterface $httpRequest, Body $responseBody)
     {
         if ($this->urlConditionIsRegex($expectation)) {
             return $this->replaceMatches(
-                'url',
-                $expectation->getRequest()->getUrl()->getValue(),
+                InputSources::URL,
+                $expectation->getRequest()->getUrl()->getValue()->asString(),
                 $this->getUri($httpRequest),
                 $responseBody
             );
@@ -145,18 +147,18 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
      */
     private function urlConditionIsRegex(MockConfig $expectation)
     {
-        return $expectation->getRequest()->getUrl() && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher();
+        return $expectation->getRequest()->getUrl() && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->asString();
     }
 
     /**
      * @param string $type
      * @param string $pattern
      * @param string $subject
-     * @param string $responseBody
+     * @param Body   $responseBody
      *
      * @return string
      */
-    private function replaceMatches($type, $pattern, $subject, $responseBody)
+    private function replaceMatches($type, $pattern, $subject, Body $responseBody)
     {
         $matches = [];
 
@@ -182,7 +184,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
      *
      * @return string
      */
-    private function replaceMatchesInBody(array $matches, $type, $responseBody)
+    private function replaceMatchesInBody(array $matches, $type, Body $responseBody)
     {
         $search = [];
         $replace = [];
@@ -199,6 +201,6 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
             }
         }
 
-        return str_replace($search, $replace, $responseBody);
+        return str_replace($search, $replace, $responseBody->asString());
     }
 }
