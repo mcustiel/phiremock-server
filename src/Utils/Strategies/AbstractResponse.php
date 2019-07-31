@@ -46,9 +46,9 @@ class AbstractResponse
     {
         if ($responseConfig->getDelayMillis()) {
             $this->logger->debug(
-                'Delaying the response for ' . $responseConfig->getDelayMillis()->saInt . ' milliseconds'
+                'Delaying the response for ' . $responseConfig->getDelayMillis()->asInt() . ' milliseconds'
             );
-            usleep($responseConfig->getDelayMillis() * 1000);
+            usleep($responseConfig->getDelayMillis()->asInt() * 1000);
         }
     }
 
