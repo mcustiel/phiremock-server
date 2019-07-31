@@ -35,7 +35,7 @@ class RequestToMockConfigMapper
         $this->logger->debug('Adding Expectation->parseRequestObject');
         /** @var \Mcustiel\Phiremock\Domain\MockConfig $object */
         $object = $this->converter->convert($this->parseJsonBody($request));
-        $this->logger->debug(var_export($object, true));
+        $this->logger->debug('Parsed expectation: ' . var_export($object, true));
 
         return $object;
     }
@@ -60,7 +60,7 @@ class RequestToMockConfigMapper
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new \Exception(json_last_error_msg());
         }
-        $this->logger->debug(var_export($bodyJson, true));
+        $this->logger->debug('BODY JSON: ' . var_export($bodyJson, true));
 
         return $bodyJson;
     }

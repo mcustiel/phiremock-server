@@ -82,6 +82,8 @@ class RequestExpectationComparator
             return $this->requestHeadersMatchExpectation($httpRequest, $expectedRequest);
         }
 
+        $this->logger->debug('Matches? ' . ((bool) $atLeastOneExecution ? 'yes' : 'no'));
+
         return (bool) $atLeastOneExecution;
     }
 

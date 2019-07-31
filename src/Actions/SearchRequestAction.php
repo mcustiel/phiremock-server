@@ -117,9 +117,13 @@ class SearchRequestAction implements ActionInterface
      */
     private function getLoggableRequest(ServerRequestInterface $request)
     {
+        $body = $request->getBody()->__toString();
+
         return $request->getMethod() . ': '
             . $request->getUri()->__toString() . ' || '
-                . preg_replace('|\s+|', ' ', $request->getBody()->__toString());
+            . \strlen($body) > 2000 ?
+                '--VERY LONG CONTENTS--'
+                    : preg_replace('|\s+|', ' ', $body);
     }
 
     /**
@@ -131,7 +135,10 @@ class SearchRequestAction implements ActionInterface
     {
         $body = $response->getBody()->__toString();
 
-        return $response->getStatusCode() . ' / '
-            . \strlen($body) > 5000 ? '--VERY LONG CONTENTS--' : preg_replace('|\s+|', ' ', $body);
+        return $response->getStatusCode()
+            . ' / '
+            . \strlen($body) > 2000 ?
+                '--VERY LONG CONTENTS--'
+                : preg_replace('|\s+|', ' ', $body);
     }
 }
