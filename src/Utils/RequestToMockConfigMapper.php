@@ -3,7 +3,7 @@
 namespace Mcustiel\Phiremock\Server\Utils;
 
 use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
@@ -17,10 +17,6 @@ class RequestToMockConfigMapper
     /** @var LoggerInterface */
     private $logger;
 
-    /**
-     * @param ArrayToExpectationConverter $converter
-     * @param LoggerInterface             $logger
-     */
     public function __construct(
         ArrayToExpectationConverter $converter,
         LoggerInterface $logger
@@ -29,11 +25,11 @@ class RequestToMockConfigMapper
         $this->logger = $logger;
     }
 
-    /** @return MockConfig */
+    /** @return Expectation */
     public function map(ServerRequestInterface $request)
     {
         $this->logger->debug('Adding Expectation->parseRequestObject');
-        /** @var \Mcustiel\Phiremock\Domain\MockConfig $object */
+        /** @var \Mcustiel\Phiremock\Domain\Expectation $object */
         $object = $this->converter->convert($this->parseJsonBody($request));
         $this->logger->debug('Parsed expectation: ' . var_export($object, true));
 
@@ -41,8 +37,6 @@ class RequestToMockConfigMapper
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     *
      * @throws \Exception
      *
      * @return array

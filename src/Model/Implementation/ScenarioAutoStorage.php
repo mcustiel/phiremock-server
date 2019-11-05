@@ -33,22 +33,12 @@ class ScenarioAutoStorage implements ScenarioStorage
         $this->scenarios = [];
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\Phiremock\Server\Model\ScenarioStorage::setScenarioState()
-     */
-    public function setScenarioState(ScenarioStateInfo $scenarioState)
+    public function setScenarioState(ScenarioStateInfo $scenarioState): void
     {
         $this->scenarios[$scenarioState->getScenarioName()->asString()] = $scenarioState->getScenarioState();
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\Phiremock\Server\Model\ScenarioStorage::getScenarioState()
-     */
-    public function getScenarioState(ScenarioName $name)
+    public function getScenarioState(ScenarioName $name): ScenarioState
     {
         $nameString = $name->asString();
         if (!isset($this->scenarios[$nameString])) {
@@ -58,12 +48,7 @@ class ScenarioAutoStorage implements ScenarioStorage
         return $this->scenarios[$nameString];
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\Phiremock\Server\Model\ScenarioStorage::clearScenarios()
-     */
-    public function clearScenarios()
+    public function clearScenarios(): void
     {
         $this->scenarios = [];
     }

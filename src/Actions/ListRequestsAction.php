@@ -19,10 +19,10 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
-use Mcustiel\Phiremock\Server\Utils\RequestToMockConfigMapper;
+use Mcustiel\Phiremock\Server\Utils\RequestToExpectationMapper;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -33,13 +33,13 @@ class ListRequestsAction implements ActionInterface
     private $requestsStorage;
     /** @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator */
     private $comparator;
-    /** @var RequestToMockConfigMapper */
+    /** @var RequestToExpectationMapper */
     private $converter;
     /** @var LoggerInterface */
     private $logger;
 
     public function __construct(
-        RequestToMockConfigMapper $converter,
+        RequestToExpectationMapper $converter,
         RequestStorage $storage,
         RequestExpectationComparator $comparator,
         LoggerInterface $logger
@@ -50,14 +50,14 @@ class ListRequestsAction implements ActionInterface
         $this->logger = $logger;
     }
 
-    public function execute(ServerRequestInterface $request, ResponseInterface $response)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $object = $this->converter->map($request);
 
         return $this->process($response, $object);
     }
 
-    public function process(ResponseInterface $response, MockConfig $expectation)
+    public function process(ResponseInterface $response, Expectation $expectation): ResponseInterface
     {
         $this->validateRequestOrThrowException($expectation, $this->logger);
         $executions = $this->searchForExecutionsCount($expectation);
@@ -70,11 +70,9 @@ class ListRequestsAction implements ActionInterface
     }
 
     /**
-     * @param MockConfig $expectation
-     *
      * @return array[]
      */
-    private function searchForExecutionsCount(MockConfig $expectation)
+    private function searchForExecutionsCount(Expectation $expectation): array
     {
         $executions = [];
         foreach ($this->requestsStorage->listRequests() as $request) {

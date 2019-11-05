@@ -18,7 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Config\Matchers;
 use Mcustiel\Phiremock\Server\Factory\Factory;
 
@@ -29,20 +29,15 @@ class ResponseStrategyLocator
      */
     private $factory;
 
-    /**
-     * @param Factory $dependencyService
-     */
     public function __construct(Factory $dependencyService)
     {
         $this->factory = $dependencyService;
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\MockConfig $expectation
-     *
      * @return \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface
      */
-    public function getStrategyForExpectation(MockConfig $expectation)
+    public function getStrategyForExpectation(Expectation $expectation)
     {
         if ($expectation->getResponse()->isProxyResponse()) {
             return $this->factory->createProxyResponseStrategy();
@@ -55,11 +50,9 @@ class ResponseStrategyLocator
     }
 
     /**
-     * @param MockConfig $expectation
-     *
      * @return bool
      */
-    private function requestBodyOrUrlAreRegexp(MockConfig $expectation)
+    private function requestBodyOrUrlAreRegexp(Expectation $expectation)
     {
         return $expectation->getRequest()->getBody()
             && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->asString()

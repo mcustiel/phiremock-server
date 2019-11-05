@@ -18,7 +18,6 @@
 
 namespace Mcustiel\Phiremock\Server\Http\Implementation;
 
-use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Cli\Options\HostInterface;
 use Mcustiel\Phiremock\Server\Cli\Options\Port;
 use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
@@ -27,8 +26,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as EventLoop;
-use React\Http\Response as ReactResponse;
-use React\Promise\Promise;
+use React\Http\Server;
 use React\Socket\Server as ReactSocket;
 
 class ReactPhpServer implements ServerInterface
@@ -55,12 +53,11 @@ class ReactPhpServer implements ServerInterface
         $this->requestHandler = $requestHandler;
     }
 
-    public function listen(HostInterface $host, Port $port)
+    public function listen(HostInterface $host, Port $port): void
     {
-        $serverClass = $this->getReactServerClass();
-        $this->http = new $serverClass(
+        $this->http = new Server(
             function (ServerRequestInterface $request) {
-                return $this->createRequestManager($request);
+                return $this->onRequest($request);
             }
         );
 
@@ -78,60 +75,17 @@ class ReactPhpServer implements ServerInterface
         $this->loop->run();
     }
 
-    public function shutdown()
+    public function shutdown(): void
     {
         $this->loop->stop();
     }
 
-    /** @return \React\Http\Server|\React\Http\StreamingServer */
-    private function getReactServerClass()
-    {
-        if (class_exists('\React\Http\StreamingServer')) {
-            return '\React\Http\StreamingServer';
-        }
-
-        return '\React\Http\Server';
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return ResponseInterface
-     */
-    private function onRequest(ServerRequestInterface $request)
+    private function onRequest(ServerRequestInterface $request): ResponseInterface
     {
         $start = microtime(true);
         $psrResponse = $this->requestHandler->dispatch($request);
         $this->logger->debug('Processing took ' . number_format((microtime(true) - $start) * 1000, 3) . ' milliseconds');
 
         return $psrResponse;
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return \React\Promise\Promise
-     */
-    private function createRequestManager(ServerRequestInterface $request)
-    {
-        return new Promise(function ($resolve, $reject) use ($request) {
-            $bodyStream = '';
-
-            $request->getBody()->on('data', function ($data) use (&$bodyStream, $request) {
-                $bodyStream .= $data;
-            });
-            $request->getBody()->on('end', function () use ($resolve, $request, &$bodyStream) {
-                $response = $this->onRequest($request->withBody(new StringStream($bodyStream)));
-                $resolve($response);
-            });
-            $request->getBody()->on('error', function (\Exception $exception) use ($resolve) {
-                $response = new ReactResponse(
-                    400,
-                    ['Content-Type' => 'text/plain'],
-                    'An error occured while reading: ' . $exception->getMessage()
-                );
-                $resolve($response);
-            });
-        });
     }
 }

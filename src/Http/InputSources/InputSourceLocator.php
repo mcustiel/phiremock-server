@@ -33,11 +33,6 @@ class InputSourceLocator
         if (InputSources::isValidInputSource($inputSourceIdentifier)) {
             return $this->factory->{self::INPUT_SOURCE_FACTORY_METHOD_MAP[$inputSourceIdentifier]}();
         }
-        throw new \InvalidArgumentException(
-            sprintf(
-                'Trying to match using %s. Which is not a valid matcher.',
-                var_export($inputSourceIdentifier, true)
-            )
-        );
+        throw new \InvalidArgumentException(sprintf('Trying to get data from %s. Which is not a valid input source.', var_export($inputSourceIdentifier, true)));
     }
 }

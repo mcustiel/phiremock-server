@@ -18,8 +18,8 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\HttpResponse;
-use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Domain\Response;
 use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
@@ -39,10 +39,7 @@ class AbstractResponse
         $this->logger = $logger;
     }
 
-    /**
-     * @param Response $responseConfig
-     */
-    protected function processDelay(Response $responseConfig)
+    protected function processDelay(Response $responseConfig): void
     {
         if ($responseConfig->getDelayMillis()) {
             $this->logger->debug(
@@ -52,16 +49,11 @@ class AbstractResponse
         }
     }
 
-    /**
-     * @param MockConfig $foundExpectation
-     */
-    protected function processScenario(MockConfig $foundExpectation)
+    protected function processScenario(Expectation $foundExpectation): void
     {
         if ($foundExpectation->getResponse()->hasNewScenarioState()) {
             if (!$foundExpectation->hasScenarioName()) {
-                throw new \RuntimeException(
-                    'Expecting scenario state without specifying scenario name'
-                );
+                throw new \RuntimeException('Expecting scenario state without specifying scenario name');
             }
             $this->logger->debug(
                 sprintf(
@@ -80,8 +72,7 @@ class AbstractResponse
     }
 
     /**
-     * @param Response          $responseConfig
-     * @param ResponseInterface $httpResponse
+     * @param Response $responseConfig
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
@@ -101,8 +92,7 @@ class AbstractResponse
     }
 
     /**
-     * @param Response          $responseConfig
-     * @param ResponseInterface $httpResponse
+     * @param Response $responseConfig
      *
      * @return \Psr\Http\Message\ResponseInterface
      */

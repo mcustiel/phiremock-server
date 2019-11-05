@@ -26,14 +26,9 @@ interface ScenarioStorage
 {
     const INITIAL_SCENARIO = 'Scenario.START';
 
-    public function setScenarioState(ScenarioStateInfo $scenarioState);
+    public function setScenarioState(ScenarioStateInfo $scenarioState): void;
 
-    /**
-     * @param string $name
-     *
-     * @return ScenarioState
-     */
-    public function getScenarioState(ScenarioName $name);
+    public function getScenarioState(ScenarioName $name): ScenarioState;
 
-    public function clearScenarios();
+    public function clearScenarios(): void;
 }

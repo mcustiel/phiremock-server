@@ -38,8 +38,6 @@ class SetScenarioStateAction implements ActionInterface
 
     /**
      * @param \Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter $requestBuilder
-     * @param \Mcustiel\Phiremock\Server\Model\ScenarioStorage             $storage
-     * @param \Psr\Log\LoggerInterface                                     $logger
      */
     public function __construct(
         ArrayToScenarioStateInfoConverter $requestBuilder,
@@ -51,7 +49,7 @@ class SetScenarioStateAction implements ActionInterface
         $this->logger = $logger;
     }
 
-    public function execute(ServerRequestInterface $request, ResponseInterface $response)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $state = $this->parseRequestObject($request);
         if ($state->getScenarioName() === null || $state->getScenarioState() === null) {
@@ -81,8 +79,6 @@ class SetScenarioStateAction implements ActionInterface
     }
 
     /**
-     * @param ServerRequestInterface $request
-     *
      * @return \Mcustiel\Phiremock\Domain\ScenarioStateInfo
      */
     private function parseRequestObject(ServerRequestInterface $request)
@@ -97,8 +93,6 @@ class SetScenarioStateAction implements ActionInterface
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     *
      * @throws \Exception
      *
      * @return array

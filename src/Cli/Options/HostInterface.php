@@ -7,30 +7,13 @@ class HostInterface
     /** @var string */
     private $interface;
 
-    /** @param string $interface */
-    public function __construct($interface)
+    public function __construct(string $interface)
     {
-        $this->ensureIsString($interface);
         $this->interface = $interface;
     }
 
-    /** @return string */
-    public function asString()
+    public function asString(): string
     {
         return $this->interface;
-    }
-
-    /**
-     * @param string $interface
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function ensureIsString($interface)
-    {
-        if (!\is_string($interface)) {
-            throw new \InvalidArgumentException(
-                sprintf('Expected string argument. Got %s', \gettype($interface))
-            );
-        }
     }
 }

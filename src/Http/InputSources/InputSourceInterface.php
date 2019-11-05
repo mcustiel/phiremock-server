@@ -7,10 +7,9 @@ use Psr\Http\Message\ServerRequestInterface;
 interface InputSourceInterface
 {
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param mixed                                    $argument
+     * @param mixed $argument
      *
-     * @return mixed
+     * @return : ?string
      */
-    public function getValue(ServerRequestInterface $request, $argument = null);
+    public function getValue(ServerRequestInterface $request, $argument = null): ?string;
 }

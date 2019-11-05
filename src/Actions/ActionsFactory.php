@@ -24,26 +24,26 @@ class ActionsFactory
         $this->phiremockFactory = $phiremockFactory;
     }
 
-    public function createAddExpectation()
+    public function createAddExpectation(): AddExpectationAction
     {
         return new AddExpectationAction(
-            $this->serverFactory->createRequestToMockConfigMapper(),
+            $this->serverFactory->createRequestToExpectationMapper(),
             $this->serverFactory->createExpectationStorage(),
             $this->serverFactory->createLogger()
         );
     }
 
-    public function createClearExpectations()
+    public function createClearExpectations(): ClearExpectationsAction
     {
         return new ClearExpectationsAction($this->serverFactory->createExpectationStorage());
     }
 
-    public function createClearScenarios()
+    public function createClearScenarios(): ClearScenariosAction
     {
         return new ClearScenariosAction($this->serverFactory->createScenarioStorage());
     }
 
-    public function createCountRequests()
+    public function createCountRequests(): CountRequestsAction
     {
         return new CountRequestsAction(
             $this->phiremockFactory->createArrayToExpectationConverter(),
@@ -53,7 +53,7 @@ class ActionsFactory
         );
     }
 
-    public function createListExpectations()
+    public function createListExpectations(): ListExpectationsAction
     {
         return new ListExpectationsAction(
             $this->serverFactory->createExpectationStorage(),
@@ -61,7 +61,7 @@ class ActionsFactory
         );
     }
 
-    public function createListRequests()
+    public function createListRequests(): ListRequestsAction
     {
         return new ListRequestsAction(
             $this->phiremockFactory->createArrayToRequestConditionConverter(),
@@ -71,7 +71,7 @@ class ActionsFactory
         );
     }
 
-    public function createReloadPreconfiguredExpectations()
+    public function createReloadPreconfiguredExpectations(): ReloadPreconfiguredExpectationsAction
     {
         return new ReloadPreconfiguredExpectationsAction(
             $this->serverFactory->createExpectationStorage(),
@@ -80,12 +80,12 @@ class ActionsFactory
         );
     }
 
-    public function createResetRequestsCount()
+    public function createResetRequestsCount(): ResetRequestsCountAction
     {
         return new ResetRequestsCountAction($this->serverFactory->createRequestStorage());
     }
 
-    public function createSearchRequest()
+    public function createSearchRequest(): SearchRequestAction
     {
         return new SearchRequestAction(
             $this->serverFactory->createExpectationStorage(),
@@ -96,7 +96,7 @@ class ActionsFactory
         );
     }
 
-    public function createSetScenarioState()
+    public function createSetScenarioState(): SetScenarioStateAction
     {
         return new SetScenarioStateAction(
             $this->phiremockFactory->createArrayToScenarioStateInfoConverter(),

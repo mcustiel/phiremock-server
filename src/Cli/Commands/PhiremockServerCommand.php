@@ -34,7 +34,7 @@ class PhiremockServerCommand extends Command
         parent::__construct('run');
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Runs Phiremock server')
             ->setHelp('This is the main command to run Phiremock as a HTTP server.');
@@ -67,14 +67,16 @@ class PhiremockServerCommand extends Command
         );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->startProcess($input);
         $this->processFileExpectations($input);
         $this->startHttpServer($input);
+
+        return 0;
     }
 
-    private function startHttpServer(InputInterface $input)
+    private function startHttpServer(InputInterface $input): void
     {
         $interface = new HostInterface($input->getOption('ip'));
         $port = new Port((int) $input->getOption('port'));
@@ -83,7 +85,7 @@ class PhiremockServerCommand extends Command
         $httpServer->listen($interface, $port);
     }
 
-    private function startProcess($input)
+    private function startProcess($input): void
     {
         \define('IS_DEBUG_MODE', $input->hasOption('debug'));
 
@@ -97,7 +99,7 @@ class PhiremockServerCommand extends Command
         );
     }
 
-    private function processFileExpectations(InputInterface $input)
+    private function processFileExpectations(InputInterface $input): void
     {
         $expectationsDir = $this->getExpectationsDir($input)->asString();
         $this->logger->debug("Phiremock's expectation dir is set to: {$expectationsDir}");
@@ -115,8 +117,7 @@ class PhiremockServerCommand extends Command
         }
     }
 
-    /** @return ExpectationsDirectory */
-    private function getExpectationsDir(InputInterface $input)
+    private function getExpectationsDir(InputInterface $input): ExpectationsDirectory
     {
         if ($input->getOption('expectations-dir')) {
             return new ExpectationsDirectory(
@@ -135,7 +136,7 @@ class PhiremockServerCommand extends Command
         );
     }
 
-    private function setUpHandlers(ServerInterface $server)
+    private function setUpHandlers(ServerInterface $server): void
     {
         $handleTermination = function ($signal = 0) use ($server) {
             $this->logger->info('Stopping Phiremock...');
@@ -165,12 +166,7 @@ class PhiremockServerCommand extends Command
         set_error_handler($errorHandler);
     }
 
-    /**
-     * @param int $severity
-     *
-     * @return bool
-     */
-    private function isError($severity)
+    private function isError(int $severity): bool
     {
         return \in_array(
             $severity,

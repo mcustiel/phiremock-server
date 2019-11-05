@@ -16,13 +16,7 @@ class InputSources
         self::BODY,
     ];
 
-    /**
-     * @param string $matcherName
-     * @param mixed  $inputSource
-     *
-     * @return bool
-     */
-    public static function isValidInputSource($inputSource)
+    public static function isValidInputSource(string $inputSource): bool
     {
         return \in_array($inputSource, self::VALID_INPUT_SOURCES, true);
     }

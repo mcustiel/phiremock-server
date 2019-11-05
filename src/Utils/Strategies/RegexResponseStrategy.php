@@ -19,8 +19,8 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\Http\Body;
-use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Server\Config\InputSources;
 use Mcustiel\Phiremock\Server\Config\Matchers;
 use Psr\Http\Message\ResponseInterface;
@@ -29,10 +29,10 @@ use Psr\Http\Message\ServerRequestInterface;
 class RegexResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
     public function createResponse(
-        MockConfig $expectation,
+        Expectation $expectation,
         ResponseInterface $httpResponse,
         ServerRequestInterface $request
-    ) {
+    ): ResponseInterface {
         $responseConfig = $expectation->getResponse();
         $httpResponse = $this->getResponseWithBody(
             $expectation,
@@ -47,18 +47,11 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $httpResponse;
     }
 
-    /**
-     * @param MockConfig             $expectation
-     * @param ResponseInterface      $httpResponse
-     * @param ServerRequestInterface $httpRequest
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
     private function getResponseWithBody(
-        MockConfig $expectation,
+        Expectation $expectation,
         ResponseInterface $httpResponse,
         ServerRequestInterface $httpRequest
-    ) {
+    ): ResponseInterface {
         $responseBody = $expectation->getResponse()->getBody();
 
         if ($responseBody) {
@@ -70,14 +63,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $httpResponse;
     }
 
-    /**
-     * @param MockConfig             $expectation
-     * @param ServerRequestInterface $httpRequest
-     * @param string                 $responseBody
-     *
-     * @return string
-     */
-    private function fillWithBodyMatches(MockConfig $expectation, ServerRequestInterface $httpRequest, $responseBody)
+    private function fillWithBodyMatches(Expectation $expectation, ServerRequestInterface $httpRequest, string $responseBody): string
     {
         if ($this->bodyConditionIsRegex($expectation)) {
             return $this->replaceMatches(
@@ -91,25 +77,13 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $responseBody;
     }
 
-    /**
-     * @param MockConfig $expectation
-     *
-     * @return bool
-     */
-    private function bodyConditionIsRegex(MockConfig $expectation)
+    private function bodyConditionIsRegex(Expectation $expectation): bool
     {
         return $expectation->getRequest()->getBody()
             && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->asString();
     }
 
-    /**
-     * @param MockConfig             $expectation
-     * @param ServerRequestInterface $httpRequest
-     * @param string                 $responseBody
-     *
-     * @return string
-     */
-    private function fillWithUrlMatches(MockConfig $expectation, ServerRequestInterface $httpRequest, Body $responseBody)
+    private function fillWithUrlMatches(Expectation $expectation, ServerRequestInterface $httpRequest, Body $responseBody): string
     {
         if ($this->urlConditionIsRegex($expectation)) {
             return $this->replaceMatches(
@@ -123,12 +97,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $responseBody;
     }
 
-    /**
-     * @param ServerRequestInterface $httpRequest
-     *
-     * @return string
-     */
-    private function getUri(ServerRequestInterface $httpRequest)
+    private function getUri(ServerRequestInterface $httpRequest): string
     {
         $path = ltrim($httpRequest->getUri()->getPath(), '/');
         $query = $httpRequest->getUri()->getQuery();
@@ -140,25 +109,12 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $return;
     }
 
-    /**
-     * @param MockConfig $expectation
-     *
-     * @return bool
-     */
-    private function urlConditionIsRegex(MockConfig $expectation)
+    private function urlConditionIsRegex(Expectation $expectation): bool
     {
         return $expectation->getRequest()->getUrl() && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->asString();
     }
 
-    /**
-     * @param string $type
-     * @param string $pattern
-     * @param string $subject
-     * @param Body   $responseBody
-     *
-     * @return string
-     */
-    private function replaceMatches($type, $pattern, $subject, Body $responseBody)
+    private function replaceMatches(string $type, string $pattern, string $subject, Body $responseBody): string
     {
         $matches = [];
 
@@ -177,14 +133,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $responseBody;
     }
 
-    /**
-     * @param array  $matches
-     * @param string $type
-     * @param string $responseBody
-     *
-     * @return string
-     */
-    private function replaceMatchesInBody(array $matches, $type, Body $responseBody)
+    private function replaceMatchesInBody(array $matches, string $type, Body $responseBody): string
     {
         $search = [];
         $replace = [];

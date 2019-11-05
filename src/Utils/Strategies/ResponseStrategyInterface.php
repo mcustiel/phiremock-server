@@ -18,7 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -26,7 +26,7 @@ interface ResponseStrategyInterface
 {
     /** @return \Psr\Http\Message\ResponseInterface */
     public function createResponse(
-        MockConfig $expectation,
+        Expectation $expectation,
         ResponseInterface $transactionData,
         ServerRequestInterface $request
     );

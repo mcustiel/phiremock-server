@@ -18,34 +18,25 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\Traits;
 
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\RequestConditions;
 use Mcustiel\Phiremock\Domain\Response;
 use Psr\Log\LoggerInterface;
 
 trait ExpectationValidator
 {
-    /**
-     * @param MockConfig      $expectation
-     * @param LoggerInterface $logger
-     *
-     * @throws \RuntimeException
-     */
-    protected function validateExpectationOrThrowException(MockConfig $expectation, LoggerInterface $logger)
+    /** @throws \RuntimeException */
+    protected function validateExpectationOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
         $this->logger->debug('Adding Expectation->validateExpectationOrThrowException');
         $this->validateRequestOrThrowException($expectation, $logger);
         $this->validateResponseOrThrowException($expectation, $logger);
-        $this->validateScenarioConfigOrThrowException($expectation, $logger);
+        $this->validateScenarioNameOrThrowException($expectation, $logger);
+        $this->validateScenarioStateOrThrowException($expectation, $logger);
     }
 
-    /**
-     * @param MockConfig      $expectation
-     * @param LoggerInterface $logger
-     *
-     * @throws \RuntimeException
-     */
-    protected function validateResponseOrThrowException(MockConfig $expectation, LoggerInterface $logger)
+    /** @throws \RuntimeException */
+    protected function validateResponseOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
         if ($this->responseIsInvalid($expectation->getResponse())) {
             $logger->error('Invalid response specified in expectation');
@@ -53,13 +44,8 @@ trait ExpectationValidator
         }
     }
 
-    /**
-     * @param MockConfig      $expectation
-     * @param LoggerInterface $logger
-     *
-     * @throws \RuntimeException
-     */
-    protected function validateRequestOrThrowException(MockConfig $expectation, LoggerInterface $logger)
+    /** @throws \RuntimeException */
+    protected function validateRequestOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
         if ($this->requestIsInvalid($expectation->getRequest())) {
             $logger->error('Invalid request specified in expectation');
@@ -67,74 +53,38 @@ trait ExpectationValidator
         }
     }
 
-    /**
-     * @param Response $response
-     *
-     * @return bool
-     */
-    protected function responseIsInvalid(Response $response)
+    protected function responseIsInvalid(Response $response): bool
     {
         return empty($response->getStatusCode());
     }
 
-    /**
-     * @param RequestConditions $request
-     *
-     * @return bool
-     */
-    protected function requestIsInvalid(RequestConditions $request)
+    protected function requestIsInvalid(RequestConditions $request): bool
     {
         return empty($request->getBody()) && empty($request->getHeaders())
         && empty($request->getMethod()) && empty($request->getUrl());
     }
 
-    /**
-     * @param MockConfig      $expectation
-     * @param LoggerInterface $logger
-     */
-    protected function validateScenarioConfigOrThrowException(
-        MockConfig $expectation,
-        LoggerInterface $logger
-    ) {
-        $this->validateScenarioNameOrThrowException($expectation, $logger);
-        $this->validateScenarioStateOrThrowException($expectation, $logger);
-    }
-
-    /**
-     * @param MockConfig      $expectation
-     * @param LoggerInterface $logger
-     *
-     * @throws \RuntimeException
-     */
+    /** @throws \RuntimeException */
     protected function validateScenarioStateOrThrowException(
-        MockConfig $expectation,
+        Expectation $expectation,
         LoggerInterface $logger
-    ) {
+    ): void {
         if ($expectation->getResponse()->hasNewScenarioState() && !$expectation->getRequest()->hasScenarioState()) {
             $logger->error('Scenario states misconfiguration');
-            throw new \RuntimeException(
-                'Trying to set scenario state without specifying scenario previous state'
-            );
+            throw new \RuntimeException('Trying to set scenario state without specifying scenario previous state');
         }
     }
 
-    /**
-     * @param MockConfig      $expectation
-     * @param LoggerInterface $logger
-     *
-     * @throws \RuntimeException
-     */
+    /** @throws \RuntimeException */
     protected function validateScenarioNameOrThrowException(
-        MockConfig $expectation,
+        Expectation $expectation,
         LoggerInterface $logger
-    ) {
+    ): void {
         if (!$expectation->hasScenarioName()
             && ($expectation->getRequest()->hasScenarioState() || $expectation->getResponse()->hasNewScenarioState())
         ) {
             $logger->error('Scenario name related misconfiguration');
-            throw new \RuntimeException(
-                'Expecting or trying to set scenario state without specifying scenario name'
-            );
+            throw new \RuntimeException('Expecting or trying to set scenario state without specifying scenario name');
         }
     }
 }

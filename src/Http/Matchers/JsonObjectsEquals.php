@@ -33,8 +33,7 @@ class JsonObjectsEquals implements MatcherInterface
         $this->logger = $logger;
     }
 
-    /** @return bool */
-    public function match($value, $argument = null)
+    public function match($value, $argument = null): bool
     {
         if (\is_string($value)) {
             $requestValue = $this->getParsedValue($value);

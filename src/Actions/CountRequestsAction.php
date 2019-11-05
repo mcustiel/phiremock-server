@@ -19,10 +19,10 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
-use Mcustiel\Phiremock\Server\Utils\RequestToMockConfigMapper;
+use Mcustiel\Phiremock\Server\Utils\RequestToExpectationMapper;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -33,13 +33,13 @@ class CountRequestsAction implements ActionInterface
     private $requestsStorage;
     /** @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator */
     private $comparator;
-    /** @var RequestToMockConfigMapper */
+    /** @var RequestToExpectationMapper */
     private $converter;
     /** @var LoggerInterface */
     private $logger;
 
     public function __construct(
-        RequestToMockConfigMapper $converter,
+        RequestToExpectationMapper $converter,
         RequestStorage $storage,
         RequestExpectationComparator $comparator,
         LoggerInterface $logger
@@ -50,7 +50,7 @@ class CountRequestsAction implements ActionInterface
         $this->logger = $logger;
     }
 
-    public function execute(ServerRequestInterface $request, ResponseInterface $response)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $this->logger->debug('Adding Expectation->createObjectFromRequestAndProcess');
         $object = $this->converter->map($request);
@@ -58,7 +58,7 @@ class CountRequestsAction implements ActionInterface
         return $this->process($response, $object);
     }
 
-    private function process(ResponseInterface $response, MockConfig $expectation)
+    private function process(ResponseInterface $response, Expectation $expectation)
     {
         $this->validateRequestOrThrowException($expectation, $this->logger);
         $count = $this->searchForExecutionsCount($expectation);
@@ -71,11 +71,9 @@ class CountRequestsAction implements ActionInterface
     }
 
     /**
-     * @param MockConfig $expectation
-     *
      * @return int
      */
-    private function searchForExecutionsCount(MockConfig $expectation)
+    private function searchForExecutionsCount(Expectation $expectation)
     {
         $count = 0;
         foreach ($this->requestsStorage->listRequests() as $request) {

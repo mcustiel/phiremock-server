@@ -23,9 +23,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class RequestAutoStorage implements RequestStorage
 {
-    /**
-     * @var \Psr\Http\Message\ServerRequestInterface[]
-     */
+    /** @var \Psr\Http\Message\ServerRequestInterface[] */
     private $requests;
 
     public function __construct()
@@ -33,12 +31,7 @@ class RequestAutoStorage implements RequestStorage
         $this->clearRequests();
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\Phiremock\Server\Model\RequestStorage::addRequest()
-     */
-    public function addRequest(ServerRequestInterface $request)
+    public function addRequest(ServerRequestInterface $request): void
     {
         $this->requests[] = $request;
     }
@@ -48,17 +41,12 @@ class RequestAutoStorage implements RequestStorage
      *
      * @see \Mcustiel\Phiremock\Server\Model\RequestStorage::listRequests()
      */
-    public function listRequests()
+    public function listRequests(): array
     {
         return $this->requests;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @see \Mcustiel\Phiremock\Server\Model\RequestStorage::clearRequests()
-     */
-    public function clearRequests()
+    public function clearRequests(): void
     {
         $this->requests = [];
     }

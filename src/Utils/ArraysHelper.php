@@ -20,12 +20,7 @@ namespace Mcustiel\Phiremock\Server\Utils;
 
 class ArraysHelper
 {
-    /**
-     * @param array $array
-     *
-     * @return bool
-     */
-    public static function isAssociative(array $array)
+    public static function isAssociative(array $array): bool
     {
         if (empty($array)) {
             return false;
@@ -34,13 +29,7 @@ class ArraysHelper
         return array_keys($array) !== range(0, \count($array) - 1);
     }
 
-    /**
-     * @param array $array1
-     * @param array $array2
-     *
-     * @return bool
-     */
-    public static function areRecursivelyEquals(array $array1, array $array2)
+    public static function areRecursivelyEquals(array $array1, array $array2): bool
     {
         if (\count($array1) !== \count($array2)) {
             return false;
@@ -49,13 +38,7 @@ class ArraysHelper
         return self::arrayIsContained($array1, $array2);
     }
 
-    /**
-     * @param array $array1
-     * @param array $array2
-     *
-     * @return bool
-     */
-    public static function arrayIsContained(array $array1, array $array2)
+    public static function arrayIsContained(array $array1, array $array2): bool
     {
         foreach ($array1 as $key => $value1) {
             if (!\array_key_exists($key, $array2)) {
@@ -69,13 +52,7 @@ class ArraysHelper
         return true;
     }
 
-    /**
-     * @param mixed $value1
-     * @param mixed $value2
-     *
-     * @return bool
-     */
-    public static function haveTheSameTypeAndValue($value1, $value2)
+    public static function haveTheSameTypeAndValue($value1, $value2): bool
     {
         if (\gettype($value1) !== \gettype($value2)) {
             return false;
@@ -84,13 +61,7 @@ class ArraysHelper
         return self::haveTheSameValue($value1, $value2);
     }
 
-    /**
-     * @param mixed $value1
-     * @param mixed $value2
-     *
-     * @return bool
-     */
-    public static function haveTheSameValue($value1, $value2)
+    public static function haveTheSameValue($value1, $value2): bool
     {
         if (\is_array($value1)) {
             if (!self::areRecursivelyEquals($value1, $value2)) {

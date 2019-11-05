@@ -23,6 +23,8 @@ use Mcustiel\Phiremock\Server\Cli\Commands\PhiremockServerCommand;
 use Mcustiel\Phiremock\Server\Factory\Factory as PhiremockServerFactory;
 use Symfony\Component\Console\Application;
 
+const IS_SINGLE_COMMAND = true;
+
 if (PHP_SAPI !== 'cli') {
     throw new RuntimeException('This is a standalone CLI application');
 }
@@ -37,5 +39,5 @@ $factory = new PhiremockServerFactory(new PhiremockFactory());
 $application = new Application('Phiremock', '');
 $phiremockServerCommand = new PhiremockServerCommand($factory);
 $application->add($phiremockServerCommand);
-$application->setDefaultCommand($phiremockServerCommand->getName());
+$application->setDefaultCommand($phiremockServerCommand->getName(), IS_SINGLE_COMMAND);
 $application->run();

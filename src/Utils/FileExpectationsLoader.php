@@ -36,12 +36,6 @@ class FileExpectationsLoader
     /** @var \Psr\Log\LoggerInterface */
     private $logger;
 
-    /**
-     * @param ArrayToExpectationConverter $requestBuilder
-     * @param ExpectationStorage          $storage
-     * @param ExpectationStorage          $backup
-     * @param LoggerInterface             $logger
-     */
     public function __construct(
         ArrayToExpectationConverter $requestBuilder,
         ExpectationStorage $storage,
@@ -54,12 +48,8 @@ class FileExpectationsLoader
         $this->logger = $logger;
     }
 
-    /**
-     * @param string $fileName
-     *
-     * @throws \Exception
-     */
-    public function loadExpectationFromFile($fileName)
+    /** @throws \Exception */
+    public function loadExpectationFromFile(string $fileName): void
     {
         $this->logger->debug("Loading expectation file $fileName");
         $content = file_get_contents($fileName);
@@ -79,10 +69,7 @@ class FileExpectationsLoader
         $this->backup->addExpectation($expectation);
     }
 
-    /**
-     * @param string $directory
-     */
-    public function loadExpectationsFromDirectory($directory)
+    public function loadExpectationsFromDirectory(string $directory): void
     {
         $this->logger->info("Loading expectations from directory $directory");
         $iterator = new \RecursiveDirectoryIterator(

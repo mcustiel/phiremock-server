@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Method implements InputSourceInterface
 {
-    public function getValue(ServerRequestInterface $request, $argument = null)
+    public function getValue(ServerRequestInterface $request, $argument = null): ?string
     {
         return strtoupper($request->getMethod());
     }

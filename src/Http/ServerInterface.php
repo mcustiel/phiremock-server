@@ -23,7 +23,7 @@ use Mcustiel\Phiremock\Server\Cli\Options\Port;
 
 interface ServerInterface
 {
-    public function listen(HostInterface $interface, Port $port);
+    public function listen(HostInterface $interface, Port $port): void;
 
-    public function shutdown();
+    public function shutdown(): void;
 }

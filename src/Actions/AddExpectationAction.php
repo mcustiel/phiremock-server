@@ -20,9 +20,9 @@ namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
-use Mcustiel\Phiremock\Server\Utils\RequestToMockConfigMapper;
+use Mcustiel\Phiremock\Server\Utils\RequestToExpectationMapper;
 use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,18 +34,16 @@ class AddExpectationAction implements ActionInterface
 
     /** @var ExpectationStorage */
     private $storage;
-    /** @var RequestToMockConfigMapper */
+    /** @var RequestToExpectationMapper */
     private $converter;
     /** @var LoggerInterface */
     private $logger;
 
     /**
      * @param ArrayToExpectationConverter $converter
-     * @param ExpectationStorage          $storage
-     * @param LoggerInterface             $logger
      */
     public function __construct(
-        RequestToMockConfigMapper $converter,
+        RequestToExpectationMapper $converter,
         ExpectationStorage $storage,
         LoggerInterface $logger
     ) {
@@ -54,7 +52,7 @@ class AddExpectationAction implements ActionInterface
         $this->storage = $storage;
     }
 
-    public function execute(ServerRequestInterface $request, ResponseInterface $response)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $this->logger->debug('Adding Expectation->execute');
         try {
@@ -69,7 +67,7 @@ class AddExpectationAction implements ActionInterface
         }
     }
 
-    private function process(ResponseInterface $response, MockConfig $expectation)
+    private function process(ResponseInterface $response, Expectation $expectation)
     {
         $this->logger->debug('process');
         $this->validateExpectationOrThrowException($expectation, $this->logger);
@@ -79,9 +77,6 @@ class AddExpectationAction implements ActionInterface
     }
 
     /**
-     * @param array                               $listOfErrors
-     * @param \Psr\Http\Message\ResponseInterface $response
-     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     private function constructResponse(array $listOfErrors, ResponseInterface $response)
@@ -95,9 +90,6 @@ class AddExpectationAction implements ActionInterface
     }
 
     /**
-     * @param array                               $listOfErrors
-     * @param \Psr\Http\Message\ResponseInterface $response
-     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     private function constructErrorResponse(array $listOfErrors, ResponseInterface $response)

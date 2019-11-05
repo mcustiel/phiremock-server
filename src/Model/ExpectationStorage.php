@@ -18,19 +18,14 @@
 
 namespace Mcustiel\Phiremock\Server\Model;
 
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 
 interface ExpectationStorage
 {
-    /**
-     * @param \Mcustiel\Phiremock\Domain\MockConfig $expectation
-     */
-    public function addExpectation(MockConfig $expectation);
+    public function addExpectation(Expectation $expectation): void;
 
-    public function clearExpectations();
+    public function clearExpectations(): void;
 
-    /**
-     * @return \Mcustiel\Phiremock\Domain\MockConfig[]
-     */
-    public function listExpectations();
+    /** @return \Mcustiel\Phiremock\Domain\Expectation[] */
+    public function listExpectations(): array;
 }

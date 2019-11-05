@@ -8,46 +8,28 @@ class ExpectationsDirectory
     private $expectationsDir;
 
     /** @param string $expectationsDir */
-    public function __construct($expectationsDir)
+    public function __construct(string $expectationsDir)
     {
-        $this->ensureIsString($expectationsDir);
         $this->expectationsDir = $expectationsDir;
     }
 
-    /** @return bool */
-    public function exists()
+    public function exists(): bool
     {
         return file_exists($this->expectationsDir);
     }
 
-    /** @return bool */
-    public function isDirectory()
+    public function isDirectory(): bool
     {
         return is_dir($this->expectationsDir);
     }
 
-    public function create()
+    public function create(): void
     {
         mkdir($this->expectationsDir, 0755, true);
     }
 
-    /** @return string */
-    public function asString()
+    public function asString(): string
     {
         return $this->expectationsDir;
-    }
-
-    /**
-     * @param string $expectationsDir
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function ensureIsString($expectationsDir)
-    {
-        if (!\is_string($expectationsDir)) {
-            throw new \InvalidArgumentException(
-                sprintf('Expected string argument. Got %s', \gettype($expectationsDir))
-            );
-        }
     }
 }

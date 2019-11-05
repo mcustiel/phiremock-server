@@ -19,8 +19,8 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\HttpResponse;
-use Mcustiel\Phiremock\Domain\MockConfig;
 use Mcustiel\Phiremock\Domain\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -33,10 +33,10 @@ class HttpResponseStrategy extends AbstractResponse implements ResponseStrategyI
      * @see \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface::createResponse()
      */
     public function createResponse(
-        MockConfig $expectation,
+        Expectation $expectation,
         ResponseInterface $httpResponse,
         ServerRequestInterface $request
-    ) {
+    ): ResponseInterface {
         /** @var HttpResponse $responseConfig */
         $responseConfig = $expectation->getResponse();
         $httpResponse = $this->getResponseWithBody($responseConfig, $httpResponse);
@@ -49,12 +49,9 @@ class HttpResponseStrategy extends AbstractResponse implements ResponseStrategyI
     }
 
     /**
-     * @param Response          $responseConfig
-     * @param ResponseInterface $httpResponse
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param Response $responseConfig
      */
-    private function getResponseWithBody(HttpResponse $responseConfig, ResponseInterface $httpResponse)
+    private function getResponseWithBody(HttpResponse $responseConfig, ResponseInterface $httpResponse): ResponseInterface
     {
         if ($responseConfig->getBody()) {
             $httpResponse = $httpResponse->withBody(new StringStream($responseConfig->getBody()->asString()));

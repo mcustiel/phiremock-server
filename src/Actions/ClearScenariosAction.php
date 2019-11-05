@@ -29,15 +29,12 @@ class ClearScenariosAction implements ActionInterface
      */
     private $storage;
 
-    /**
-     * @param ScenarioStorage $storage
-     */
     public function __construct(ScenarioStorage $storage)
     {
         $this->storage = $storage;
     }
 
-    public function execute(ServerRequestInterface $request, ResponseInterface $response)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $this->storage->clearScenarios();
 

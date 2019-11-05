@@ -23,10 +23,5 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface RequestHandlerInterface
 {
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return ResponseInterface
-     */
-    public function dispatch(ServerRequestInterface $request);
+    public function dispatch(ServerRequestInterface $request): ResponseInterface;
 }

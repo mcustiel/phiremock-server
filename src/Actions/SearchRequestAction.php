@@ -18,7 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Actions;
 
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
@@ -40,11 +40,6 @@ class SearchRequestAction implements ActionInterface
     /** @var \Mcustiel\Phiremock\Server\Model\RequestStorage */
     private $requestsStorage;
 
-    /**
-     * @param ExpectationStorage           $expectationsStorage
-     * @param RequestExpectationComparator $comparator
-     * @param LoggerInterface              $logger
-     */
     public function __construct(
         ExpectationStorage $expectationsStorage,
         RequestExpectationComparator $comparator,
@@ -59,7 +54,7 @@ class SearchRequestAction implements ActionInterface
         $this->responseStrategyFactory = $responseStrategyLocator;
     }
 
-    public function execute(ServerRequestInterface $request, ResponseInterface $response)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $this->logger->debug('Searching matching expectation for request');
         $this->logger->info('Request received: ' . $this->getLoggableRequest($request));
@@ -77,12 +72,7 @@ class SearchRequestAction implements ActionInterface
         return $response;
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return \Mcustiel\Phiremock\Domain\MockConfig|null
-     */
-    private function searchForMatchingExpectation(ServerRequestInterface $request)
+    private function searchForMatchingExpectation(ServerRequestInterface $request): ?Expectation
     {
         $lastFound = null;
         foreach ($this->expectationsStorage->listExpectations() as $expectation) {
@@ -93,13 +83,11 @@ class SearchRequestAction implements ActionInterface
     }
 
     /**
-     * @param \Mcustiel\Phiremock\Domain\MockConfig|null $lastFound
-     * @param ServerRequestInterface                     $request
-     * @param MockConfig                                 $expectation
+     * @param \Mcustiel\Phiremock\Domain\Expectation|null $lastFound
      *
-     * @return \Mcustiel\Phiremock\Domain\MockConfig
+     * @return \Mcustiel\Phiremock\Domain\Expectation
      */
-    private function getNextMatchingExpectation($lastFound, ServerRequestInterface $request, MockConfig $expectation)
+    private function getNextMatchingExpectation($lastFound, ServerRequestInterface $request, Expectation $expectation)
     {
         if ($this->comparator->equals($request, $expectation)) {
             if (null === $lastFound || $expectation->getPriority() > $lastFound->getPriority()) {
@@ -111,8 +99,6 @@ class SearchRequestAction implements ActionInterface
     }
 
     /**
-     * @param ServerRequestInterface $request
-     *
      * @return string
      */
     private function getLoggableRequest(ServerRequestInterface $request)
@@ -127,8 +113,6 @@ class SearchRequestAction implements ActionInterface
     }
 
     /**
-     * @param ResponseInterface $response
-     *
      * @return string
      */
     private function getLoggableResponse(ResponseInterface $response)

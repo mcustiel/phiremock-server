@@ -31,9 +31,6 @@ class ListExpectationsAction implements ActionInterface
     /** @var ExpectationToArrayConverter */
     private $converter;
 
-    /**
-     * @param ExpectationStorage $storage
-     */
     public function __construct(
         ExpectationStorage $storage,
         ExpectationToArrayConverter $converter
@@ -42,7 +39,7 @@ class ListExpectationsAction implements ActionInterface
         $this->converter = $converter;
     }
 
-    public function execute(ServerRequestInterface $request, ResponseInterface $response)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $list = [];
         foreach ($this->storage->listExpectations() as $expectation) {

@@ -18,7 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
-use Mcustiel\Phiremock\Domain\MockConfig;
+use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\RequestConditions;
 use Mcustiel\Phiremock\Server\Config\InputSources;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
@@ -29,21 +29,13 @@ use Psr\Log\LoggerInterface;
 
 class RequestExpectationComparator
 {
-    /**
-     * @var MatcherLocator
-     */
+    /** @var MatcherLocator */
     private $matcherLocator;
-    /**
-     * @var InputSourceLocator
-     */
+    /** @var InputSourceLocator */
     private $inputSourceLocator;
-    /**
-     * @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage
-     */
+    /** @var ScenarioStorage */
     private $scenarioStorage;
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
+    /** @var LoggerInterface */
     private $logger;
 
     public function __construct(
@@ -58,13 +50,7 @@ class RequestExpectationComparator
         $this->logger = $logger;
     }
 
-    /**
-     * @param \Psr\Http\Message\ServerRequestInterface $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\MockConfig    $expectation
-     *
-     * @return bool
-     */
-    public function equals(ServerRequestInterface $httpRequest, MockConfig $expectation)
+    public function equals(ServerRequestInterface $httpRequest, Expectation $expectation): bool
     {
         $this->logger->debug('Checking if request matches an expectation');
 
@@ -87,13 +73,7 @@ class RequestExpectationComparator
         return (bool) $atLeastOneExecution;
     }
 
-    /**
-     * @param \Psr\Http\Message\ServerRequestInterface     $httpRequest
-     * @param \Mcustiel\Phiremock\Domain\RequestConditions $expectedRequest
-     *
-     * @return bool|null
-     */
-    private function compareRequestParts(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
+    private function compareRequestParts(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): ?bool
     {
         $atLeastOneExecution = false;
         $requestParts = ['Method', 'Url', 'Body'];
@@ -113,12 +93,7 @@ class RequestExpectationComparator
         return $atLeastOneExecution;
     }
 
-    /**
-     * @param MockConfig $expectation
-     *
-     * @return bool
-     */
-    private function isExpectedScenarioState(MockConfig $expectation)
+    private function isExpectedScenarioState(Expectation $expectation): bool
     {
         if ($expectation->getRequest()->hasScenarioState()) {
             $this->checkScenarioNameOrThrowException($expectation);
@@ -134,27 +109,15 @@ class RequestExpectationComparator
         return true;
     }
 
-    /**
-     * @param MockConfig $expectation
-     *
-     * @throws \RuntimeException
-     */
-    private function checkScenarioNameOrThrowException(MockConfig $expectation)
+    /** @throws \RuntimeException */
+    private function checkScenarioNameOrThrowException(Expectation $expectation)
     {
         if (!$expectation->hasScenarioName()) {
-            throw new \InvalidArgumentException(
-                'Expecting scenario state without specifying scenario name'
-            );
+            throw new \InvalidArgumentException('Expecting scenario state without specifying scenario name');
         }
     }
 
-    /**
-     * @param ServerRequestInterface $httpRequest
-     * @param RequestConditions      $expectedRequest
-     *
-     * @return bool
-     */
-    private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
+    private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): bool
     {
         $inputSource = $this->inputSourceLocator->locate(InputSources::METHOD);
         $matcher = $this->matcherLocator->locate($expectedRequest->getMethod()->getMatcher()->asString());
@@ -165,13 +128,7 @@ class RequestExpectationComparator
         );
     }
 
-    /**
-     * @param ServerRequestInterface $httpRequest
-     * @param RequestConditions      $expectedRequest
-     *
-     * @return bool
-     */
-    private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
+    private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): bool
     {
         $inputSource = $this->inputSourceLocator->locate(InputSources::URL);
         $matcher = $this->matcherLocator->locate($expectedRequest->getUrl()->getMatcher()->asString());
@@ -182,13 +139,7 @@ class RequestExpectationComparator
         );
     }
 
-    /**
-     * @param ServerRequestInterface $httpRequest
-     * @param RequestConditions      $expectedRequest
-     *
-     * @return bool
-     */
-    private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
+    private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): bool
     {
         $inputSource = $this->inputSourceLocator->locate(InputSources::BODY);
         $matcher = $this->matcherLocator->locate(
@@ -201,13 +152,7 @@ class RequestExpectationComparator
         );
     }
 
-    /**
-     * @param ServerRequestInterface $httpRequest
-     * @param RequestConditions      $expectedRequest
-     *
-     * @return bool
-     */
-    private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest)
+    private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): bool
     {
         $inputSource = $this->inputSourceLocator->locate(InputSources::HEADER);
         foreach ($expectedRequest->getHeaders() as $header => $headerCondition) {

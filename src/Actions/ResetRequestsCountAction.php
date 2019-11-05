@@ -29,15 +29,12 @@ class ResetRequestsCountAction implements ActionInterface
      */
     private $storage;
 
-    /**
-     * @param RequestStorage $storage
-     */
     public function __construct(RequestStorage $storage)
     {
         $this->storage = $storage;
     }
 
-    public function execute(ServerRequestInterface $request, ResponseInterface $response)
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $this->storage->clearRequests();
 

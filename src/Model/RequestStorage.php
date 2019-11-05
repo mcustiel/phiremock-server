@@ -22,15 +22,10 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface RequestStorage
 {
-    /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     */
-    public function addRequest(ServerRequestInterface $request);
+    public function addRequest(ServerRequestInterface $request): void;
 
-    /**
-     * @return \Psr\Http\Message\ServerRequestInterface[]
-     */
-    public function listRequests();
+    /** @return \Psr\Http\Message\ServerRequestInterface[] */
+    public function listRequests(): array;
 
-    public function clearRequests();
+    public function clearRequests(): void;
 }

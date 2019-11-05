@@ -22,6 +22,7 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
 use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 
@@ -44,7 +45,7 @@ class FastRouterHandler implements RequestHandlerInterface
         $this->actionsLocator = $locator;
     }
 
-    public function dispatch(ServerRequestInterface $request)
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
         $uri = $request->getUri()->getPath();
         $routeInfo = $this->dispatcher->dispatch($request->getMethod(), $uri);
@@ -71,7 +72,7 @@ class FastRouterHandler implements RequestHandlerInterface
         }
     }
 
-    private function createDispatcherCallable()
+    private function createDispatcherCallable(): callable
     {
         return function (RouteCollector $r) {
             $r->addRoute('GET', '/__phiremock/expectations', ActionLocator::LIST_EXPECTATIONS);

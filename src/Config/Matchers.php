@@ -34,12 +34,7 @@ class Matchers
         self::SAME_STRING,
     ];
 
-    /**
-     * @param string $matcherName
-     *
-     * @return bool
-     */
-    public static function isValidMatcher($matcherName)
+    public static function isValidMatcher(string $matcherName): bool
     {
         return \in_array($matcherName, self::VALID_MATCHERS, true);
     }

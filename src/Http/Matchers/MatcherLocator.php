@@ -34,11 +34,6 @@ class MatcherLocator
         if (MatchersEnum::isValidMatcher($matcherIdentifier)) {
             return $this->factory->{self::MATCHER_FACTORY_METHOD_MAP[$matcherIdentifier]}();
         }
-        throw new \InvalidArgumentException(
-            sprintf(
-                'Trying to match using %s. Which is not a valid matcher.',
-                var_export($matcherIdentifier, true)
-            )
-        );
+        throw new \InvalidArgumentException(sprintf('Trying to match using %s. Which is not a valid matcher.', var_export($matcherIdentifier, true)));
     }
 }
