@@ -7,7 +7,7 @@ use Mcustiel\Phiremock\Domain\Expectation;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class RequestToMockConfigMapper
+class RequestToExpectationMapper
 {
     const CONTENT_ENCODING_HEADER = 'Content-Encoding';
 

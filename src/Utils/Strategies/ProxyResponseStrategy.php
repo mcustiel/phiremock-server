@@ -18,13 +18,13 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
+use Laminas\Diactoros\Uri;
 use Mcustiel\Phiremock\Common\Http\RemoteConnectionInterface;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Zend\Diactoros\Uri;
 
 class ProxyResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {

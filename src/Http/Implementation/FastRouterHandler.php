@@ -20,11 +20,11 @@ namespace Mcustiel\Phiremock\Server\Http\Implementation;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use Laminas\Diactoros\Response;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
 use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response;
 
 class FastRouterHandler implements RequestHandlerInterface
 {
@@ -49,26 +49,29 @@ class FastRouterHandler implements RequestHandlerInterface
     {
         $uri = $request->getUri()->getPath();
         $routeInfo = $this->dispatcher->dispatch($request->getMethod(), $uri);
-
-        switch ($routeInfo[0]) {
-            case Dispatcher::NOT_FOUND:
-                return $this->actionsLocator
-                    ->locate(ActionLocator::MANAGE_REQUEST)
-                    ->execute($request, new Response());
-            case Dispatcher::METHOD_NOT_ALLOWED:
-                return new Response(
-                    sprintf(
-                        'Method not allowed. Allowed methods for %s: %s',
-                        $uri,
-                        implode(', ', $routeInfo[1])
-                    ),
-                    405
-                );
-                break;
-            case Dispatcher::FOUND:
-                return $this->actionsLocator
-                    ->locate($routeInfo[1])
-                    ->execute($request, new Response());
+        try {
+            switch ($routeInfo[0]) {
+                case Dispatcher::NOT_FOUND:
+                    return $this->actionsLocator
+                        ->locate(ActionLocator::MANAGE_REQUEST)
+                        ->execute($request, new Response());
+                case Dispatcher::METHOD_NOT_ALLOWED:
+                    return new Response(
+                        sprintf(
+                            'Method not allowed. Allowed methods for %s: %s',
+                            $uri,
+                            implode(', ', $routeInfo[1])
+                        ),
+                        405
+                    );
+                    break;
+                case Dispatcher::FOUND:
+                    return $this->actionsLocator
+                        ->locate($routeInfo[1])
+                        ->execute($request, new Response());
+            }
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), 500);
         }
     }
 

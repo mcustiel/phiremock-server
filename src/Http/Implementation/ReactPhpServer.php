@@ -83,7 +83,7 @@ class ReactPhpServer implements ServerInterface
     private function onRequest(ServerRequestInterface $request): ResponseInterface
     {
         $start = microtime(true);
-        $psrResponse = $this->requestHandler->dispatch($request);
+        $psrResponse = $this->requestHandler->dispatch(new ServerRequestWithCachedBody($request));
         $this->logger->debug('Processing took ' . number_format((microtime(true) - $start) * 1000, 3) . ' milliseconds');
 
         return $psrResponse;

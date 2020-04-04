@@ -18,9 +18,8 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
+use Mcustiel\Phiremock\Domain\Conditions;
 use Mcustiel\Phiremock\Domain\Expectation;
-use Mcustiel\Phiremock\Domain\RequestConditions;
-use Mcustiel\Phiremock\Server\Config\InputSources;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
 use Mcustiel\Phiremock\Server\Http\Matchers\MatcherLocator;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
@@ -60,37 +59,18 @@ class RequestExpectationComparator
 
         $expectedRequest = $expectation->getRequest();
 
-        $atLeastOneExecution = $this->compareRequestParts($httpRequest, $expectedRequest);
+        $foundMatch = $this->compareRequestParts($httpRequest, $expectedRequest);
+        $this->logger->debug('Matches? ' . ((bool) $foundMatch ? 'yes' : 'no'));
 
-        if (null !== $atLeastOneExecution && $expectedRequest->getHeaders()) {
-            $this->logger->debug('Checking headers against expectation');
-
-            return $this->requestHeadersMatchExpectation($httpRequest, $expectedRequest);
-        }
-
-        $this->logger->debug('Matches? ' . ((bool) $atLeastOneExecution ? 'yes' : 'no'));
-
-        return (bool) $atLeastOneExecution;
+        return $foundMatch;
     }
 
-    private function compareRequestParts(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): ?bool
+    private function compareRequestParts(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
     {
-        $atLeastOneExecution = false;
-        $requestParts = ['Method', 'Url', 'Body'];
-
-        foreach ($requestParts as $requestPart) {
-            $getter = "get{$requestPart}";
-            $matcher = "request{$requestPart}MatchesExpectation";
-            if ($expectedRequest->{$getter}()) {
-                $this->logger->debug("Checking {$requestPart} against expectation");
-                if (!$this->{$matcher}($httpRequest, $expectedRequest)) {
-                    return null;
-                }
-                $atLeastOneExecution = true;
-            }
-        }
-
-        return $atLeastOneExecution;
+        return $this->requestMethodMatchesExpectation($httpRequest, $expectedRequest)
+            && $this->requestUrlMatchesExpectation($httpRequest, $expectedRequest)
+            && $this->requestBodyMatchesExpectation($httpRequest, $expectedRequest)
+            && $this->requestHeadersMatchExpectation($httpRequest, $expectedRequest);
     }
 
     private function isExpectedScenarioState(Expectation $expectation): bool
@@ -117,51 +97,73 @@ class RequestExpectationComparator
         }
     }
 
-    private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): bool
+    private function requestMethodMatchesExpectation(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
     {
-        $inputSource = $this->inputSourceLocator->locate(InputSources::METHOD);
-        $matcher = $this->matcherLocator->locate($expectedRequest->getMethod()->getMatcher()->asString());
+        $method = $expectedRequest->getMethod();
+        if (!$method) {
+            return true;
+        }
+        $this->logger->debug('Checking METHOD against expectation');
+
+        $matcher = $this->matcherLocator->locate($method->getMatcher()->asString());
 
         return $matcher->match(
-            $inputSource->getValue($httpRequest),
-            $expectedRequest->getMethod()->getValue()->asString()
+            $httpRequest->getMethod(),
+            $method->getValue()->asString()
         );
     }
 
-    private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): bool
+    private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
     {
-        $inputSource = $this->inputSourceLocator->locate(InputSources::URL);
-        $matcher = $this->matcherLocator->locate($expectedRequest->getUrl()->getMatcher()->asString());
+        $url = $expectedRequest->getUrl();
+        if (!$url) {
+            return true;
+        }
+        $this->logger->debug('Checking URL against expectation');
+
+        $matcher = $this->matcherLocator->locate($url->getMatcher()->asString());
 
         return $matcher->match(
-            $inputSource->getValue($httpRequest),
-            $expectedRequest->getUrl()->getValue()->asString()
+            $httpRequest->getUri()->__toString(),
+            $url->getValue()->asString()
         );
     }
 
-    private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): bool
+    private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
     {
-        $inputSource = $this->inputSourceLocator->locate(InputSources::BODY);
+        $bodycondition = $expectedRequest->getBody();
+        if (!$bodycondition) {
+            return true;
+        }
+        $this->logger->debug('Checking BODY against expectation');
+
         $matcher = $this->matcherLocator->locate(
-            $expectedRequest->getBody()->getMatcher()->asString()
+            $bodycondition->getMatcher()->asString()
         );
+        $httpRequest->getBody()->rewind();
 
         return $matcher->match(
-            $inputSource->getValue($httpRequest),
-            $expectedRequest->getBody()->getValue()->asString()
+            $httpRequest->getBody()->__toString(),
+            $bodycondition->getValue()->asString()
         );
     }
 
-    private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, RequestConditions $expectedRequest): bool
+    private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
     {
-        $inputSource = $this->inputSourceLocator->locate(InputSources::HEADER);
-        foreach ($expectedRequest->getHeaders() as $header => $headerCondition) {
+        $headerConditions = $expectedRequest->getHeaders();
+        if (!$headerConditions) {
+            return true;
+        }
+        $this->logger->debug('Checking HEADERS against expectation');
+        foreach ($headerConditions as $header => $headerCondition) {
+            $headerName = $header->asString();
+            $this->logger->debug("Checking $headerName against expectation");
             $matcher = $this->matcherLocator->locate(
                 $headerCondition->getMatcher()->asString()
             );
 
             $matches = $matcher->match(
-                $inputSource->getValue($httpRequest, $header->asString()),
+                $httpRequest->getHeaderLine($headerName),
                 $headerCondition->getValue()->asString()
             );
             if (!$matches) {

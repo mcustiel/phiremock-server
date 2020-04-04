@@ -56,17 +56,18 @@ class SearchRequestAction implements ActionInterface
 
     public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $this->logger->debug('Searching matching expectation for request');
         $this->logger->info('Request received: ' . $this->getLoggableRequest($request));
+        $this->logger->debug('Searching matching expectation for request');
         $this->requestsStorage->addRequest($request);
         $foundExpectation = $this->searchForMatchingExpectation($request);
         if (null === $foundExpectation) {
             return $response->withStatus(404, 'Not Found');
         }
+        $this->logger->debug('Building response...');
         $response = $this->responseStrategyFactory
             ->getStrategyForExpectation($foundExpectation)
             ->createResponse($foundExpectation, $response, $request);
-
+        $this->logger->debug('Response built...');
         $this->logger->debug('Responding: ' . $this->getLoggableResponse($response));
 
         return $response;
@@ -104,12 +105,15 @@ class SearchRequestAction implements ActionInterface
     private function getLoggableRequest(ServerRequestInterface $request)
     {
         $body = $request->getBody()->__toString();
+        $longBody = '--VERY LONG CONTENTS--';
+        $body = \strlen($body) > 2000 ? $longBody : preg_replace('|\s+|', ' ', $body);
 
-        return $request->getMethod() . ': '
-            . $request->getUri()->__toString() . ' || '
-            . \strlen($body) > 2000 ?
-                '--VERY LONG CONTENTS--'
-                    : preg_replace('|\s+|', ' ', $body);
+        return sprintf(
+            '%s: %s || %s',
+            $request->getMethod(),
+            $request->getUri()->__toString(),
+            $body
+        );
     }
 
     /**

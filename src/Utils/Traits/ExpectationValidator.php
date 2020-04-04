@@ -18,8 +18,8 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\Traits;
 
+use Mcustiel\Phiremock\Domain\Conditions;
 use Mcustiel\Phiremock\Domain\Expectation;
-use Mcustiel\Phiremock\Domain\RequestConditions;
 use Mcustiel\Phiremock\Domain\Response;
 use Psr\Log\LoggerInterface;
 
@@ -58,7 +58,7 @@ trait ExpectationValidator
         return empty($response->getStatusCode());
     }
 
-    protected function requestIsInvalid(RequestConditions $request): bool
+    protected function requestIsInvalid(Conditions $request): bool
     {
         return empty($request->getBody()) && empty($request->getHeaders())
         && empty($request->getMethod()) && empty($request->getUrl());

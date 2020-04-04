@@ -155,13 +155,14 @@ class PhiremockServerCommand extends Command
         }
 
         $errorHandler = function ($severity, $message, $file, $line, $context = null) {
+            $errorInformation = sprintf('%s:%s (%s)', $file, $line, $message);
             if ($this->isError($severity)) {
                 $this->logger->error(
-                    sprintf('Error in %s:%s (%s)', $file, $line, $message)
+                    'Error in' . $errorInformation
                 );
                 throw new \ErrorException($message, 0, $severity, $file, $line);
             }
-            $this->logger->warning(sprintf('%s:%s (%s)', $file, $line, $message));
+            $this->logger->warning($errorInformation);
         };
         set_error_handler($errorHandler);
     }

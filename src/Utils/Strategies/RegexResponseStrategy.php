@@ -20,7 +20,6 @@ namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Domain\Expectation;
-use Mcustiel\Phiremock\Domain\Http\Body;
 use Mcustiel\Phiremock\Server\Config\InputSources;
 use Mcustiel\Phiremock\Server\Config\Matchers;
 use Psr\Http\Message\ResponseInterface;
@@ -53,18 +52,21 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         ServerRequestInterface $httpRequest
     ): ResponseInterface {
         $responseBody = $expectation->getResponse()->getBody();
-
         if ($responseBody) {
-            $responseBody = $this->fillWithUrlMatches($expectation, $httpRequest, $responseBody);
-            $responseBody = $this->fillWithBodyMatches($expectation, $httpRequest, $responseBody);
-            $httpResponse = $httpResponse->withBody(new StringStream($responseBody));
+            $bodyString = $responseBody->asString();
+            $bodyString = $this->fillWithUrlMatches($expectation, $httpRequest, $bodyString);
+            $bodyString = $this->fillWithBodyMatches($expectation, $httpRequest, $bodyString);
+            $httpResponse = $httpResponse->withBody(new StringStream($bodyString));
         }
 
         return $httpResponse;
     }
 
-    private function fillWithBodyMatches(Expectation $expectation, ServerRequestInterface $httpRequest, string $responseBody): string
-    {
+    private function fillWithBodyMatches(
+        Expectation $expectation,
+        ServerRequestInterface $httpRequest,
+        string $responseBody
+    ): string {
         if ($this->bodyConditionIsRegex($expectation)) {
             return $this->replaceMatches(
                 InputSources::BODY,
@@ -83,8 +85,11 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
             && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->asString();
     }
 
-    private function fillWithUrlMatches(Expectation $expectation, ServerRequestInterface $httpRequest, Body $responseBody): string
-    {
+    private function fillWithUrlMatches(
+        Expectation $expectation,
+        ServerRequestInterface $httpRequest,
+        string $responseBody
+    ): string {
         if ($this->urlConditionIsRegex($expectation)) {
             return $this->replaceMatches(
                 InputSources::URL,
@@ -111,10 +116,12 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
 
     private function urlConditionIsRegex(Expectation $expectation): bool
     {
-        return $expectation->getRequest()->getUrl() && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->asString();
+        return $expectation->getRequest()->getUrl()
+            && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->asString();
     }
 
-    private function replaceMatches(string $type, string $pattern, string $subject, Body $responseBody): string
+    private function replaceMatches(
+        string $type, string $pattern, string $subject, string $responseBody): string
     {
         $matches = [];
 
@@ -123,7 +130,6 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
             $subject,
             $matches
         );
-
         if ($matchCount > 0) {
             // we don't need full matches
             unset($matches[0]);
@@ -133,7 +139,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $responseBody;
     }
 
-    private function replaceMatchesInBody(array $matches, string $type, Body $responseBody): string
+    private function replaceMatchesInBody(array $matches, string $type, string $responseBody): string
     {
         $search = [];
         $replace = [];
@@ -150,6 +156,6 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
             }
         }
 
-        return str_replace($search, $replace, $responseBody->asString());
+        return str_replace($search, $replace, $responseBody);
     }
 }

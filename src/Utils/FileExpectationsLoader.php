@@ -57,7 +57,7 @@ class FileExpectationsLoader
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new \Exception(json_last_error_msg());
         }
-        /** @var Mcustiel\Phiremock\Domain\Expectation $expectation */
+        /** @var \Mcustiel\Phiremock\Domain\Expectation $expectation */
         $expectation = $this->converter->convert($data);
         $this->validateExpectationOrThrowException($expectation, $this->logger);
 
