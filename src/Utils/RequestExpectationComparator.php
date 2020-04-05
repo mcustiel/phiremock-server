@@ -123,8 +123,16 @@ class RequestExpectationComparator
 
         $matcher = $this->matcherLocator->locate($url->getMatcher()->asString());
 
+        $requestUrl = $httpRequest->getUri()->getPath();
+        if ($httpRequest->getUri()->getQuery()) {
+            $requestUrl .= '?' . $httpRequest->getUri()->getQuery();
+        }
+        if ($httpRequest->getUri()->getFragment()) {
+            $requestUrl .= '#' . $httpRequest->getUri()->getFragment();
+        }
+
         return $matcher->match(
-            $httpRequest->getUri()->__toString(),
+            $requestUrl,
             $url->getValue()->asString()
         );
     }

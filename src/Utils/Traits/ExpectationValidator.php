@@ -20,7 +20,6 @@ namespace Mcustiel\Phiremock\Server\Utils\Traits;
 
 use Mcustiel\Phiremock\Domain\Conditions;
 use Mcustiel\Phiremock\Domain\Expectation;
-use Mcustiel\Phiremock\Domain\Response;
 use Psr\Log\LoggerInterface;
 
 trait ExpectationValidator
@@ -30,15 +29,20 @@ trait ExpectationValidator
     {
         $this->logger->debug('Adding Expectation->validateExpectationOrThrowException');
         $this->validateRequestOrThrowException($expectation, $logger);
+        $this->logger->debug('Ran validateRequestOrThrowException');
         $this->validateResponseOrThrowException($expectation, $logger);
+        $this->logger->debug('Ran validateResponseOrThrowException');
         $this->validateScenarioNameOrThrowException($expectation, $logger);
+        $this->logger->debug('Ran validateScenarioNameOrThrowException');
         $this->validateScenarioStateOrThrowException($expectation, $logger);
+        $this->logger->debug('Ran validateScenarioStateOrThrowException');
     }
 
     /** @throws \RuntimeException */
     protected function validateResponseOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
-        if ($this->responseIsInvalid($expectation->getResponse())) {
+        $this->logger->debug('Validating response');
+        if ($this->responseIsInvalid($expectation)) {
             $logger->error('Invalid response specified in expectation');
             throw new \RuntimeException('Invalid response specified in expectation');
         }
@@ -53,9 +57,11 @@ trait ExpectationValidator
         }
     }
 
-    protected function responseIsInvalid(Response $response): bool
+    protected function responseIsInvalid(Expectation $expectation): bool
     {
-        return empty($response->getStatusCode());
+        $response = $expectation->getResponse();
+
+        return $response->isHttpResponse() && empty($response->getStatusCode());
     }
 
     protected function requestIsInvalid(Conditions $request): bool

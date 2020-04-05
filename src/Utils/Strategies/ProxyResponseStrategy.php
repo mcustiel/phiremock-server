@@ -50,7 +50,7 @@ class ProxyResponseStrategy extends AbstractResponse implements ResponseStrategy
         ResponseInterface $transactionData,
         ServerRequestInterface $request
     ): ResponseInterface {
-        $url = $expectation->getProxyTo();
+        $url = $expectation->getResponse()->getUri()->asString();
         $this->logger->debug('Proxying request to : ' . $url);
         $this->processScenario($expectation);
         $this->processDelay($expectation->getResponse());
