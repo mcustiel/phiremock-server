@@ -20,43 +20,74 @@ namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Domain\Expectation;
-use Mcustiel\Phiremock\Server\Config\InputSources;
 use Mcustiel\Phiremock\Server\Config\Matchers;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class RegexResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
+    const PLACEHOLDER_BODY = 'body';
+    const PLACEHOLDER_URL = 'url';
+
     public function createResponse(
         Expectation $expectation,
         ResponseInterface $httpResponse,
         ServerRequestInterface $request
     ): ResponseInterface {
-        $responseConfig = $expectation->getResponse();
-        $httpResponse = $this->getResponseWithBody(
+        $httpResponse = $this->getResponseWithReplacedBody(
             $expectation,
             $httpResponse,
             $request
         );
+        $httpResponse = $this->getResponseWithReplacedHeaders(
+            $expectation,
+            $httpResponse,
+            $request
+        );
+        $responseConfig = $expectation->getResponse();
         $httpResponse = $this->getResponseWithStatusCode($responseConfig, $httpResponse);
-        $httpResponse = $this->getResponseWithHeaders($responseConfig, $httpResponse);
         $this->processScenario($expectation);
         $this->processDelay($responseConfig);
 
         return $httpResponse;
     }
 
-    private function getResponseWithBody(
+    private function getResponseWithReplacedBody(
         Expectation $expectation,
         ResponseInterface $httpResponse,
         ServerRequestInterface $httpRequest
     ): ResponseInterface {
-        $responseBody = $expectation->getResponse()->getBody();
+        /** @var \Mcustiel\Phiremock\Domain\HttpResponse $responseConfig */
+        $responseConfig = $expectation->getResponse();
+        $responseBody = $responseConfig->getBody();
         if ($responseBody) {
             $bodyString = $responseBody->asString();
             $bodyString = $this->fillWithUrlMatches($expectation, $httpRequest, $bodyString);
             $bodyString = $this->fillWithBodyMatches($expectation, $httpRequest, $bodyString);
             $httpResponse = $httpResponse->withBody(new StringStream($bodyString));
+        }
+
+        return $httpResponse;
+    }
+
+    private function getResponseWithReplacedHeaders(
+        Expectation $expectation,
+        ResponseInterface $httpResponse,
+        ServerRequestInterface $httpRequest
+    ) {
+        /** @var \Mcustiel\Phiremock\Domain\HttpResponse $responseConfig */
+        $responseConfig = $expectation->getResponse();
+        $headers = $responseConfig->getHeaders();
+
+        if ($headers === null || $headers->isEmpty()) {
+            return $httpResponse;
+        }
+
+        foreach ($headers as $header) {
+            $headerValue = $header->getValue()->asString();
+            $headerValue = $this->fillWithUrlMatches($expectation, $httpRequest, $headerValue);
+            $headerValue = $this->fillWithBodyMatches($expectation, $httpRequest, $headerValue);
+            $httpResponse = $httpResponse->withHeader($header->getName()->asString(), $headerValue);
         }
 
         return $httpResponse;
@@ -68,8 +99,8 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         string $responseBody
     ): string {
         if ($this->bodyConditionIsRegex($expectation)) {
-            return $this->replaceMatches(
-                InputSources::BODY,
+            $responseBody = $this->replaceMatches(
+                self::PLACEHOLDER_BODY,
                 $expectation->getRequest()->getBody()->getValue()->asString(),
                 $httpRequest->getBody()->__toString(),
                 $responseBody
@@ -79,12 +110,6 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         return $responseBody;
     }
 
-    private function bodyConditionIsRegex(Expectation $expectation): bool
-    {
-        return $expectation->getRequest()->getBody()
-            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->asString();
-    }
-
     private function fillWithUrlMatches(
         Expectation $expectation,
         ServerRequestInterface $httpRequest,
@@ -92,7 +117,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
     ): string {
         if ($this->urlConditionIsRegex($expectation)) {
             return $this->replaceMatches(
-                InputSources::URL,
+                self::PLACEHOLDER_URL,
                 $expectation->getRequest()->getUrl()->getValue()->asString(),
                 $this->getUri($httpRequest),
                 $responseBody
@@ -120,8 +145,14 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
             && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->asString();
     }
 
+    private function bodyConditionIsRegex(Expectation $expectation): bool
+    {
+        return $expectation->getRequest()->getBody()
+            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->asString();
+    }
+
     private function replaceMatches(
-        string $type, string $pattern, string $subject, string $responseBody): string
+        string $type, string $pattern, string $subject, string $destination): string
     {
         $matches = [];
 
@@ -133,10 +164,10 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         if ($matchCount > 0) {
             // we don't need full matches
             unset($matches[0]);
-            $responseBody = $this->replaceMatchesInBody($matches, $type, $responseBody);
+            $destination = $this->replaceMatchesInBody($matches, $type, $destination);
         }
 
-        return $responseBody;
+        return $destination;
     }
 
     private function replaceMatchesInBody(array $matches, string $type, string $responseBody): string

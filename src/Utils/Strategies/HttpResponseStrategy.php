@@ -39,6 +39,7 @@ class HttpResponseStrategy extends AbstractResponse implements ResponseStrategyI
     ): ResponseInterface {
         /** @var HttpResponse $responseConfig */
         $responseConfig = $expectation->getResponse();
+
         $httpResponse = $this->getResponseWithBody($responseConfig, $httpResponse);
         $httpResponse = $this->getResponseWithStatusCode($responseConfig, $httpResponse);
         $httpResponse = $this->getResponseWithHeaders($responseConfig, $httpResponse);
