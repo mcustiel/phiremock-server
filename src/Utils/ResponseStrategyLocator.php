@@ -19,8 +19,8 @@
 namespace Mcustiel\Phiremock\Server\Utils;
 
 use Mcustiel\Phiremock\Domain\Expectation;
-use Mcustiel\Phiremock\Server\Config\Matchers;
 use Mcustiel\Phiremock\Server\Factory\Factory;
+use Mcustiel\Phiremock\Domain\Conditions\MatchersEnum;
 
 class ResponseStrategyLocator
 {
@@ -55,8 +55,8 @@ class ResponseStrategyLocator
     private function requestBodyOrUrlAreRegexp(Expectation $expectation)
     {
         return $expectation->getRequest()->getBody()
-            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->getName()
+            && MatchersEnum::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->getName()
             || $expectation->getRequest()->getUrl()
-            && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->getName();
+            && MatchersEnum::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->getName();
     }
 }

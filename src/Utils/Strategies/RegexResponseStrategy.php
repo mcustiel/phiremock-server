@@ -20,9 +20,9 @@ namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Domain\Expectation;
-use Mcustiel\Phiremock\Server\Config\Matchers;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Mcustiel\Phiremock\Domain\Conditions\MatchersEnum;
 
 class RegexResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
@@ -142,13 +142,13 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
     private function urlConditionIsRegex(Expectation $expectation): bool
     {
         return $expectation->getRequest()->getUrl()
-            && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->getName();
+            && MatchersEnum::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->getName();
     }
 
     private function bodyConditionIsRegex(Expectation $expectation): bool
     {
         return $expectation->getRequest()->getBody()
-        && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->getName();
+            && MatchersEnum::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->getName();
     }
 
     private function replaceMatches(

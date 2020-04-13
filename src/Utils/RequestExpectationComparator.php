@@ -20,26 +20,21 @@ namespace Mcustiel\Phiremock\Server\Utils;
 
 use Mcustiel\Phiremock\Domain\Conditions;
 use Mcustiel\Phiremock\Domain\Expectation;
-use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class RequestExpectationComparator
 {
-    /** @var InputSourceLocator */
-    private $inputSourceLocator;
     /** @var ScenarioStorage */
     private $scenarioStorage;
     /** @var LoggerInterface */
     private $logger;
 
     public function __construct(
-        InputSourceLocator $inputSourceLocator,
         ScenarioStorage $scenarioStorage,
         LoggerInterface $logger
     ) {
-        $this->inputSourceLocator = $inputSourceLocator;
         $this->scenarioStorage = $scenarioStorage;
         $this->logger = $logger;
     }

@@ -8,9 +8,6 @@ use Mcustiel\Phiremock\Server\Actions\ActionLocator;
 use Mcustiel\Phiremock\Server\Actions\ActionsFactory;
 use Mcustiel\Phiremock\Server\Http\Implementation\FastRouterHandler;
 use Mcustiel\Phiremock\Server\Http\Implementation\ReactPhpServer;
-use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceFactory;
-use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceFactory as PhiremockInputSourceFactory;
-use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
 use Mcustiel\Phiremock\Server\Http\ServerInterface;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Model\Implementation\ExpectationAutoStorage;
@@ -214,7 +211,6 @@ class Factory
             $this->factoryCache->set(
                 'requestExpectationComparator',
                 new RequestExpectationComparator(
-                    $this->createInputSourceLocator(),
                     $this->createScenarioStorage(),
                     $this->createLogger()
                 )
@@ -241,42 +237,6 @@ class Factory
         return $this->factoryCache->get('fileExpectationsLoader');
     }
 
-    public function createMatcherFactory(): MatcherFactory
-    {
-        if (!$this->factoryCache->has('matcherFactory')) {
-            $this->factoryCache->set(
-                'matcherFactory',
-                new PhiremockMatcherFactory($this)
-            );
-        }
-
-        return $this->factoryCache->get('matcherFactory');
-    }
-
-    public function createInputSourceFactory(): InputSourceFactory
-    {
-        if (!$this->factoryCache->has('inputSourceFactory')) {
-            $this->factoryCache->set(
-                'inputSourceFactory',
-                new PhiremockInputSourceFactory()
-            );
-        }
-
-        return $this->factoryCache->get('inputSourceFactory');
-    }
-
-    public function createInputSourceLocator(): InputSourceLocator
-    {
-        if (!$this->factoryCache->has('inputSourceLocator')) {
-            $this->factoryCache->set(
-                'inputSourceLocator',
-                new InputSourceLocator($this->createInputSourceFactory())
-            );
-        }
-
-        return $this->factoryCache->get('inputSourceLocator');
-    }
-
     public function createActionLocator(): ActionLocator
     {
         if (!$this->factoryCache->has('actionLocator')) {
@@ -301,7 +261,6 @@ class Factory
         return $this->factoryCache->get('actionFactory');
     }
 
-    /** @return RequestToExpectationMapper */
     public function createRequestToExpectationMapper(): RequestToExpectationMapper
     {
         if (!$this->factoryCache->has('requestToExpectationMapper')) {
