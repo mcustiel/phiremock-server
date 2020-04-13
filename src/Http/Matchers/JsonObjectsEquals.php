@@ -42,6 +42,8 @@ class JsonObjectsEquals implements MatcherInterface
         }
         $configValue = $this->decodeJson($argument);
 
+        $this->logger->debug('Decoded json: ' . var_export($configValue, true));
+
         if (!\is_array($requestValue) || !\is_array($configValue)) {
             return false;
         }
@@ -56,8 +58,9 @@ class JsonObjectsEquals implements MatcherInterface
      */
     private function decodeJson($value)
     {
+        $this->logger->debug('Received json string: ' . $value);
         $decodedValue = json_decode($value, true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
+        if (JSON_ERROR_NONE !== json_last_error() || $decodedValue === null) {
             throw new \InvalidArgumentException('JSON parsing error: ' . json_last_error_msg());
         }
 
@@ -73,9 +76,10 @@ class JsonObjectsEquals implements MatcherInterface
     {
         try {
             $requestValue = $this->decodeJson($value);
-        } catch (\InvalidArgumentException $e) {
+        } catch (\Throwable $e) {
             $requestValue = $value;
             $this->logger->warning('Invalid json received in request: ' . $value);
+            //throw $e;
         }
 
         return $requestValue;

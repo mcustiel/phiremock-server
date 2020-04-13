@@ -21,10 +21,12 @@ namespace Mcustiel\Phiremock\Server\Http\Implementation;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Laminas\Diactoros\Response;
+use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
 use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 class FastRouterHandler implements RequestHandlerInterface
 {
@@ -32,8 +34,10 @@ class FastRouterHandler implements RequestHandlerInterface
     private $dispatcher;
     /** @var ActionLocator */
     private $actionsLocator;
+    /** @var LoggerInterface */
+    private $logger;
 
-    public function __construct(ActionLocator $locator)
+    public function __construct(ActionLocator $locator, LoggerInterface $logger)
     {
         $this->dispatcher = \FastRoute\simpleDispatcher(
             $this->createDispatcherCallable(),
@@ -43,6 +47,7 @@ class FastRouterHandler implements RequestHandlerInterface
             ]
         );
         $this->actionsLocator = $locator;
+        $this->logger = $logger;
     }
 
     public function dispatch(ServerRequestInterface $request): ResponseInterface
@@ -70,8 +75,16 @@ class FastRouterHandler implements RequestHandlerInterface
                         ->locate($routeInfo[1])
                         ->execute($request, new Response());
             }
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), 500);
+        } catch (\Throwable $e) {
+            $this->logger->error($e->getMessage());
+
+            return new Response(
+                new StringStream(
+                    json_encode(['result' => 'ERROR', 'details' => $e->getMessage()]),
+                ),
+                500,
+                ['Content-Type' => 'application/json']
+            );
         }
     }
 

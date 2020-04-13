@@ -50,6 +50,7 @@ class ReloadPreconfiguredExpectationsAction implements ActionInterface
 
     public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
+        $this->expectationStorage->clearExpectations();
         foreach ($this->expectationBackup->listExpectations() as $expectation) {
             $this->expectationStorage->addExpectation($expectation);
         }
