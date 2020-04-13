@@ -55,8 +55,8 @@ class ResponseStrategyLocator
     private function requestBodyOrUrlAreRegexp(Expectation $expectation)
     {
         return $expectation->getRequest()->getBody()
-            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->asString()
+            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->getName()
             || $expectation->getRequest()->getUrl()
-            && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->asString();
+            && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->getName();
     }
 }

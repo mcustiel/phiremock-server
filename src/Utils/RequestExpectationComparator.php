@@ -21,15 +21,12 @@ namespace Mcustiel\Phiremock\Server\Utils;
 use Mcustiel\Phiremock\Domain\Conditions;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
-use Mcustiel\Phiremock\Server\Http\Matchers\MatcherLocator;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class RequestExpectationComparator
 {
-    /** @var MatcherLocator */
-    private $matcherLocator;
     /** @var InputSourceLocator */
     private $inputSourceLocator;
     /** @var ScenarioStorage */
@@ -38,12 +35,10 @@ class RequestExpectationComparator
     private $logger;
 
     public function __construct(
-        MatcherLocator $matcherLocator,
         InputSourceLocator $inputSourceLocator,
         ScenarioStorage $scenarioStorage,
         LoggerInterface $logger
     ) {
-        $this->matcherLocator = $matcherLocator;
         $this->inputSourceLocator = $inputSourceLocator;
         $this->scenarioStorage = $scenarioStorage;
         $this->logger = $logger;
@@ -105,12 +100,7 @@ class RequestExpectationComparator
         }
         $this->logger->debug('Checking METHOD against expectation');
 
-        $matcher = $this->matcherLocator->locate($method->getMatcher()->asString());
-
-        return $matcher->match(
-            $httpRequest->getMethod(),
-            $method->getValue()->asString()
-        );
+        return $method->getMatcher()->matches($httpRequest->getMethod());
     }
 
     private function requestUrlMatchesExpectation(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
@@ -121,8 +111,13 @@ class RequestExpectationComparator
         }
         $this->logger->debug('Checking URL against expectation');
 
-        $matcher = $this->matcherLocator->locate($url->getMatcher()->asString());
+        $requestUrl = $this->getComparableRequestUrl($httpRequest);
 
+        return $url->getMatcher()->matches($requestUrl);
+    }
+
+    private function getComparableRequestUrl($httpRequest)
+    {
         $requestUrl = $httpRequest->getUri()->getPath();
         if ($httpRequest->getUri()->getQuery()) {
             $requestUrl .= '?' . $httpRequest->getUri()->getQuery();
@@ -131,10 +126,7 @@ class RequestExpectationComparator
             $requestUrl .= '#' . $httpRequest->getUri()->getFragment();
         }
 
-        return $matcher->match(
-            $requestUrl,
-            $url->getValue()->asString()
-        );
+        return $requestUrl;
     }
 
     private function requestBodyMatchesExpectation(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
@@ -145,15 +137,7 @@ class RequestExpectationComparator
         }
         $this->logger->debug('Checking BODY against expectation');
 
-        $matcher = $this->matcherLocator->locate(
-            $bodycondition->getMatcher()->asString()
-        );
-        $httpRequest->getBody()->rewind();
-
-        return $matcher->match(
-            $httpRequest->getBody()->__toString(),
-            $bodycondition->getValue()->asString()
-        );
+        return $bodycondition->getMatcher()->matches($httpRequest->getBody()->__toString());
     }
 
     private function requestHeadersMatchExpectation(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
@@ -163,16 +147,13 @@ class RequestExpectationComparator
             return true;
         }
         $this->logger->debug('Checking HEADERS against expectation');
+        /** @var \Mcustiel\Phiremock\Domain\Conditions\Header\HeaderCondition $headerCondition */
         foreach ($headerConditions as $header => $headerCondition) {
             $headerName = $header->asString();
             $this->logger->debug("Checking $headerName against expectation");
-            $matcher = $this->matcherLocator->locate(
-                $headerCondition->getMatcher()->asString()
-            );
 
-            $matches = $matcher->match(
-                $httpRequest->getHeaderLine($headerName),
-                $headerCondition->getValue()->asString()
+            $matches = $headerCondition->getMatcher()->matches(
+                $httpRequest->getHeaderLine($headerName)
             );
             if (!$matches) {
                 return false;

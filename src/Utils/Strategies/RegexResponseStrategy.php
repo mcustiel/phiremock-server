@@ -142,13 +142,13 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
     private function urlConditionIsRegex(Expectation $expectation): bool
     {
         return $expectation->getRequest()->getUrl()
-            && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->asString();
+            && Matchers::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->getName();
     }
 
     private function bodyConditionIsRegex(Expectation $expectation): bool
     {
         return $expectation->getRequest()->getBody()
-            && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->asString();
+        && Matchers::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->getName();
     }
 
     private function replaceMatches(

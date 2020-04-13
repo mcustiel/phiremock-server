@@ -11,9 +11,6 @@ use Mcustiel\Phiremock\Server\Http\Implementation\ReactPhpServer;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceFactory;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceFactory as PhiremockInputSourceFactory;
 use Mcustiel\Phiremock\Server\Http\InputSources\InputSourceLocator;
-use Mcustiel\Phiremock\Server\Http\Matchers\MatcherFactory;
-use Mcustiel\Phiremock\Server\Http\Matchers\MatcherFactory as PhiremockMatcherFactory;
-use Mcustiel\Phiremock\Server\Http\Matchers\MatcherLocator;
 use Mcustiel\Phiremock\Server\Http\ServerInterface;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Model\Implementation\ExpectationAutoStorage;
@@ -217,7 +214,6 @@ class Factory
             $this->factoryCache->set(
                 'requestExpectationComparator',
                 new RequestExpectationComparator(
-                    $this->createMatcherLocator(),
                     $this->createInputSourceLocator(),
                     $this->createScenarioStorage(),
                     $this->createLogger()
@@ -255,18 +251,6 @@ class Factory
         }
 
         return $this->factoryCache->get('matcherFactory');
-    }
-
-    public function createMatcherLocator(): MatcherLocator
-    {
-        if (!$this->factoryCache->has('matcherLocator')) {
-            $this->factoryCache->set(
-                'matcherLocator',
-                new MatcherLocator($this->createMatcherFactory())
-            );
-        }
-
-        return $this->factoryCache->get('matcherLocator');
     }
 
     public function createInputSourceFactory(): InputSourceFactory
