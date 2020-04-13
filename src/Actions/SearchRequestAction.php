@@ -57,17 +57,14 @@ class SearchRequestAction implements ActionInterface
     public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $this->logger->info('Request received: ' . $this->getLoggableRequest($request));
-        $this->logger->debug('Searching matching expectation for request');
         $this->requestsStorage->addRequest($request);
         $foundExpectation = $this->searchForMatchingExpectation($request);
         if (null === $foundExpectation) {
             return $response->withStatus(404, 'Not Found');
         }
-        $this->logger->debug('Building response...');
         $response = $this->responseStrategyFactory
             ->getStrategyForExpectation($foundExpectation)
             ->createResponse($foundExpectation, $response, $request);
-        $this->logger->debug('Response built...');
         $this->logger->debug('Responding: ' . $this->getLoggableResponse($response));
 
         return $response;
@@ -106,7 +103,7 @@ class SearchRequestAction implements ActionInterface
     {
         $body = $request->getBody()->__toString();
         $longBody = '--VERY LONG CONTENTS--';
-        $body = \strlen($body) > 2000 ? $longBody : preg_replace('|\s+|', ' ', $body);
+        $body = isset($body[2000]) ? $longBody : preg_replace('|\s+|', ' ', $body);
 
         return sprintf(
             '%s: %s || %s',
@@ -116,17 +113,14 @@ class SearchRequestAction implements ActionInterface
         );
     }
 
-    /**
-     * @return string
-     */
-    private function getLoggableResponse(ResponseInterface $response)
+    private function getLoggableResponse(ResponseInterface $response): string
     {
         $body = $response->getBody()->__toString();
 
-        return $response->getStatusCode()
-            . ' / '
-            . \strlen($body) > 2000 ?
-                '--VERY LONG CONTENTS--'
-                : preg_replace('|\s+|', ' ', $body);
+        return sprintf(
+            '%d / %s',
+            $response->getStatusCode(),
+            isset($body[2000]) ? '--VERY LONG CONTENTS--' : preg_replace('|\s+|', ' ', $body)
+        );
     }
 }

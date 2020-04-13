@@ -18,7 +18,6 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
-use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\HttpResponse;
 use Mcustiel\Phiremock\Domain\Response;
@@ -55,7 +54,7 @@ class HttpResponseStrategy extends AbstractResponse implements ResponseStrategyI
     private function getResponseWithBody(HttpResponse $responseConfig, ResponseInterface $httpResponse): ResponseInterface
     {
         if ($responseConfig->getBody()) {
-            $httpResponse = $httpResponse->withBody(new StringStream($responseConfig->getBody()->asString()));
+            $httpResponse = $httpResponse->withBody($responseConfig->getBody()->asStream());
         }
 
         return $httpResponse;
