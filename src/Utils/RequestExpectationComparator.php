@@ -142,7 +142,7 @@ class RequestExpectationComparator
             return true;
         }
         $this->logger->debug('Checking HEADERS against expectation');
-        /** @var \Mcustiel\Phiremock\Domain\Conditions\Header\HeaderCondition $headerCondition */
+        /** @var \Mcustiel\Phiremock\Domain\Condition\Conditions\HeaderCondition $headerCondition */
         foreach ($headerConditions as $header => $headerCondition) {
             $headerName = $header->asString();
             $this->logger->debug("Checking $headerName against expectation");

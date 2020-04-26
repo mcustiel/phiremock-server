@@ -20,7 +20,7 @@ namespace Mcustiel\Phiremock\Server\Utils;
 
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Factory\Factory;
-use Mcustiel\Phiremock\Domain\Conditions\MatchersEnum;
+use Mcustiel\Phiremock\Domain\Condition\MatchersEnum;
 
 class ResponseStrategyLocator
 {
