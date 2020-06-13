@@ -26,9 +26,13 @@ use Mcustiel\Phiremock\Server\Utils\RequestToExpectationMapper;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Mcustiel\Phiremock\Common\Utils\ExpectationToArrayConverter;
+use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
 
 class ListRequestsAction implements ActionInterface
 {
+    use ExpectationValidator;
+
     /** @var \Mcustiel\Phiremock\Server\Model\RequestStorage */
     private $requestsStorage;
     /** @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator */
@@ -52,6 +56,10 @@ class ListRequestsAction implements ActionInterface
 
     public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
+        if ($request->getBody()->__toString() === '') {
+            $this->logger->info('Received empty body. Creating default');
+            $request = $request->withBody(new StringStream('{"request": {"url": {"matches": "/.+/"}}, "response": {"statusCode": 200}}'));
+        }
         $object = $this->converter->map($request);
 
         return $this->process($response, $object);

@@ -80,7 +80,7 @@ class ActionsFactory
     public function createListRequests(): ListRequestsAction
     {
         return new ListRequestsAction(
-            $this->phiremockFactory->createArrayToRequestConditionConverter(),
+            $this->serverFactory->createRequestToExpectationMapper(),
             $this->serverFactory->createRequestStorage(),
             $this->serverFactory->createRequestExpectationComparator(),
             $this->serverFactory->createLogger()
