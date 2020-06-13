@@ -44,7 +44,6 @@ class RequestToExpectationMapper
     /** @return Expectation */
     public function map(ServerRequestInterface $request)
     {
-        $this->logger->debug('Adding Expectation->parseRequestObject');
         /** @var \Mcustiel\Phiremock\Domain\Expectation $object */
         $object = $this->converter->convert($this->parseJsonBody($request));
         $this->logger->debug('Parsed expectation: ' . var_export($object, true));

@@ -62,7 +62,7 @@ class ActionsFactory
     public function createCountRequests(): CountRequestsAction
     {
         return new CountRequestsAction(
-            $this->phiremockFactory->createArrayToExpectationConverter(),
+            $this->serverFactory->createRequestToExpectationMapper(),
             $this->serverFactory->createRequestStorage(),
             $this->serverFactory->createRequestExpectationComparator(),
             $this->serverFactory->createLogger()
