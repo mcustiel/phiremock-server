@@ -18,25 +18,27 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
+use Mcustiel\Phiremock\Server\Utils\Config\Directory;
+
 class HomePathService
 {
     /** @throws \Exception */
-    public function getHomePath(): string
+    public static function getHomePath(): Directory
     {
         $unixHome = getenv('HOME');
 
         if (!empty($unixHome)) {
-            return $unixHome;
+            return new Directory($unixHome);
         }
 
         $windowsHome = getenv('USERPROFILE');
         if (!empty($windowsHome)) {
-            return $windowsHome;
+            return new Directory($windowsHome);
         }
 
         $windowsHome = getenv('HOMEPATH');
         if (!empty($windowsHome)) {
-            return getenv('HOMEDRIVE') . getenv('HOMEPATH');
+            return new Directory(getenv('HOMEDRIVE') . getenv('HOMEPATH'));
         }
 
         throw new \Exception('Could not get the users\'s home path');

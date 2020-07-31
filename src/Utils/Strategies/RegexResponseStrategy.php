@@ -19,10 +19,10 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
+use Mcustiel\Phiremock\Domain\Condition\MatchersEnum;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Mcustiel\Phiremock\Domain\Condition\MatchersEnum;
 
 class RegexResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {

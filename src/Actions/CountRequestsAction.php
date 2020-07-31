@@ -23,10 +23,10 @@ use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
 use Mcustiel\Phiremock\Server\Utils\RequestToExpectationMapper;
+use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
 
 class CountRequestsAction implements ActionInterface
 {

@@ -18,11 +18,11 @@
 
 namespace Mcustiel\Phiremock\Server\Cli\Commands;
 
-use Mcustiel\Phiremock\Server\Cli\Options\ExpectationsDirectory;
-use Mcustiel\Phiremock\Server\Cli\Options\HostInterface;
-use Mcustiel\Phiremock\Server\Cli\Options\Port;
 use Mcustiel\Phiremock\Server\Factory\Factory;
 use Mcustiel\Phiremock\Server\Http\ServerInterface;
+use Mcustiel\Phiremock\Server\Utils\Config\Config;
+use Mcustiel\Phiremock\Server\Utils\Config\ConfigBuilder;
+use Mcustiel\Phiremock\Server\Utils\Config\Directory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,6 +38,7 @@ class PhiremockServerCommand extends Command
     const EXPECTATIONS_DIR_HELP_MESSAGE = 'Directory in which to search for expectation definition files.';
     const DEFAULT_EXPECTATIONS_DIR = '[USER_HOME_PATH]/.phiremock/expectations';
     const DEBUG_HELP_MESSAGE = 'Sets debug mode.';
+    const CONFIG_PATH_HELP_MESSAGE = 'Directory in which to search for configuration files. Default: current directory.';
 
     /** @var Factory */
     private $factory;
@@ -53,103 +54,107 @@ class PhiremockServerCommand extends Command
     protected function configure(): void
     {
         $this->setDescription('Runs Phiremock server')
-            ->setHelp('This is the main command to run Phiremock as a HTTP server.');
-        $this->addOption(
-            'ip',
-            'i',
-            InputOption::VALUE_REQUIRED,
-            self::IP_HELP_MESSAGE,
-            self::DEFAULT_IP
-        );
-        $this->addOption(
-            'port',
-            'p',
-            InputOption::VALUE_REQUIRED,
-            self::PORT_HELP_MESSAGE,
-            self::DEFAULT_PORT
-        );
-        $this->addOption(
-            'expectations-dir',
-            'e',
-            InputOption::VALUE_REQUIRED,
-            sprintf(self::EXPECTATIONS_DIR_HELP_MESSAGE, self::DEFAULT_EXPECTATIONS_DIR),
-            null
-        );
-        $this->addOption(
-            'debug',
-            'd',
-            InputOption::VALUE_NONE,
-            sprintf(self::DEBUG_HELP_MESSAGE)
-        );
+            ->setHelp('This is the main command to run Phiremock as a HTTP server.')
+            ->addOption(
+                'ip',
+                'i',
+                InputOption::VALUE_REQUIRED,
+                self::IP_HELP_MESSAGE
+            )
+            ->addOption(
+                'port',
+                'p',
+                InputOption::VALUE_REQUIRED,
+                self::PORT_HELP_MESSAGE
+            )
+            ->addOption(
+                'expectations-dir',
+                'e',
+                InputOption::VALUE_REQUIRED,
+                self::EXPECTATIONS_DIR_HELP_MESSAGE
+            )
+            ->addOption(
+                'debug',
+                'd',
+                InputOption::VALUE_NONE,
+                sprintf(self::DEBUG_HELP_MESSAGE)
+            )
+            ->addOption(
+                'config-path',
+                'c',
+                InputOption::VALUE_REQUIRED,
+                sprintf(self::CONFIG_PATH_HELP_MESSAGE)
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->startProcess($input);
-        $this->processFileExpectations($input);
-        $this->startHttpServer($input);
+        $this->createPhiremockPathIfNotExists();
+
+        $configPath = new Directory($input->getOption('config-path') ?? getcwd());
+        $cliConfig = [];
+        if ($input->getOption('ip')) {
+            $cliConfig['ip'] = $input->getOption('ip');
+        }
+        if ($input->getOption('port')) {
+            $cliConfig['port'] = $input->getOption('port');
+        }
+        if ($input->getOption('debug')) {
+            $cliConfig['debug'] = true;
+        }
+        if ($input->getOption('expectations-dir')) {
+            $cliConfig['expectations-dir'] = $this->factory
+                ->createFileSystemService()
+                ->getRealPath($input->getOption('expectations-dir'));
+        }
+
+        $config = (new ConfigBuilder($configPath))->build($cliConfig);
+
+        $this->initializeLogger($config);
+        $this->processFileExpectations($config);
+        $this->startHttpServer($config);
 
         return 0;
     }
 
-    private function startHttpServer(InputInterface $input): void
+    private function createPhiremockPathIfNotExists()
     {
-        $interface = new HostInterface($input->getOption('ip'));
-        $port = new Port((int) $input->getOption('port'));
-        $httpServer = $this->factory->createHttpServer();
-        $this->setUpHandlers($httpServer);
-        $httpServer->listen($interface, $port);
+        $defaultExpectationsPath = ConfigBuilder::getDefaultExpectationsDir();
+        if (!$defaultExpectationsPath->exists()) {
+            $defaultExpectationsPath->create();
+        } elseif (!$defaultExpectationsPath->isDirectory()) {
+            throw new \Exception('Expectations path must be a directory');
+        }
     }
 
-    private function startProcess($input): void
+    private function startHttpServer(Config $config): void
     {
-        \define('IS_DEBUG_MODE', $input->hasOption('debug'));
+        $httpServer = $this->factory->createHttpServer();
+        $this->setUpHandlers($httpServer);
+        $httpServer->listen($config->getInterfaceIp(), $config->getPort());
+    }
+
+    private function initializeLogger(Config $config): void
+    {
+        \define('IS_DEBUG_MODE', $config->isDebugMode());
 
         $this->logger = $this->factory->createLogger();
         $this->logger->info(
             sprintf(
-                '[%s] Starting Phiremock %s...',
+                '[%s] Starting Phiremock%s...',
                 date('Y-m-d H:i:s'),
                 (IS_DEBUG_MODE ? ' in debug mode' : '')
             )
         );
     }
 
-    private function processFileExpectations(InputInterface $input): void
+    private function processFileExpectations(Config $config): void
     {
-        $expectationsDir = $this->getExpectationsDir($input)->asString();
+        $expectationsDir = $config->getExpectationsPath()->asString();
         $this->logger->debug("Phiremock's expectation dir is set to: {$expectationsDir}");
-        if (is_dir($expectationsDir)) {
-            $this->factory
-                ->createFileExpectationsLoader()
-                ->loadExpectationsFromDirectory($expectationsDir);
-        } else {
-            $this->logger->debug(
-                sprintf(
-                    'Not loading expectations file because %s directory does not exist',
-                    $expectationsDir
-                )
-            );
-        }
-    }
-
-    private function getExpectationsDir(InputInterface $input): ExpectationsDirectory
-    {
-        if ($input->getOption('expectations-dir')) {
-            return new ExpectationsDirectory(
-                $this->factory
-                    ->createFileSystemService()
-                    ->getRealPath($input->getOption('expectations-dir'))
-            );
-        }
-
-        return new ExpectationsDirectory(
-            $this->factory->createHomePathService()->getHomePath()
-            . \DIRECTORY_SEPARATOR
-            . '.phiremock'
-            . \DIRECTORY_SEPARATOR
-            . 'expectations'
-        );
+        $this->factory
+            ->createFileExpectationsLoader()
+            ->loadExpectationsFromDirectory($expectationsDir);
     }
 
     private function setUpHandlers(ServerInterface $server): void
