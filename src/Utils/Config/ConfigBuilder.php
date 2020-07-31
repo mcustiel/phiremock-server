@@ -49,8 +49,6 @@ class ConfigBuilder
             throw new \DomainException('Extra keys in configuration file: ' . implode(',', $extraKeys));
         }
 
-        var_dump($config, $fileConfiguration, $cliConfig);
-
         return new Config(array_replace($config, $fileConfiguration, $cliConfig));
     }
 
