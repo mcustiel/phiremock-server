@@ -25,7 +25,7 @@ use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 
 class ScenarioAutoStorage implements ScenarioStorage
 {
-    /** @var ScenarioStateInfo[] */
+    /** @var array<string, ScenarioState> */
     private $scenarios;
 
     public function __construct()

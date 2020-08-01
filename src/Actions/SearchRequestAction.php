@@ -29,15 +29,15 @@ use Psr\Log\LoggerInterface;
 
 class SearchRequestAction implements ActionInterface
 {
-    /** @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage */
+    /** @var ExpectationStorage */
     private $expectationsStorage;
-    /** @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator */
+    /** @var RequestExpectationComparator */
     private $comparator;
-    /** @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage */
+    /** @var LoggerInterface */
     private $logger;
-    /** @var \Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator */
+    /** @var ResponseStrategyLocator */
     private $responseStrategyFactory;
-    /** @var \Mcustiel\Phiremock\Server\Model\RequestStorage */
+    /** @var RequestStorage */
     private $requestsStorage;
 
     public function __construct(

@@ -101,7 +101,7 @@ class SetScenarioStateAction implements ActionInterface
     {
         $body = $request->getBody()->__toString();
         $this->logger->debug($body);
-        if ($request->hasHeader('Content-Encoding') && 'base64' === $request->getHeader('Content-Encoding')) {
+        if ($request->hasHeader('Content-Encoding') && 'base64' === implode(',', $request->getHeader('Content-Encoding'))) {
             $body = base64_decode($body, true);
         }
 

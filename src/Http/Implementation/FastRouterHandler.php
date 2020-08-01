@@ -69,7 +69,6 @@ class FastRouterHandler implements RequestHandlerInterface
                         ),
                         405
                     );
-                    break;
                 case Dispatcher::FOUND:
                     return $this->actionsLocator
                         ->locate($routeInfo[1])

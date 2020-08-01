@@ -50,10 +50,12 @@ class ProxyResponseStrategy extends AbstractResponse implements ResponseStrategy
         ResponseInterface $transactionData,
         ServerRequestInterface $request
     ): ResponseInterface {
-        $url = $expectation->getResponse()->getUri()->asString(e);
+        /** @var \Mcustiel\Phiremock\Domain\ProxyResponse $response */
+        $response = $expectation->getResponse();
+        $url = $response->getUri()->asString();
         $this->logger->debug('Proxying request to : ' . $url);
         $this->processScenario($expectation);
-        $this->processDelay($expectation->getResponse());
+        $this->processDelay($response);
 
         return $this->httpService->send(
             $request->withUri(new Uri($url))

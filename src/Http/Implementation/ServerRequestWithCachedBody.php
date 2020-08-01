@@ -22,11 +22,10 @@ use Mcustiel\Phiremock\Common\StringStream;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
-use React\Http\Io\ServerRequest;
 
 class ServerRequestWithCachedBody implements ServerRequestInterface
 {
-    /** @var ServerRequest */
+    /** @var ServerRequestInterface */
     private $parent;
 
     /** @var StreamInterface */

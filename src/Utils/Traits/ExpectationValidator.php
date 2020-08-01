@@ -21,6 +21,7 @@ namespace Mcustiel\Phiremock\Server\Utils\Traits;
 use Mcustiel\Phiremock\Domain\Conditions;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Psr\Log\LoggerInterface;
+use Mcustiel\Phiremock\Domain\HttpResponse;
 
 trait ExpectationValidator
 {
@@ -59,6 +60,7 @@ trait ExpectationValidator
 
     protected function responseIsInvalid(Expectation $expectation): bool
     {
+        /** @var HttpResponse $response */
         $response = $expectation->getResponse();
 
         return $response->isHttpResponse() && empty($response->getStatusCode());

@@ -94,10 +94,10 @@ class PhiremockServerCommand extends Command
         $configPath = new Directory($input->getOption('config-path') ?? getcwd());
         $cliConfig = [];
         if ($input->getOption('ip')) {
-            $cliConfig['ip'] = $input->getOption('ip');
+            $cliConfig['ip'] = (string) $input->getOption('ip');
         }
         if ($input->getOption('port')) {
-            $cliConfig['port'] = $input->getOption('port');
+            $cliConfig['port'] = (int) $input->getOption('port');
         }
         if ($input->getOption('debug')) {
             $cliConfig['debug'] = true;
@@ -105,7 +105,7 @@ class PhiremockServerCommand extends Command
         if ($input->getOption('expectations-dir')) {
             $cliConfig['expectations-dir'] = $this->factory
                 ->createFileSystemService()
-                ->getRealPath($input->getOption('expectations-dir'));
+                ->getRealPath((string) $input->getOption('expectations-dir'));
         }
 
         $config = (new ConfigBuilder($configPath))->build($cliConfig);
@@ -159,7 +159,7 @@ class PhiremockServerCommand extends Command
 
     private function setUpHandlers(ServerInterface $server): void
     {
-        $handleTermination = function ($signal = 0) use ($server) {
+        $handleTermination = function () use ($server) {
             $this->logger->info('Stopping Phiremock...');
             $server->shutdown();
             $this->logger->info('Bye bye');
@@ -173,7 +173,7 @@ class PhiremockServerCommand extends Command
             pcntl_signal(SIGTERM, function() { exit(0); });
         }
 
-        $errorHandler = function ($severity, $message, $file, $line, $context = null) {
+        $errorHandler = function ($severity, $message, $file, $line) {
             $errorInformation = sprintf('%s:%s (%s)', $file, $line, $message);
             if ($this->isError($severity)) {
                 $this->logger->error($errorInformation);
