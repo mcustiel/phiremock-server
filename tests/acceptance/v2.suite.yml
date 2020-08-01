@@ -1,0 +1,11 @@
+class_name: AcceptanceTester
+suite_namespace: Mcustiel/Phiremock/Server/Tests/V2
+modules:
+    enabled:
+        - Asserts
+        - REST
+        - \Helper\AcceptanceV2
+    config:
+        REST:
+            depends: PhpBrowser
+            url: 'http://localhost:8086'

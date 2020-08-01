@@ -390,12 +390,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mcustiel/phiremock-common.git",
-                "reference": "ddee2fd6425415597ae479fa5bf94ca86296792b"
+                "reference": "bc2ad0b573b3138d482c7047dfdb60f89b42fb5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcustiel/phiremock-common/zipball/ddee2fd6425415597ae479fa5bf94ca86296792b",
-                "reference": "ddee2fd6425415597ae479fa5bf94ca86296792b",
+                "url": "https://api.github.com/repos/mcustiel/phiremock-common/zipball/bc2ad0b573b3138d482c7047dfdb60f89b42fb5e",
+                "reference": "bc2ad0b573b3138d482c7047dfdb60f89b42fb5e",
                 "shasum": ""
             },
             "require": {
@@ -433,7 +433,7 @@
                 "server",
                 "tests"
             ],
-            "time": "2020-07-12T19:39:33+00:00"
+            "time": "2020-08-01T10:50:59+00:00"
         },
         {
             "name": "monolog/monolog",

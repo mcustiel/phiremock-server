@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit bootstrap="./bootstrap.php" colors="true"
+	convertErrorsToExceptions="true" convertNoticesToExceptions="false"
+	convertWarningsToExceptions="false">
+	<testsuite name="UnitTests">
+		<directory>./unit</directory>
+	</testsuite>
+	<filter>
+		<whitelist addUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">../src</directory>
+		</whitelist>
+	</filter>
+	<php>
+		<ini name="display_startup_errors" value="1" />
+		<ini name="display_errors" value="1" />
+		<ini name="error_reporting" value="E_ALL" />
+	</php>
+</phpunit>

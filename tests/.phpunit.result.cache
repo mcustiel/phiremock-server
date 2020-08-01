@@ -1,0 +1,1 @@
+C:37:"PHPUnit\Runner\DefaultTestResultCache":161:{a:2:{s:7:"defects";a:1:{s:44:"FeatureReactLoopTest::testParallelExecutions";i:5;}s:5:"times";a:1:{s:44:"FeatureReactLoopTest::testParallelExecutions";d:10.004;}}}

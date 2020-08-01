@@ -59,9 +59,9 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
     ): ResponseInterface {
         /** @var \Mcustiel\Phiremock\Domain\HttpResponse $responseConfig */
         $responseConfig = $expectation->getResponse();
-        $responseBody = $responseConfig->getBody();
-        if ($responseBody) {
-            $bodyString = $responseBody->asString();
+
+        if ($responseConfig->hasBody()) {
+            $bodyString = $responseConfig->getBody()->asString();
             $bodyString = $this->fillWithUrlMatches($expectation, $httpRequest, $bodyString);
             $bodyString = $this->fillWithBodyMatches($expectation, $httpRequest, $bodyString);
             $httpResponse = $httpResponse->withBody(new StringStream($bodyString));

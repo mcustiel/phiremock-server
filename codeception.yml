@@ -1,0 +1,15 @@
+actor: Tester
+paths:
+    tests: tests/acceptance
+    log: tests/acceptance/_output
+    data: tests/acceptance/_data
+    support: tests/acceptance/_support
+    envs: tests/acceptance/_envs
+settings:
+    colors: true
+    memory_limit: 1024M
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+        - Mcustiel\Codeception\Extensions\ServerControl
+bootstrap: _bootstrap.php
