@@ -170,7 +170,7 @@ class PhiremockServerCommand extends Command
 
         if (\function_exists('pcntl_signal')) {
             $this->logger->debug('PCNTL present: Installing signal handlers');
-            pcntl_signal(SIGTERM, function() { exit(0); });
+            pcntl_signal(SIGTERM, function () { exit(0); });
         }
 
         $errorHandler = function ($severity, $message, $file, $line) {

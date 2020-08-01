@@ -20,8 +20,8 @@ namespace Mcustiel\Phiremock\Server\Utils\Traits;
 
 use Mcustiel\Phiremock\Domain\Conditions;
 use Mcustiel\Phiremock\Domain\Expectation;
-use Psr\Log\LoggerInterface;
 use Mcustiel\Phiremock\Domain\HttpResponse;
+use Psr\Log\LoggerInterface;
 
 trait ExpectationValidator
 {
