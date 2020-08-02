@@ -54,7 +54,6 @@ class AddExpectationAction implements ActionInterface
 
     public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $this->logger->debug('Adding Expectation->execute');
         try {
             $object = $this->converter->map($request);
 
@@ -81,7 +80,6 @@ class AddExpectationAction implements ActionInterface
      */
     private function constructResponse(array $listOfErrors, ResponseInterface $response)
     {
-        $this->logger->debug('Adding Expectation->constructResponse');
         if (empty($listOfErrors)) {
             return $response->withStatus(201)->withBody(new StringStream('{"result" : "OK"}'));
         }
@@ -94,8 +92,6 @@ class AddExpectationAction implements ActionInterface
      */
     private function constructErrorResponse(array $listOfErrors, ResponseInterface $response)
     {
-        $this->logger->debug('Adding Expectation->constructErrorResponse');
-
         return $response->withStatus(500)
             ->withBody(
                 new StringStream(
