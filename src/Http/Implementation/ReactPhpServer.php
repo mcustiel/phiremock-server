@@ -77,6 +77,8 @@ class ReactPhpServer implements ServerInterface
 
     public function shutdown(): void
     {
+        $this->http->removeAllListeners();
+        $this->socket->close();
         $this->loop->stop();
     }
 

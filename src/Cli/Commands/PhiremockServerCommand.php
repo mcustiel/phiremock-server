@@ -44,6 +44,8 @@ class PhiremockServerCommand extends Command
     private $factory;
     /** @var LoggerInterface */
     private $logger;
+    /** @var ServerInterface */
+    private $httpServer;
 
     public function __construct(Factory $factory)
     {
@@ -129,9 +131,9 @@ class PhiremockServerCommand extends Command
 
     private function startHttpServer(Config $config): void
     {
-        $httpServer = $this->factory->createHttpServer();
-        $this->setUpHandlers($httpServer);
-        $httpServer->listen($config->getInterfaceIp(), $config->getPort());
+        $this->httpServer = $this->factory->createHttpServer();
+        $this->setUpHandlers();
+        $this->httpServer->listen($config->getInterfaceIp(), $config->getPort());
     }
 
     private function initializeLogger(Config $config): void
@@ -157,11 +159,11 @@ class PhiremockServerCommand extends Command
             ->loadExpectationsFromDirectory($expectationsDir);
     }
 
-    private function setUpHandlers(ServerInterface $server): void
+    private function setUpHandlers(): void
     {
-        $handleTermination = function () use ($server) {
+        $handleTermination = function () {
             $this->logger->info('Stopping Phiremock...');
-            $server->shutdown();
+            $this->httpServer->shutdown();
             $this->logger->info('Bye bye');
         };
 
