@@ -30,12 +30,12 @@ class BodyConditionCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":null,"url":null,"body":{"isEqualTo":"Potato body"},"headers":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function createAnExpectationUsingBodyMatchesTest(AcceptanceTester $I)
@@ -60,12 +60,12 @@ class BodyConditionCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":null,"url":null,"body":{"matches":"\/tomato (\\\\d[^a])+\/"},"headers":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function failWhenInvalidMatcherSpecifiedTest(AcceptanceTester $I)

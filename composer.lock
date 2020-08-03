@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b44ec9f49eb3bda103c79ceaf0552bd8",
+    "content-hash": "ab9a892e03a158573cf9cb81431a17a8",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -390,12 +390,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mcustiel/phiremock-common.git",
-                "reference": "5ada7b2c60872deb553d3a5dfdac1d478d9052a3"
+                "reference": "6a6aba9cf69d0af1496d431405d751b466a48d0d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcustiel/phiremock-common/zipball/5ada7b2c60872deb553d3a5dfdac1d478d9052a3",
-                "reference": "5ada7b2c60872deb553d3a5dfdac1d478d9052a3",
+                "url": "https://api.github.com/repos/mcustiel/phiremock-common/zipball/6a6aba9cf69d0af1496d431405d751b466a48d0d",
+                "reference": "6a6aba9cf69d0af1496d431405d751b466a48d0d",
                 "shasum": ""
             },
             "require": {
@@ -433,7 +433,7 @@
                 "server",
                 "tests"
             ],
-            "time": "2020-08-02T10:12:58+00:00"
+            "time": "2020-08-02T20:18:53+00:00"
         },
         {
             "name": "monolog/monolog",

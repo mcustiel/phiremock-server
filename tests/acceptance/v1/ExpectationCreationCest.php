@@ -30,12 +30,12 @@ class ExpectationCreationCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function creationWithOnlyValidMethodConditionTest(AcceptanceTester $I)
@@ -57,12 +57,12 @@ class ExpectationCreationCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":"post","url":null,"body":null,"headers":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function creationWithOnlyValidBodyConditionTest(AcceptanceTester $I)
@@ -84,12 +84,12 @@ class ExpectationCreationCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":null,"url":null,"body":{"matches":"~potato~"},"headers":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function creationWithOnlyValidHeadersConditionTest(AcceptanceTester $I)
@@ -111,12 +111,12 @@ class ExpectationCreationCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":null,"url":null,"body":null,"headers":{"Accept":{"matches":"~potato~"}}},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function creationFailWhenEmptyRequestTest(AcceptanceTester $I)
@@ -159,12 +159,12 @@ class ExpectationCreationCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":"get","url":null,"body":null,"headers":null},'
             . '"response":{"statusCode":200,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function creationFailWhenAnythingSentAsRequestTest(AcceptanceTester $I)
@@ -240,7 +240,7 @@ class ExpectationCreationCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":"potato","scenarioStateIs":"tomato","newScenarioState":"banana",'
             . '"request":{'
             . '"method":"get","url":{"isEqualTo":"\/the\/request\/url"},'
@@ -255,6 +255,6 @@ class ExpectationCreationCest
             . '"Location":"href:\/\/potato.tmt"},'
             . '"delayMillis":5000},'
             . '"proxyTo":null,"priority":3}]'
-        );
+        ));
     }
 }

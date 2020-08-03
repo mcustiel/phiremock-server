@@ -8,7 +8,6 @@ class RecursiveDirectoryCest
 {
     public function _before(CommonTester $I)
     {
-        $I->sendDELETE('/__phiremock/expectations');
         $I->sendPOST('/__phiremock/reset');
     }
 

@@ -31,12 +31,12 @@ class DelaySpecificationCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null},'
             . '"response":{"statusCode":200,"body":null,"headers":null,"delayMillis":5000},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function failWhithNegativedDelayTest(AcceptanceTester $I)

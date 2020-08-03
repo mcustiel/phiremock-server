@@ -28,7 +28,7 @@ class ActionLocator
     const COUNT_REQUESTS = 'countRequests';
     const LIST_REQUESTS = 'listRequests';
     const RESET_REQUESTS_COUNT = 'resetRequestsCount';
-    const RELOAD_EXPECTATIONS = 'reloadExpectations';
+    const RESET = 'reset';
 
     const MANAGE_REQUEST = 'manageRequest';
 
@@ -44,7 +44,7 @@ class ActionLocator
         self::LIST_REQUESTS        => 'createListRequests',
         self::RESET_REQUESTS_COUNT => 'createResetRequestsCount',
 
-        self::RELOAD_EXPECTATIONS => 'createReloadPreconfiguredExpectations',
+        self::RESET => 'createReset',
 
         self::MANAGE_REQUEST => 'createSearchRequest',
     ];

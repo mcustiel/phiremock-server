@@ -13,4 +13,9 @@ class AcceptanceV1 extends \Codeception\Module
     {
         return $request;
     }
+
+    public function getPhiremockResponse(string $response): string
+    {
+        return $response;
+    }
 }

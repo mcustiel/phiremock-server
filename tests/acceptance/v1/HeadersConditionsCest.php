@@ -30,12 +30,12 @@ class HeadersConditionsCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":null,"url":null,"body":null,"headers":{"Content-Type":{"isEqualTo":"application\/x-www-form-urlencoded"}}},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function creationWithOneHeaderUsingMatchesTest(AcceptanceTester $I)
@@ -57,12 +57,12 @@ class HeadersConditionsCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":null,"url":null,"body":null,"headers":{"Content-Type":{"matches":"\/application\/"}}},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function failWhenUsingInvalidMatcherTest(AcceptanceTester $I)
@@ -133,7 +133,7 @@ class HeadersConditionsCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
             . '"request":{"method":null,"url":null,"body":null,"headers":{'
             . '"Content-Type":{"matches":"\/application\/"},'
@@ -141,7 +141,7 @@ class HeadersConditionsCest
             . '"Content-Encoding":{"isSameString":"gzip"}}},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
-        );
+        ));
     }
 
     public function responseExpectedWhenRequestOneHeaderMatchesTest(AcceptanceTester $I)

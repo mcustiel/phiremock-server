@@ -101,6 +101,16 @@ class ActionsFactory
         return new ResetRequestsCountAction($this->serverFactory->createRequestStorage());
     }
 
+    public function createReset(): ResetAction
+    {
+        return new ResetAction(
+            $this->createClearScenarios(),
+            $this->createResetRequestsCount(),
+            $this->createReloadPreconfiguredExpectations(),
+            $this->serverFactory->createLogger()
+        );
+    }
+
     public function createSearchRequest(): SearchRequestAction
     {
         return new SearchRequestAction(

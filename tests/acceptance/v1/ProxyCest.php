@@ -35,13 +35,13 @@ class ProxyCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals(
+        $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":"PotatoScenario","scenarioStateIs":"Scenario.START",'
             . '"newScenarioState":null,"request":{"method":"post","url":{"isEqualTo":"\/potato"},'
             . '"body":{"isEqualTo":"{\"key\": \"This is the body\"}"},"headers":{"X-Potato":'
             . '{"isSameString":"bAnaNa"}}},"response":null,'
             . '"proxyTo":"https:\/\/www.w3schools.com\/html\/","priority":0}]'
-        );
+        ));
     }
 
     public function proxyToGivenUriTest(AcceptanceTester $I)

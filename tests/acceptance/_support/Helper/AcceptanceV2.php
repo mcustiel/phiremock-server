@@ -12,4 +12,13 @@ class AcceptanceV2 extends \Codeception\Module
 
         return array_merge(['version' => '2'], $request);
     }
+
+    public function getPhiremockResponse(string $response): string
+    {
+        return preg_replace(
+            ['~^(\[\{)~', '~("method"\:)"(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|FETCH)"~i'],
+            ['$1"version":"2",', '$1{"isSameString":"$2"}'],
+            $response
+        );
+    }
 }
