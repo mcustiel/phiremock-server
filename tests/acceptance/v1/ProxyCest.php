@@ -46,7 +46,7 @@ class ProxyCest
 
     public function proxyToGivenUriTest(AcceptanceTester $I)
     {
-        $realUrl = 'https://www.w3schools.com/html/';
+        $realUrl = 'http://info.cern.ch/';
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
@@ -56,8 +56,8 @@ class ProxyCest
                 'scenarioName'    => 'PotatoScenario',
                 'scenarioStateIs' => 'Scenario.START',
                 'request'         => [
-                    'url'    => ['isEqualTo' => '/potato'],
-                    'header' => ['X-Potato' => ['isSameString' => 'bAnaNa']],
+                    'url'     => ['isEqualTo' => '/potato'],
+                    'headers' => ['X-Potato' => ['isSameString' => 'bAnaNa']],
                 ],
                 'proxyTo' => $realUrl,
             ])

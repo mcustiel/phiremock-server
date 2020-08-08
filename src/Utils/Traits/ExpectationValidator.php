@@ -18,7 +18,6 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\Traits;
 
-use Mcustiel\Phiremock\Domain\Conditions;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\HttpResponse;
 use Psr\Log\LoggerInterface;
@@ -28,15 +27,9 @@ trait ExpectationValidator
     /** @throws \RuntimeException */
     protected function validateExpectationOrThrowException(Expectation $expectation, LoggerInterface $logger)
     {
-        $this->logger->debug('Adding Expectation->validateExpectationOrThrowException');
-        $this->validateRequestOrThrowException($expectation, $logger);
-        $this->logger->debug('Ran validateRequestOrThrowException');
         $this->validateResponseOrThrowException($expectation, $logger);
-        $this->logger->debug('Ran validateResponseOrThrowException');
         $this->validateScenarioNameOrThrowException($expectation, $logger);
-        $this->logger->debug('Ran validateScenarioNameOrThrowException');
         $this->validateScenarioStateOrThrowException($expectation, $logger);
-        $this->logger->debug('Ran validateScenarioStateOrThrowException');
     }
 
     /** @throws \RuntimeException */
@@ -49,27 +42,12 @@ trait ExpectationValidator
         }
     }
 
-    /** @throws \RuntimeException */
-    protected function validateRequestOrThrowException(Expectation $expectation, LoggerInterface $logger)
-    {
-        if ($this->requestIsInvalid($expectation->getRequest())) {
-            $logger->error('Invalid request specified in expectation');
-            throw new \RuntimeException('Invalid request specified in expectation');
-        }
-    }
-
     protected function responseIsInvalid(Expectation $expectation): bool
     {
         /** @var HttpResponse $response */
         $response = $expectation->getResponse();
 
         return $response->isHttpResponse() && empty($response->getStatusCode());
-    }
-
-    protected function requestIsInvalid(Conditions $request): bool
-    {
-        return empty($request->getBody()) && empty($request->getHeaders())
-        && empty($request->getMethod()) && empty($request->getUrl());
     }
 
     /** @throws \RuntimeException */

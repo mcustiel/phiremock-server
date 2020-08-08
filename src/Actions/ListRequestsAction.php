@@ -66,7 +66,6 @@ class ListRequestsAction implements ActionInterface
 
     public function process(ResponseInterface $response, Expectation $expectation): ResponseInterface
     {
-        $this->validateRequestOrThrowException($expectation, $this->logger);
         $executions = $this->searchForExecutionsCount($expectation);
         $this->logger->debug('Listed ' . \count($executions) . ' request matching the expectation');
 

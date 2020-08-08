@@ -67,7 +67,6 @@ class CountRequestsAction implements ActionInterface
 
     private function process(ResponseInterface $response, Expectation $expectation)
     {
-        $this->validateRequestOrThrowException($expectation, $this->logger);
         $count = $this->searchForExecutionsCount($expectation);
         $this->logger->debug('Found ' . $count . ' request matching the expectation');
 

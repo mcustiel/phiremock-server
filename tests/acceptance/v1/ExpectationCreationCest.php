@@ -11,6 +11,36 @@ class ExpectationCreationCest
         $I->sendDELETE('/__phiremock/expectations');
     }
 
+    public function createCatchAllRequest(AcceptanceTester $I)
+    {
+        $I->wantTo('create an expectation that only checks url');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(
+            '/__phiremock/expectations',
+            $I->getPhiremockRequest([
+                'request' => [
+                ],
+                'response' => [
+                    'statusCode' => 201,
+                ],
+            ])
+        );
+
+        $I->sendGET('/__phiremock/expectations');
+        $I->seeResponseCodeIs('200');
+        $I->seeResponseIsJson();
+        $I->seeResponseEquals($I->getPhiremockResponse(
+            '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
+            . '"request":{"method":null,"url":null,"body":null,"headers":null},'
+            . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
+            . '"proxyTo":null,"priority":0}]'
+        ));
+        $I->sendGET('/it/does/not/matter');
+        $I->seeResponseCodeIs(201);
+        $I->sendPOST('/potato', '{"tomato": "banana"}');
+        $I->seeResponseCodeIs(201);
+    }
+
     public function creationWithOnlyValidUrlConditionTest(AcceptanceTester $I)
     {
         $I->wantTo('create an expectation that only checks url');
@@ -119,28 +149,6 @@ class ExpectationCreationCest
         ));
     }
 
-    public function creationFailWhenEmptyRequestTest(AcceptanceTester $I)
-    {
-        $I->wantTo('See if creation fails when request is empty');
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST(
-            '/__phiremock/expectations',
-            $I->getPhiremockRequest([
-                'request' => [
-                ],
-                'response' => [
-                    'statusCode' => 201,
-                ],
-            ])
-        );
-
-        $I->seeResponseCodeIs('500');
-        $I->seeResponseIsJson();
-        $I->seeResponseEquals(
-            '{"result" : "ERROR", "details" : ["Invalid request specified in expectation"]}'
-        );
-    }
-
     public function useDefaultWhenEmptyResponseTest(AcceptanceTester $I)
     {
         $I->wantTo('When response is empty in request, default should be used');
@@ -181,7 +189,7 @@ class ExpectationCreationCest
 
         $I->seeResponseCodeIs('500');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals('{"result" : "ERROR", "details" : ["Invalid request specified in expectation"]}');
+        $I->seeResponseEquals('{"result" : "ERROR", "details" : ["Unknown request conditions: array (\n  \'potato\' => \'tomato\',\n)"]}');
     }
 
     public function creationFailWhenAnythingSentAsResponseTest(AcceptanceTester $I)
