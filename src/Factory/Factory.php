@@ -242,7 +242,7 @@ class Factory
             $this->factoryCache->set(
                 'fileExpectationsLoader',
                 new FileExpectationsLoader(
-                    $this->phiremockFactory->createArrayToExpectationConverter(),
+                    $this->phiremockFactory->createArrayToExpectationConverterLocator(),
                     $this->createExpectationStorage(),
                     $this->createExpectationBackup(),
                     $this->createLogger()
@@ -283,7 +283,7 @@ class Factory
             $this->factoryCache->set(
                 'requestToExpectationMapper',
                 new RequestToExpectationMapper(
-                    $this->phiremockFactory->createArrayToExpectationConverter(),
+                    $this->phiremockFactory->createArrayToExpectationConverterLocator(),
                     $this->createLogger()
                 )
             );

@@ -19,7 +19,7 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
-use Mcustiel\Phiremock\Common\Utils\ExpectationToArrayConverter;
+use Mcustiel\Phiremock\Common\Utils\ExpectationToArrayConverterLocator;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,22 +28,22 @@ class ListExpectationsAction implements ActionInterface
 {
     /** @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage */
     private $storage;
-    /** @var ExpectationToArrayConverter */
-    private $converter;
+    /** @var ExpectationToArrayConverterLocator */
+    private $converterLocator;
 
     public function __construct(
         ExpectationStorage $storage,
-        ExpectationToArrayConverter $converter
+        ExpectationToArrayConverterLocator $converterLocator
     ) {
         $this->storage = $storage;
-        $this->converter = $converter;
+        $this->converterLocator = $converterLocator;
     }
 
     public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $list = [];
         foreach ($this->storage->listExpectations() as $expectation) {
-            $list[] = $this->converter->convert($expectation);
+            $list[] = $this->converterLocator->locate($expectation)->convert($expectation);
         }
         $jsonList = json_encode($list);
 

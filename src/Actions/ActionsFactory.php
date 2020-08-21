@@ -73,7 +73,7 @@ class ActionsFactory
     {
         return new ListExpectationsAction(
             $this->serverFactory->createExpectationStorage(),
-            $this->phiremockFactory->createExpectationToArrayConverter()
+            $this->phiremockFactory->createExpectationToArrayConverterLocator()
         );
     }
 
@@ -125,7 +125,7 @@ class ActionsFactory
     public function createSetScenarioState(): SetScenarioStateAction
     {
         return new SetScenarioStateAction(
-            $this->phiremockFactory->createArrayToScenarioStateInfoConverter(),
+            $this->phiremockFactory->createV1UtilsFactory()->createArrayToScenarioStateInfoConverter(),
             $this->serverFactory->createScenarioStorage(),
             $this->serverFactory->createLogger()
         );

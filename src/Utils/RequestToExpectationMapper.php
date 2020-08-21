@@ -18,7 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
-use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
+use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverterLocator;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -27,25 +27,25 @@ class RequestToExpectationMapper
 {
     const CONTENT_ENCODING_HEADER = 'Content-Encoding';
 
-    /** @var ArrayToExpectationConverter */
-    private $converter;
+    /** @var ArrayToExpectationConverterLocator */
+    private $converterLocator;
 
     /** @var LoggerInterface */
     private $logger;
 
     public function __construct(
-        ArrayToExpectationConverter $converter,
+        ArrayToExpectationConverterLocator $converterLocator,
         LoggerInterface $logger
     ) {
-        $this->converter = $converter;
+        $this->converterLocator = $converterLocator;
         $this->logger = $logger;
     }
 
     /** @return Expectation */
     public function map(ServerRequestInterface $request)
     {
-        /** @var \Mcustiel\Phiremock\Domain\Expectation $object */
-        $object = $this->converter->convert($this->parseJsonBody($request));
+        $parsedJson = $this->parseJsonBody($request);
+        $object = $this->converterLocator->locate($parsedJson)->convert($parsedJson);
         $this->logger->debug('Parsed expectation: ' . var_export($object, true));
 
         return $object;
@@ -56,7 +56,7 @@ class RequestToExpectationMapper
      *
      * @return array
      */
-    private function parseJsonBody(ServerRequestInterface $request)
+    private function parseJsonBody(ServerRequestInterface $request): array
     {
         $this->logger->debug('Adding Expectation->parseJsonBody');
         $body = $request->getBody()->__toString();
