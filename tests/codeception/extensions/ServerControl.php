@@ -36,7 +36,6 @@ class ServerControl extends \Codeception\Extension
         $this->writeln($this->application->getCommandLine());
         $this->application->start();
         sleep(1);
-        $this->writeln(file_get_contents(codecept_log_dir('phiremock.log')));
     }
 
     public function suiteAfter()
