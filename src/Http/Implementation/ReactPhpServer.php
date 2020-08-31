@@ -18,6 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Http\Implementation;
 
+use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Cli\Options\HostInterface;
 use Mcustiel\Phiremock\Server\Cli\Options\Port;
 use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
@@ -86,6 +87,12 @@ class ReactPhpServer implements ServerInterface
     private function onRequest(ServerRequestInterface $request): ResponseInterface
     {
         $start = microtime(true);
+
+        // TODO: Remove this patch if ReactPHP is fixed
+        if ($request->getParsedBody() !== null) {
+            $request = $request->withBody(new StringStream(http_build_query($request->getParsedBody())));
+        }
+
         $psrResponse = $this->requestHandler->dispatch(new ServerRequestWithCachedBody($request));
         $this->logger->debug('Processing took ' . number_format((microtime(true) - $start) * 1000, 3) . ' milliseconds');
 

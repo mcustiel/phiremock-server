@@ -49,22 +49,22 @@ class BodyConditionCest
                     'body'    => ['isEqualTo' => 'a=b'],
                 ],
                 'response' => [
-                    'statusCode' => 201,
+                    'statusCode' => 418,
                 ],
             ])
         );
         $I->deleteHeader('Content-Type', 'application/json');
         //$I->haveHttpHeader('Content-Type', 'application/x-www-form-urlencoded');
         $I->sendPOST('/test', ['a' => 'b']);
-        $I->seeResponseCodeIs(201);
+        $I->seeResponseCodeIs(418);
 
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":{"matches":"\/tomato (\\\\d[^a])+\/"},"headers":null,"formData":null},'
-            . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
+            . '"request":{"method":null,"url":null,"body":{"isEqualTo":"a=b"},"headers":null,"formData":null},'
+            . '"response":{"statusCode":418,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
     }
