@@ -39,7 +39,7 @@ class ProxyCest
             '[{"scenarioName":"PotatoScenario","scenarioStateIs":"Scenario.START",'
             . '"newScenarioState":null,"request":{"method":"post","url":{"isEqualTo":"\/potato"},'
             . '"body":{"isEqualTo":"{\"key\": \"This is the body\"}"},"headers":{"X-Potato":'
-            . '{"isSameString":"bAnaNa"}}},"response":null,'
+            . '{"isSameString":"bAnaNa"}},"formData":null},"response":null,'
             . '"proxyTo":"https:\/\/www.w3schools.com\/html\/","priority":0}]'
         ));
     }

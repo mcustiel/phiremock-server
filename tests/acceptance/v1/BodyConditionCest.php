@@ -32,7 +32,38 @@ class BodyConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":{"isEqualTo":"Potato body"},"headers":null},'
+            . '"request":{"method":null,"url":null,"body":{"isEqualTo":"Potato body"},"headers":null,"formData":null},'
+            . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
+            . '"proxyTo":null,"priority":0}]'
+        ));
+    }
+
+    public function createAnExpectationUsingBodyEqualToWithPostVariablesTest(AcceptanceTester $I)
+    {
+        $I->wantTo('create an expectation that checks body using matches');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(
+            '/__phiremock/expectations',
+            $I->getPhiremockRequest([
+                'request' => [
+                    'body'    => ['isEqualTo' => 'a=b'],
+                ],
+                'response' => [
+                    'statusCode' => 201,
+                ],
+            ])
+        );
+        $I->deleteHeader('Content-Type', 'application/json');
+        //$I->haveHttpHeader('Content-Type', 'application/x-www-form-urlencoded');
+        $I->sendPOST('/test', ['a' => 'b']);
+        $I->seeResponseCodeIs(201);
+
+        $I->sendGET('/__phiremock/expectations');
+        $I->seeResponseCodeIs('200');
+        $I->seeResponseIsJson();
+        $I->seeResponseEquals($I->getPhiremockResponse(
+            '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
+            . '"request":{"method":null,"url":null,"body":{"matches":"\/tomato (\\\\d[^a])+\/"},"headers":null,"formData":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -62,7 +93,7 @@ class BodyConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":{"matches":"\/tomato (\\\\d[^a])+\/"},"headers":null},'
+            . '"request":{"method":null,"url":null,"body":{"matches":"\/tomato (\\\\d[^a])+\/"},"headers":null,"formData":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));

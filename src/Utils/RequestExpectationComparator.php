@@ -60,7 +60,8 @@ class RequestExpectationComparator
         return $this->requestMethodMatchesExpectation($httpRequest, $expectedRequest)
             && $this->requestUrlMatchesExpectation($httpRequest, $expectedRequest)
             && $this->requestBodyMatchesExpectation($httpRequest, $expectedRequest)
-            && $this->requestHeadersMatchExpectation($httpRequest, $expectedRequest);
+            && $this->requestHeadersMatchExpectation($httpRequest, $expectedRequest)
+            && $this->requestFormDataMatchExpectation($httpRequest, $expectedRequest);
     }
 
     private function isExpectedScenarioState(Expectation $expectation): bool
@@ -149,6 +150,33 @@ class RequestExpectationComparator
 
             $matches = $headerCondition->getMatcher()->matches(
                 $httpRequest->getHeaderLine($headerName)
+            );
+            if (!$matches) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function requestFormDataMatchExpectation(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
+    {
+        $formDataConditions = $expectedRequest->getFormFields();
+        if (!$formDataConditions) {
+            return true;
+        }
+        $this->logger->debug('Checking FORM DATA against expectation');
+        /** @var \Mcustiel\Phiremock\Domain\Condition\Conditions\FormFieldCondition $fieldCondition */
+        foreach ($formDataConditions as $field => $fieldCondition) {
+            $fieldName = $field->asString();
+            $this->logger->debug("Checking $fieldName against expectation");
+
+            if (!isset($httpRequest->getParsedBody()[$fieldName])) {
+                return false;
+            }
+
+            $matches = $fieldCondition->getMatcher()->matches(
+                $httpRequest->getParsedBody()[$fieldName]
             );
             if (!$matches) {
                 return false;
