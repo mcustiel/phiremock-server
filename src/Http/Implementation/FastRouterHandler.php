@@ -79,7 +79,7 @@ class FastRouterHandler implements RequestHandlerInterface
 
             return new Response(
                 new StringStream(
-                    json_encode(['result' => 'ERROR', 'details' => $e->getMessage()]),
+                    json_encode(['result' => 'ERROR', 'details' => $e->getMessage()])
                 ),
                 500,
                 ['Content-Type' => 'application/json']
