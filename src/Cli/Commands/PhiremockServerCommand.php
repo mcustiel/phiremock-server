@@ -105,9 +105,7 @@ class PhiremockServerCommand extends Command
             $cliConfig['debug'] = true;
         }
         if ($input->getOption('expectations-dir')) {
-            $cliConfig['expectations-dir'] = $this->factory
-                ->createFileSystemService()
-                ->getRealPath((string) $input->getOption('expectations-dir'));
+            $cliConfig['expectations-dir'] = $input->getOption('expectations-dir');
         }
 
         $config = (new ConfigBuilder($configPath))->build($cliConfig);
@@ -153,7 +151,11 @@ class PhiremockServerCommand extends Command
     private function processFileExpectations(Config $config): void
     {
         $expectationsDir = $config->getExpectationsPath()->asString();
-        $this->logger->debug("Phiremock's expectation dir is set to: {$expectationsDir}");
+        $this->logger->debug(
+            sprintf(
+                'Phiremock\'s expectation dir is set to: %s',
+                $this->factory->createFileSystemService()->getRealPath($expectationsDir))
+        );
         $this->factory
             ->createFileExpectationsLoader()
             ->loadExpectationsFromDirectory($expectationsDir);
