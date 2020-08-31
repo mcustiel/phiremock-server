@@ -56,6 +56,7 @@ class ReactPhpServer implements ServerInterface
     public function listen(HostInterface $host, Port $port): void
     {
         $this->http = new Server(
+            $this->loop,
             function (ServerRequestInterface $request) {
                 return $this->onRequest($request);
             }

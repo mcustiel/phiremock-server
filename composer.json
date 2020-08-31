@@ -22,7 +22,7 @@
     "require": {
         "php": "^7.2",
         "mcustiel/phiremock-common": "dev-master",
-        "react/http": "~0.8.0",
+        "react/http": "^1.0",
         "monolog/monolog": "^1.0",
         "symfony/console": "^4.0",
         "nikic/fast-route": "^1.3.0"
