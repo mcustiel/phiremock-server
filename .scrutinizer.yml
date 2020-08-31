@@ -12,7 +12,7 @@ build:
   tests:
     override:
       - php-scrutinizer-run
-      - ./vendor/bin/codecept run && cat ./tests/acceptance/_output/phiremock.log
+      - ./vendor/bin/codecept run -d
   nodes:
     php72:
       environment:
