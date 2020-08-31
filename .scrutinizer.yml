@@ -12,7 +12,6 @@ build:
   tests:
     override:
       - php-scrutinizer-run
-      - phpcs-run
       - ./vendor/bin/codecept run
   nodes:
     php72:
