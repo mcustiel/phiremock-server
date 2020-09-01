@@ -21,7 +21,7 @@
     "license": "GPL-3.0-or-later",
     "require": {
         "php": "^7.2",
-        "mcustiel/phiremock-common": "dev-master",
+        "mcustiel/phiremock-common": "v1.0.0-beta.1",
         "react/http": "^1.0",
         "monolog/monolog": "^1.0",
         "symfony/console": "^4.0",

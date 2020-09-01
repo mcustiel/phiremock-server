@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a25cca89242b39121835f2f0bfb9a9b",
+    "content-hash": "f998ed9a9bfab6624aa6552a7734ebee",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -392,16 +392,16 @@
         },
         {
             "name": "mcustiel/phiremock-common",
-            "version": "dev-master",
+            "version": "v1.0.0-beta.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mcustiel/phiremock-common.git",
-                "reference": "cb0a20ca669a160c219403c8e9dc83acee64aa2b"
+                "reference": "7ca88e47083e47c5185c2f5bb0492a5f77baac92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcustiel/phiremock-common/zipball/cb0a20ca669a160c219403c8e9dc83acee64aa2b",
-                "reference": "cb0a20ca669a160c219403c8e9dc83acee64aa2b",
+                "url": "https://api.github.com/repos/mcustiel/phiremock-common/zipball/7ca88e47083e47c5185c2f5bb0492a5f77baac92",
+                "reference": "7ca88e47083e47c5185c2f5bb0492a5f77baac92",
                 "shasum": ""
             },
             "require": {
@@ -439,7 +439,7 @@
                 "server",
                 "tests"
             ],
-            "time": "2020-08-31T10:09:45+00:00"
+            "time": "2020-08-31T18:31:37+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -2667,6 +2667,20 @@
             "keywords": [
                 "constructor",
                 "instantiate"
+            ],
+            "funding": [
+                {
+                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/phpdoctrine",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Finstantiator",
+                    "type": "tidelift"
+                }
             ],
             "time": "2020-05-29T17:27:14+00:00"
         },
@@ -4922,7 +4936,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "mcustiel/phiremock-common": 20
+        "mcustiel/phiremock-common": 10
     },
     "prefer-stable": false,
     "prefer-lowest": false,
