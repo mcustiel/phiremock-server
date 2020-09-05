@@ -16,9 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
  */
-declare(ticks=1);
-
-use Mcustiel\Phiremock\Factory as PhiremockFactory;
 use Mcustiel\Phiremock\Server\Cli\Commands\PhiremockServerCommand;
 use Mcustiel\Phiremock\Server\Factory\Factory as PhiremockServerFactory;
 use Symfony\Component\Console\Application;
@@ -35,7 +32,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     $loader = require __DIR__ . '/../../../autoload.php';
 }
 
-$factory = new PhiremockServerFactory(new PhiremockFactory());
+$factory = PhiremockServerFactory::createDefault();
 $application = new Application('Phiremock', '');
 $phiremockServerCommand = new PhiremockServerCommand($factory);
 $application->add($phiremockServerCommand);

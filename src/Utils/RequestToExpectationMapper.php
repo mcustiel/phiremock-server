@@ -53,8 +53,6 @@ class RequestToExpectationMapper
 
     /**
      * @throws \Exception
-     *
-     * @return array
      */
     private function parseJsonBody(ServerRequestInterface $request): array
     {

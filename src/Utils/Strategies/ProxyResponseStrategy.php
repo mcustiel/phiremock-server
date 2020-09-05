@@ -19,20 +19,20 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Laminas\Diactoros\Uri;
-use Mcustiel\Phiremock\Common\Http\RemoteConnectionInterface;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class ProxyResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
-    /** @var \Mcustiel\Phiremock\Common\Http\RemoteConnectionInterface */
+    /** @var ClientInterface */
     private $httpService;
 
     public function __construct(
-        RemoteConnectionInterface $httpService,
+        ClientInterface $httpService,
         ScenarioStorage $scenarioStorage,
         LoggerInterface $logger
     ) {
@@ -57,7 +57,7 @@ class ProxyResponseStrategy extends AbstractResponse implements ResponseStrategy
         $this->processScenario($expectation);
         $this->processDelay($response);
 
-        return $this->httpService->send(
+        return $this->httpService->sendRequest(
             $request->withUri(new Uri($url))
         );
     }

@@ -18,6 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Factory;
 
+use GuzzleHttp\Client as GuzzleClient;
 use Mcustiel\Phiremock\Common\Utils\FileSystem;
 use Mcustiel\Phiremock\Factory as PhiremockFactory;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
@@ -33,6 +34,7 @@ use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\Phiremock\Server\Utils\DataStructures\StringObjectArrayMap;
 use Mcustiel\Phiremock\Server\Utils\FileExpectationsLoader;
+use Mcustiel\Phiremock\Server\Utils\GuzzlePsr18Client;
 use Mcustiel\Phiremock\Server\Utils\HomePathService;
 use Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator;
 use Mcustiel\Phiremock\Server\Utils\RequestToExpectationMapper;
@@ -42,6 +44,7 @@ use Mcustiel\Phiremock\Server\Utils\Strategies\ProxyResponseStrategy;
 use Mcustiel\Phiremock\Server\Utils\Strategies\RegexResponseStrategy;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 
 class Factory
@@ -56,6 +59,11 @@ class Factory
     {
         $this->phiremockFactory = $factory;
         $this->factoryCache = new StringObjectArrayMap();
+    }
+
+    public static function createDefault(): self
+    {
+        return new self(new PhiremockFactory());
     }
 
     public function createFileSystemService(): FileSystem
@@ -115,7 +123,7 @@ class Factory
             $this->factoryCache->set(
                 'proxyResponseStrategy',
                 new ProxyResponseStrategy(
-                    $this->phiremockFactory->createRemoteConnectionInterface(),
+                    $this->createHttpClient(),
                     $this->createScenarioStorage(),
                     $this->createLogger()
                 )
@@ -290,5 +298,14 @@ class Factory
         }
 
         return $this->factoryCache->get('requestToExpectationMapper');
+    }
+
+    public function createHttpClient(): ClientInterface
+    {
+        if (!class_exists(GuzzleClient::class, true)) {
+            throw new \Exception('A default http client implementation is needed. Please extend the factory or install Guzzle Http Client v6');
+        }
+
+        return new GuzzlePsr18Client();
     }
 }
