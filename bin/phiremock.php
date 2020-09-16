@@ -17,7 +17,6 @@
  * along with Phiremock.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Mcustiel\Phiremock\Server\Cli\Commands\PhiremockServerCommand;
-use Mcustiel\Phiremock\Server\Factory\Factory as PhiremockServerFactory;
 use Symfony\Component\Console\Application;
 
 const IS_SINGLE_COMMAND = true;
@@ -32,9 +31,8 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     $loader = require __DIR__ . '/../../../autoload.php';
 }
 
-$factory = PhiremockServerFactory::createDefault();
 $application = new Application('Phiremock', '');
-$phiremockServerCommand = new PhiremockServerCommand($factory);
+$phiremockServerCommand = new PhiremockServerCommand();
 $application->add($phiremockServerCommand);
 $application->setDefaultCommand($phiremockServerCommand->getName(), IS_SINGLE_COMMAND);
 $application->run();

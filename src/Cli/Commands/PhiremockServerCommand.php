@@ -39,6 +39,7 @@ class PhiremockServerCommand extends Command
     const DEFAULT_EXPECTATIONS_DIR = '[USER_HOME_PATH]/.phiremock/expectations';
     const DEBUG_HELP_MESSAGE = 'Sets debug mode.';
     const CONFIG_PATH_HELP_MESSAGE = 'Directory in which to search for configuration files. Default: current directory.';
+    const FACTORY_CLASS_HELP_MESSAGE = 'Factory class to use. Must inherit from: ' . Factory::class;
 
     /** @var Factory */
     private $factory;
@@ -47,9 +48,8 @@ class PhiremockServerCommand extends Command
     /** @var ServerInterface */
     private $httpServer;
 
-    public function __construct(Factory $factory)
+    public function __construct()
     {
-        $this->factory = $factory;
         parent::__construct('run');
     }
 
@@ -86,6 +86,12 @@ class PhiremockServerCommand extends Command
                 'c',
                 InputOption::VALUE_REQUIRED,
                 sprintf(self::CONFIG_PATH_HELP_MESSAGE)
+            )
+            ->addOption(
+                'factory-class',
+                'f',
+                InputOption::VALUE_REQUIRED,
+                sprintf(self::FACTORY_CLASS_HELP_MESSAGE)
             );
     }
 
@@ -107,9 +113,13 @@ class PhiremockServerCommand extends Command
         if ($input->getOption('expectations-dir')) {
             $cliConfig['expectations-dir'] = $input->getOption('expectations-dir');
         }
+        if ($input->getOption('factory-class')) {
+            $cliConfig['factory-class'] = $input->getOption('factory-class');
+        }
 
         $config = (new ConfigBuilder($configPath))->build($cliConfig);
 
+        $this->factory = $config->getFactoryClassName()->asInstance();
         $this->initializeLogger($config);
         $this->processFileExpectations($config);
         $this->startHttpServer($config);

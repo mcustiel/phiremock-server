@@ -63,7 +63,7 @@ class Factory
 
     public static function createDefault(): self
     {
-        return new self(new PhiremockFactory());
+        return new static(new PhiremockFactory());
     }
 
     public function createFileSystemService(): FileSystem
@@ -303,7 +303,7 @@ class Factory
     public function createHttpClient(): ClientInterface
     {
         if (!class_exists(GuzzleClient::class, true)) {
-            throw new \Exception('A default http client implementation is needed. Please extend the factory or install Guzzle Http Client v6');
+            throw new \Exception('A default http client implementation is needed. ' . 'Please extend the factory to return a PSR18-compatible HttpClient or install Guzzle Http Client v6');
         }
 
         return new GuzzlePsr18Client();

@@ -3,6 +3,7 @@
 namespace Mcustiel\Phiremock\Server\Utils\Config;
 
 use Mcustiel\Phiremock\Server\Cli\Options\ExpectationsDirectory;
+use Mcustiel\Phiremock\Server\Factory\Factory;
 use Mcustiel\Phiremock\Server\Utils\HomePathService;
 
 class ConfigBuilder
@@ -24,6 +25,7 @@ class ConfigBuilder
                 'ip'               => self::DEFAULT_IP,
                 'expectations-dir' => self::getDefaultExpectationsDir()->asString(),
                 'debug'            => false,
+                'factory-class'    => Factory::class,
             ];
         }
         $this->configPath = $configPath;
