@@ -32,7 +32,7 @@ class PhpFactoryFqcn
 
     private function ensureExtendsFactory(string $className): void
     {
-        if ($className !== Factory::class && !is_a($className, Factory::class)) {
+        if (!is_a($className, Factory::class, true)) {
             throw new \InvalidArgumentException(sprintf('Class %s does not extend %s', $className, Factory::class));
         }
     }

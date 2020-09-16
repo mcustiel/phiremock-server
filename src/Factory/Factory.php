@@ -267,7 +267,7 @@ class Factory
             $this->factoryCache->set(
                 'actionLocator',
                 new ActionLocator($this->createActionFactory())
-                );
+            );
         }
 
         return $this->factoryCache->get('actionLocator');
