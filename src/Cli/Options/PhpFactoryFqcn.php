@@ -3,6 +3,7 @@
 namespace Mcustiel\Phiremock\Server\Cli\Options;
 
 use Mcustiel\Phiremock\Server\Factory\Factory;
+use Mcustiel\Phiremock\Server\Utils\Config\Config;
 
 class PhpFactoryFqcn
 {
@@ -23,11 +24,11 @@ class PhpFactoryFqcn
         return $this->className;
     }
 
-    public function asInstance(): object
+    public function asInstance(Config $config): object
     {
         $className = $this->className;
 
-        return $className::createDefault();
+        return $className::createDefault($config);
     }
 
     private function ensureExtendsFactory(string $className): void

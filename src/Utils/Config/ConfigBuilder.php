@@ -12,6 +12,7 @@ class ConfigBuilder
     private const DEFAULT_PORT = 8086;
     private const DEFAULT_EXPECTATIONS_DIR = '[USER_HOME_PATH]/.phiremock/expectations';
 
+    /** @var array */
     private static $defaultConfig;
 
     /** @var Directory */
@@ -37,7 +38,17 @@ class ConfigBuilder
 
         $fileConfiguration = [];
 
-        $configFiles = ['.phiremock', '.phiremock.dist'];
+        $configFiles = [
+            __DIR__ . '/../../../.phiremock',
+            __DIR__ . '/../../../.phiremock.dist',
+            './.phiremock',
+            './.phiremock.dist',
+            HomePathService::getHomePath()->getFullSubpathAsString(
+                '.phiremock' . \DIRECTORY_SEPARATOR . 'config'
+            ),
+            '.phiremock',
+            '.phiremock-dist',
+        ];
 
         foreach ($configFiles as $configFileName) {
             $configFilePath = $this->configPath->getFullSubpathAsString($configFileName);

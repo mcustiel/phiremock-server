@@ -119,7 +119,7 @@ class PhiremockServerCommand extends Command
 
         $config = (new ConfigBuilder($configPath))->build($cliConfig);
 
-        $this->factory = $config->getFactoryClassName()->asInstance();
+        $this->factory = $config->getFactoryClassName()->asInstance($config);
         $this->initializeLogger($config);
         $this->processFileExpectations($config);
         $this->startHttpServer($config);
@@ -146,14 +146,12 @@ class PhiremockServerCommand extends Command
 
     private function initializeLogger(Config $config): void
     {
-        \define('IS_DEBUG_MODE', $config->isDebugMode());
-
         $this->logger = $this->factory->createLogger();
         $this->logger->info(
             sprintf(
                 '[%s] Starting Phiremock%s...',
                 date('Y-m-d H:i:s'),
-                (IS_DEBUG_MODE ? ' in debug mode' : '')
+                ($config->isDebugMode() ? ' in debug mode' : '')
             )
         );
     }

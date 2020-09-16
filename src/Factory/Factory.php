@@ -32,6 +32,7 @@ use Mcustiel\Phiremock\Server\Model\Implementation\RequestAutoStorage;
 use Mcustiel\Phiremock\Server\Model\Implementation\ScenarioAutoStorage;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
+use Mcustiel\Phiremock\Server\Utils\Config\Config;
 use Mcustiel\Phiremock\Server\Utils\DataStructures\StringObjectArrayMap;
 use Mcustiel\Phiremock\Server\Utils\FileExpectationsLoader;
 use Mcustiel\Phiremock\Server\Utils\GuzzlePsr18Client;
@@ -55,15 +56,19 @@ class Factory
     /** @var StringObjectArrayMap */
     private $factoryCache;
 
-    public function __construct(PhiremockFactory $factory)
+    /** @var Config */
+    private $config;
+
+    public function __construct(PhiremockFactory $factory, Config $config)
     {
         $this->phiremockFactory = $factory;
         $this->factoryCache = new StringObjectArrayMap();
+        $this->config = $config;
     }
 
-    public static function createDefault(): self
+    public static function createDefault(Config $config): self
     {
-        return new static(new PhiremockFactory());
+        return new static(new PhiremockFactory(), $config);
     }
 
     public function createFileSystemService(): FileSystem
@@ -79,7 +84,7 @@ class Factory
     {
         if (!$this->factoryCache->has('logger')) {
             $logger = new Logger('stdoutLogger');
-            $logLevel = IS_DEBUG_MODE ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
+            $logLevel = $this->config->isDebugMode() ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
             $logger->pushHandler(new StreamHandler(STDOUT, $logLevel));
             $this->factoryCache->set('logger', $logger);
         }
