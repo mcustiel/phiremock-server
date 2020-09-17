@@ -18,7 +18,6 @@
 
 namespace Mcustiel\Phiremock\Server\Factory;
 
-use GuzzleHttp\Client as GuzzleClient;
 use Mcustiel\Phiremock\Common\Utils\FileSystem;
 use Mcustiel\Phiremock\Factory as PhiremockFactory;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
@@ -307,7 +306,7 @@ class Factory
 
     public function createHttpClient(): ClientInterface
     {
-        if (!class_exists(GuzzleClient::class, true)) {
+        if (!class_exists('\GuzzleHttp\Client', true)) {
             throw new \Exception('A default http client implementation is needed. ' . 'Please extend the factory to return a PSR18-compatible HttpClient or install Guzzle Http Client v6');
         }
 

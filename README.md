@@ -29,7 +29,7 @@ Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not 
         "guzzlehttp/guzzle": "^6.0"
     }
 ```
-Phiremock Server requires guzzle client v6 to work. This dependency can be avoiding and you can choose any psr18-compatible http client and overwrite phiremock factory to provide it.
+Phiremock Server requires guzzle client v6 to work. This dependency can be avoided and you can choose any psr18-compatible http client and overwrite Phiremock Server's factory to provide it.
 
 ### Phar
 You can also download the standalone server as a phar from [here](https://github.com/mcustiel/phiremock-server/releases/download/v1.0.0-beta.1/phiremock.phar).
@@ -625,6 +625,6 @@ Just submit a pull request. Don't forget to run tests and php-cs-fixer first and
 * Denis Rudoi ([@drudoi](https://github.com/drudoi))
 * Henrik Schmidt ([@mrIncompetent](https://github.com/mrIncompetent))
 * Nils Gajsek ([@linslin](https://github.com/linslin))
-* Florian Levis([@Gounlaf](https://github.com/Gounlaf))
+* Florian Levis ([@Gounlaf](https://github.com/Gounlaf))
 
 And everyone who submitted their Pull Requests.
