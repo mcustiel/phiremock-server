@@ -39,15 +39,17 @@ class ConfigBuilder
         $fileConfiguration = [];
 
         $configFiles = [
+            __DIR__ . '/../../../../../../.phiremock',
+            __DIR__ . '/../../../../../../.phiremock.dist',
             __DIR__ . '/../../../.phiremock',
             __DIR__ . '/../../../.phiremock.dist',
-            './.phiremock',
-            './.phiremock.dist',
+            getcwd() . '/.phiremock',
+            getcwd() . '/.phiremock.dist',
             HomePathService::getHomePath()->getFullSubpathAsString(
                 '.phiremock' . \DIRECTORY_SEPARATOR . 'config'
             ),
             '.phiremock',
-            '.phiremock-dist',
+            '.phiremock.dist',
         ];
 
         foreach ($configFiles as $configFileName) {
