@@ -14,13 +14,14 @@ Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not 
 * Proxy requests to another URL as they are received.
 * Fill the response body using data from the request.
 * Integration to codeception through [phiremock-codeception-extension](https://github.com/mcustiel/phiremock-codeception-extension) and [phiremock-codeception-module](https://github.com/mcustiel/phiremock-codeception-module).
+* Client with nice API supporting all functionalities: [phiremock-client](https://github.com/mcustiel/phiremock-client)
 
 [![Build Status](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/badges/build.png?b=master)](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/build-status/master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/?branch=master)
 
 ## Installation
 
-### Default installation through composer:
+### Default installation through composer
 
 ```json
     "require-dev": {
@@ -30,14 +31,14 @@ Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not 
 ```
 Phiremock Server requires guzzle client v6 to work. This dependency can be avoiding and you can choose any psr18-compatible http client and overwrite phiremock factory to provide it.
 
-### Phar:
+### Phar
 You can also download the standalone server as a phar from [here](https://github.com/mcustiel/phiremock-server/releases/download/v1.0.0-beta.1/phiremock.phar).
 
 ## Running
 
 Execute `./vendor/bin/phiremock`.
 
-### Command line arguments:
+### Command line arguments
 
 * **--ip|-i <interface>** - Network interface where to listen for http connections. Default: 0.0.0.0
 * **--port|-p <port>** - Port where to listen for http connections. Default: 8086
@@ -168,17 +169,18 @@ Host: your.phiremock.host
 Content-Type: application/json
 
 {
-    "request": {
-        "method": "GET",
-        "url": {
-            "isEqualTo" : "/example_service/some/resource"
-        }
+    "version": "2",
+    "on": {
+        "method": { "isSameString": "GET" },
+        "url": { "isEqualTo" : "/example_service/some/resource" },
     },
-    "response": {
-        "statusCode": 200,
-        "body": "{\"id\": 1, \"description\": \"I am a resource\"}",
-        "headers": {
-            "Content-Type": "application/json"
+    "then": {
+        "response": {
+            "statusCode": 200,
+            "body": "{\"id\": 1, \"description\": \"I am a resource\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
         }
     }
 }
@@ -215,8 +217,7 @@ Content-Type: application/json
         "url": {
             "isEqualTo" : "/example_service/some/resource"
         }
-    },
-    "response": {}
+    }
 }
 ```
 
@@ -265,17 +266,18 @@ Host: your.phiremock.host
 Content-Type: application/json
 
 {
-    "request": {
-        "method": "GET",
-        "url": {
-            "isEqualTo" : "/example_service/photo.jpg"
-        }
+    "version": "2",
+    "on": {
+        "method": { "isSameString": "GET" },
+        "url": { "isEqualTo" : "/example_service/photo.jpg" },
     },
-    "response": {
-        "statusCode": 200,
-        "body": "phiremock.base64:HERE_THE_BASE64_ENCODED_IMAGE",
-        "headers": {
-            "Content-Type": "image/jpeg"
+    "then": {
+        "response": {
+            "statusCode": 200,
+            "body": "phiremock.base64:HERE_THE_BASE64_ENCODED_IMAGE",
+            "headers": {
+                "Content-Type": "image/jpeg"
+            }
         }
     }
 }
@@ -545,6 +547,37 @@ Content-Type: application/json
             "body": "${body.1} has ${body.2} brothers, ${body.1.2} has ${body.2.2} brothers, ${body.1.3} has ${body.2.3} brothers"
         }
     }
+}
+```
+
+### Backwards compatibility
+
+Phiremock Server still supports expectations in the format of Phiremock V1. This should make your migration from Phiremock v1 to Phiremock v1 (phiremock-server + phiremock-client) easier.
+
+```json
+{
+    "scenarioName": "potato",
+    "scenarioStateIs": "Scenario.START",
+    "newScenarioState": "tomato",
+    "request": {
+        "method": "GET",
+        "url": {
+            "isEqualTo": "/some/thing"
+        },
+        "headers": {
+            "Content-Type": {
+                "isEqualTo": "text/plain"
+            }
+        }
+    },
+    "response": {
+        "statusCode": 200,
+        "body": "Hello world!",
+        "headers": {
+            "Content-Type": "text/plain"
+        }
+    },
+    "priority": 1
 }
 ```
 
