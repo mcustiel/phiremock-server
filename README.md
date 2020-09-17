@@ -149,7 +149,7 @@ Then, using phiremock's REST interface, expectations can be configured, specifyi
         "response": {
             "statusCode": 200,
             "body": "phiremock.base64:__BASE64_ENCODED_IMAGE__",
-            "headers": [ "Content-Type": "image/x-icon" ]
+            "headers": { "Content-Type": "image/x-icon" }
         }
     },
     "priority": 0
@@ -395,7 +395,7 @@ Content-Type: application/json
 ```
 
 In this case, the first time that Phiremock Server receives a request matching the expectation, the first one will match and it will change the state of the `saved` scenario. From the second time the same request is executed, the second expectation will be matched.
-If you want after the second call, to go back to the initial state just add `->andSetScenarioStateTo('Scenario.START')` to the response.
+If you want after the second call, to go back to the initial state just add `"newScenarioState": "Scenario.START"` to the `then` section.
 
 To reset all scenarios to the initial state (Scenario.START) use this simple method from the client: 
 
@@ -550,8 +550,34 @@ Content-Type: application/json
 }
 ```
 
-### Backwards compatibility
+### Conditions based in form data
+For requests encoded with `application/x-www-form-urlencoded` and specifying this Content Type in the headers. Phiremock Server is capable of execute conditions on the values of the form fields.
 
+```
+POST /__phiremock/expectations HTTP/1.1
+Host: your.phiremock.host
+Content-Type: application/json
+
+{
+    "version": "2",
+    "on": {
+        "method": { "matches": "~POST|PUT~" },
+        "url": {"isEqualTo": "/login-form-handler"}
+        "formData": {
+            "username": {"isEqualTo": "the_username"},
+            "password": {"isEqualTo": "the_password"},
+        }
+    },
+    "then": {
+        "response": {
+            "statusCode": 200,
+            "body": "Login successful"
+        }
+    }
+}
+```
+
+### Backwards compatibility
 Phiremock Server still supports expectations in the format of Phiremock V1. This should make your migration from Phiremock v1 to Phiremock v1 (phiremock-server + phiremock-client) easier.
 
 ```json
