@@ -32,7 +32,7 @@ Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not 
 Phiremock Server requires guzzle client v6 to work. This dependency can be avoided and you can choose any psr18-compatible http client and overwrite Phiremock Server's factory to provide it.
 
 ### Phar
-You can also download the standalone server as a phar from [here](https://github.com/mcustiel/phiremock-server/releases/download/v1.0.0-beta.1/phiremock.phar).
+You can also download the standalone server as a phar from [here](https://github.com/mcustiel/phiremock-server/releases/download/v1.0.0/phiremock.phar).
 
 ## Running
 
@@ -615,6 +615,12 @@ Phiremock Server still supports expectations in the format of Phiremock V1. This
 * **isEqualTo:** Checks that the given section of the http request is equal to the one specified, case sensitive.
 * **isSameString:** Checks that the given section of the http request is equal to the one specified, case insensitive.
 * **matches:** Checks that the given section of the http request matches the regular expression specified.
+* **isSameJsonObject**: Checks that json received in the request is the same as a given JSON.
+
+### See also
+
+* Phiremock Client: https://github.com/mcustiel/phiremock-client
+* Examples in tests: https://github.com/mcustiel/phiremock-server/tree/master/tests/acceptance
 
 ### Contributing:
 
