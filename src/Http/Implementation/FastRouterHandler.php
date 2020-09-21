@@ -24,6 +24,7 @@ use Laminas\Diactoros\Response;
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
 use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
+use Mcustiel\Phiremock\Server\Utils\Config\Config;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -37,13 +38,13 @@ class FastRouterHandler implements RequestHandlerInterface
     /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(ActionLocator $locator, LoggerInterface $logger)
+    public function __construct(ActionLocator $locator, Config $config, LoggerInterface $logger)
     {
         $this->dispatcher = \FastRoute\simpleDispatcher(
             $this->createDispatcherCallable(),
             [
                 'cacheFile'     => __DIR__ . '/route.cache',
-                'cacheDisabled' => IS_DEBUG_MODE,
+                'cacheDisabled' => $config->isDebugMode(),
             ]
         );
         $this->actionsLocator = $locator;

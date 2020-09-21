@@ -154,7 +154,7 @@ class Factory
         if (!$this->factoryCache->has('router')) {
             $this->factoryCache->set(
                 'router',
-                new FastRouterHandler($this->createActionLocator(), $this->createLogger())
+                new FastRouterHandler($this->createActionLocator(), $this->config, $this->createLogger())
             );
         }
 
