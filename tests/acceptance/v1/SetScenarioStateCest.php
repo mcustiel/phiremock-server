@@ -45,6 +45,10 @@ class SetScenarioStateCest
             ])
          );
 
+        $I->sendGET('/test');
+        $I->seeResponseCodeIs('200');
+        $I->seeResponseEquals('start');
+
         $I->sendPUT(
             '/__phiremock/scenarios',
             [
