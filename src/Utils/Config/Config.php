@@ -2,10 +2,14 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\Config;
 
+use Mcustiel\Phiremock\Server\Cli\Options\CertificateKeyPath;
+use Mcustiel\Phiremock\Server\Cli\Options\CertificatePath;
 use Mcustiel\Phiremock\Server\Cli\Options\ExpectationsDirectory;
 use Mcustiel\Phiremock\Server\Cli\Options\HostInterface;
+use Mcustiel\Phiremock\Server\Cli\Options\Passphrase;
 use Mcustiel\Phiremock\Server\Cli\Options\PhpFactoryFqcn;
 use Mcustiel\Phiremock\Server\Cli\Options\Port;
+use Mcustiel\Phiremock\Server\Cli\Options\SecureOptions;
 
 class Config
 {
@@ -40,5 +44,26 @@ class Config
     public function getFactoryClassName(): PhpFactoryFqcn
     {
         return new PhpFactoryFqcn($this->configurationArray['factory-class']);
+    }
+
+    public function isSecure(): bool
+    {
+        return isset($this->configurationArray['certificate'])
+            && isset($this->configurationArray['certificate-key']);
+    }
+
+    public function getSecureOptions(): ?SecureOptions
+    {
+        if (!$this->isSecure()) {
+            return null;
+        }
+
+        return new SecureOptions(
+            new CertificatePath($this->configurationArray['certificate']),
+            new CertificateKeyPath($this->configurationArray['certificate-key']),
+            isset($this->configurationArray['cert-passphrase'])
+                ? new Passphrase($this->configurationArray['cert-passphrase'])
+                : null
+        );
     }
 }

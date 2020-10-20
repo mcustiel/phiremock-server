@@ -21,6 +21,7 @@ namespace Mcustiel\Phiremock\Server\Http\Implementation;
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Cli\Options\HostInterface;
 use Mcustiel\Phiremock\Server\Cli\Options\Port;
+use Mcustiel\Phiremock\Server\Cli\Options\SecureOptions;
 use Mcustiel\Phiremock\Server\Http\RequestHandlerInterface;
 use Mcustiel\Phiremock\Server\Http\ServerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -54,7 +55,7 @@ class ReactPhpServer implements ServerInterface
         $this->requestHandler = $requestHandler;
     }
 
-    public function listen(HostInterface $host, Port $port): void
+    public function listen(HostInterface $host, Port $port, ?SecureOptions $secureOptions): void
     {
         $this->http = new Server(
             $this->loop,
@@ -64,8 +65,7 @@ class ReactPhpServer implements ServerInterface
         );
 
         $listenConfig = "{$host->asString()}:{$port->asInt()}";
-        $this->logger->info("Phiremock http server listening on {$listenConfig}");
-        $this->socket = new ReactSocket($listenConfig, $this->loop);
+        $this->initSocket($listenConfig, $secureOptions);
         $this->http->listen($this->socket);
 
         // Dispatch pending signals periodically
@@ -97,5 +97,28 @@ class ReactPhpServer implements ServerInterface
         $this->logger->debug('Processing took ' . number_format((microtime(true) - $start) * 1000, 3) . ' milliseconds');
 
         return $psrResponse;
+    }
+
+    private function initSocket(string $listenConfig, ?SecureOptions $secureOptions): void
+    {
+        $this->logger->info(
+            sprintf(
+                'Phiremock http server listening on %s over %s',
+                $listenConfig,
+                null === $secureOptions ? 'http' : 'https'
+            )
+        );
+        $context = [];
+        if ($secureOptions !== null) {
+            $tlsContext = [];
+            $listenConfig = sprintf('tls://%s', $listenConfig);
+            $tlsContext['local_cert'] = $secureOptions->getCertificate()->asString();
+            $tlsContext['local_pk'] = $secureOptions->getCertificateKey()->asString();
+            if ($secureOptions->hasPassphrase()) {
+                $tlsContext['passphrase'] = $secureOptions->getPassphrase()->asString();
+            }
+            $context['tls'] = $tlsContext;
+        }
+        $this->socket = new ReactSocket($listenConfig, $this->loop, $context);
     }
 }

@@ -39,7 +39,10 @@ class PhiremockServerCommand extends Command
     const DEFAULT_EXPECTATIONS_DIR = '[USER_HOME_PATH]/.phiremock/expectations';
     const DEBUG_HELP_MESSAGE = 'Sets debug mode.';
     const CONFIG_PATH_HELP_MESSAGE = 'Directory in which to search for configuration files. Default: current directory.';
-    const FACTORY_CLASS_HELP_MESSAGE = 'Factory class to use. Must inherit from: ' . Factory::class;
+    const FACTORY_CLASS_HELP_MESSAGE = 'Factory class to use. It must inherit from: ' . Factory::class;
+    const CERTIFICATE_HELP_MESSAGE = 'Path to the local certificate for secure connection';
+    const CERTIFICATE_KEY_HELP_MESSAGE = 'Path to the local certificate key for secure connection';
+    const PASSPHRASE_HELP_MESSAGE = 'Passphrase if the local certificate is encrypted';
 
     /** @var Factory */
     private $factory;
@@ -92,6 +95,24 @@ class PhiremockServerCommand extends Command
                 'f',
                 InputOption::VALUE_REQUIRED,
                 sprintf(self::FACTORY_CLASS_HELP_MESSAGE)
+            )
+            ->addOption(
+                'certificate',
+                't',
+                InputOption::VALUE_REQUIRED,
+                sprintf(self::CERTIFICATE_HELP_MESSAGE)
+            )
+            ->addOption(
+                'certificate-key',
+                'k',
+                InputOption::VALUE_REQUIRED,
+                sprintf(self::CERTIFICATE_KEY_HELP_MESSAGE)
+            )
+            ->addOption(
+                'cert-passphrase',
+                's',
+                InputOption::VALUE_REQUIRED,
+                sprintf(self::PASSPHRASE_HELP_MESSAGE)
             );
     }
 
@@ -115,6 +136,15 @@ class PhiremockServerCommand extends Command
         }
         if ($input->getOption('factory-class')) {
             $cliConfig['factory-class'] = $input->getOption('factory-class');
+        }
+        if ($input->getOption('certificate')) {
+            $cliConfig['certificate'] = $input->getOption('certificate');
+        }
+        if ($input->getOption('certificate-key')) {
+            $cliConfig['certificate-key'] = $input->getOption('certificate-key');
+        }
+        if ($input->getOption('cert-passphrase')) {
+            $cliConfig['cert-passphrase'] = $input->getOption('cert-passphrase');
         }
 
         $config = (new ConfigBuilder($configPath))->build($cliConfig);
@@ -141,7 +171,7 @@ class PhiremockServerCommand extends Command
     {
         $this->httpServer = $this->factory->createHttpServer();
         $this->setUpHandlers();
-        $this->httpServer->listen($config->getInterfaceIp(), $config->getPort());
+        $this->httpServer->listen($config->getInterfaceIp(), $config->getPort(), $config->getSecureOptions());
     }
 
     private function initializeLogger(Config $config): void

@@ -20,10 +20,11 @@ namespace Mcustiel\Phiremock\Server\Http;
 
 use Mcustiel\Phiremock\Server\Cli\Options\HostInterface;
 use Mcustiel\Phiremock\Server\Cli\Options\Port;
+use Mcustiel\Phiremock\Server\Cli\Options\SecureOptions;
 
 interface ServerInterface
 {
-    public function listen(HostInterface $interface, Port $port): void;
+    public function listen(HostInterface $interface, Port $port, SecureOptions $secureOptions): void;
 
     public function shutdown(): void;
 }
