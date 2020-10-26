@@ -44,9 +44,14 @@ Execute `./vendor/bin/phiremock`.
 * **--port|-p <port>** - Port where to listen for http connections. Default: 8086
 * **--expectations-dir|-e <directory-name>** - Directory where to search for predefined static expectations. Default: [HOME_PATH]/.phiremock/expectations
 * **--factory-class|f <fully-qualified-class-name>** - Factory class to use to create the objects needed by phiremock server. Default: Default internal factory class.
+* **--certificate|t <path-to-certificate-file>** - Certificate file to enable phiremock to listen for secure connections (https).
+* **--certificate-key|k <path-to-certificate-key-file>** - Path to the certificate key.
+* **--cert-passphrase|s <pasphrase>** - Passphrase to use if the certificate is encrypted.
 * **--debug|-d** - Flag to activate the debug mode.
 
 **Note:** Static expectations saved in files are very useful if you use phiremock in your development environment. For testing, can be more useful to setup expectations on the fly. 
+
+**Note:** When a certificate is added, phiremock-server will only listen for secure connections.
 
 ## Configuration
 You can statically specify phiremock server's configuration in the .phiremock file. It looks as following:
@@ -58,6 +63,9 @@ You can statically specify phiremock server's configuration in the .phiremock fi
     'expectations-dir' => $_SERVER['HOME'] . '/.phiremock/expectations',
     'debug'            => false,
     'factory-class'    => '\\My\\Namespace\\FactoryClass',
+    'certificate'      => null,
+    'certificate-key'  => null,
+    'certificate-passphrase' => null,
 ];
 ```
 
@@ -78,6 +86,7 @@ This file will be searched as following, the first one found is the one to use:
 
 If guzzle client v6 is provided as a dependency no extra configuration is needed. If you want to use a different http client you need to provide it to phiremock server as a psr18-compatible client.
 For instance, if you want to use guzzle client v7 you need to extend phiremock server's factory class:
+
 ```php
 <?php
 namespace My\Namespace;
