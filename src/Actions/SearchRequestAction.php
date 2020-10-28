@@ -80,12 +80,7 @@ class SearchRequestAction implements ActionInterface
         return $lastFound;
     }
 
-    /**
-     * @param \Mcustiel\Phiremock\Domain\Expectation|null $lastFound
-     *
-     * @return \Mcustiel\Phiremock\Domain\Expectation
-     */
-    private function getNextMatchingExpectation($lastFound, ServerRequestInterface $request, Expectation $expectation)
+    private function getNextMatchingExpectation(?Expectation $lastFound, ServerRequestInterface $request, Expectation $expectation): ?Expectation
     {
         if ($this->comparator->equals($request, $expectation)) {
             if (null === $lastFound || $expectation->getPriority() > $lastFound->getPriority()) {
@@ -96,10 +91,7 @@ class SearchRequestAction implements ActionInterface
         return $lastFound;
     }
 
-    /**
-     * @return string
-     */
-    private function getLoggableRequest(ServerRequestInterface $request)
+    private function getLoggableRequest(ServerRequestInterface $request): string
     {
         $body = $request->getBody()->__toString();
         $longBody = '--VERY LONG CONTENTS--';

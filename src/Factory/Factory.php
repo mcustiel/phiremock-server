@@ -18,6 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Factory;
 
+use Exception;
 use Mcustiel\Phiremock\Common\Utils\FileSystem;
 use Mcustiel\Phiremock\Factory as PhiremockFactory;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
@@ -83,7 +84,7 @@ class Factory
     {
         if (!$this->factoryCache->has('logger')) {
             $logger = new Logger('stdoutLogger');
-            $logLevel = $this->config->isDebugMode() ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
+            $logLevel = $this->config->isDebugMode() ? Logger::DEBUG : Logger::INFO;
             $logger->pushHandler(new StreamHandler(STDOUT, $logLevel));
             $this->factoryCache->set('logger', $logger);
         }
@@ -121,6 +122,7 @@ class Factory
         return $this->factoryCache->get('regexResponseStrategy');
     }
 
+    /** @throws Exception */
     public function createProxyResponseStrategy(): ProxyResponseStrategy
     {
         if (!$this->factoryCache->has('proxyResponseStrategy')) {
@@ -304,10 +306,11 @@ class Factory
         return $this->factoryCache->get('requestToExpectationMapper');
     }
 
+    /** @throws Exception */
     public function createHttpClient(): ClientInterface
     {
         if (!class_exists('\GuzzleHttp\Client', true)) {
-            throw new \Exception('A default http client implementation is needed. ' . 'Please extend the factory to return a PSR18-compatible HttpClient or install Guzzle Http Client v6');
+            throw new Exception('A default http client implementation is needed. ' . 'Please extend the factory to return a PSR18-compatible HttpClient or install Guzzle Http Client v6');
         }
 
         return new GuzzlePsr18Client();

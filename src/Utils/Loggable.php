@@ -22,7 +22,7 @@ use Psr\Log\LoggerInterface;
 
 trait Loggable
 {
-    /** @var \Psr\Log\LoggerInterface */
+    /** @var LoggerInterface */
     private $logger;
 
     public function setLogger(LoggerInterface $logger)

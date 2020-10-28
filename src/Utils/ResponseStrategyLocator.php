@@ -18,15 +18,15 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
+use Exception;
 use Mcustiel\Phiremock\Domain\Condition\MatchersEnum;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Factory\Factory;
+use Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface;
 
 class ResponseStrategyLocator
 {
-    /**
-     * @var Factory
-     */
+    /** @var Factory */
     private $factory;
 
     public function __construct(Factory $dependencyService)
@@ -34,10 +34,8 @@ class ResponseStrategyLocator
         $this->factory = $dependencyService;
     }
 
-    /**
-     * @return \Mcustiel\Phiremock\Server\Utils\Strategies\ResponseStrategyInterface
-     */
-    public function getStrategyForExpectation(Expectation $expectation)
+    /** @throws Exception */
+    public function getStrategyForExpectation(Expectation $expectation): ResponseStrategyInterface
     {
         if ($expectation->getResponse()->isProxyResponse()) {
             return $this->factory->createProxyResponseStrategy();
@@ -49,10 +47,7 @@ class ResponseStrategyLocator
         return $this->factory->createHttpResponseStrategy();
     }
 
-    /**
-     * @return bool
-     */
-    private function requestBodyOrUrlAreRegexp(Expectation $expectation)
+    private function requestBodyOrUrlAreRegexp(Expectation $expectation): bool
     {
         return $expectation->getRequest()->getBody()
             && MatchersEnum::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->getName()

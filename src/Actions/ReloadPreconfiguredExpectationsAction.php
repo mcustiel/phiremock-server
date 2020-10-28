@@ -26,15 +26,15 @@ use Psr\Log\LoggerInterface;
 class ReloadPreconfiguredExpectationsAction implements ActionInterface
 {
     /**
-     * @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage
+     * @var ExpectationStorage
      */
     private $expectationStorage;
     /**
-     * @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage
+     * @var ExpectationStorage
      */
     private $expectationBackup;
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     private $logger;
 

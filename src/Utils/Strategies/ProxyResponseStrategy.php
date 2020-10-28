@@ -20,6 +20,7 @@ namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Laminas\Diactoros\Uri;
 use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\ProxyResponse;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -50,7 +51,7 @@ class ProxyResponseStrategy extends AbstractResponse implements ResponseStrategy
         ResponseInterface $transactionData,
         ServerRequestInterface $request
     ): ResponseInterface {
-        /** @var \Mcustiel\Phiremock\Domain\ProxyResponse $response */
+        /** @var ProxyResponse $response */
         $response = $expectation->getResponse();
         $url = $response->getUri()->asString();
         $this->logger->debug('Proxying request to : ' . $url);

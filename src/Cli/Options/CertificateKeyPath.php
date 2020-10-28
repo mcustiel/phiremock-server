@@ -2,6 +2,8 @@
 
 namespace Mcustiel\Phiremock\Server\Cli\Options;
 
+use Exception;
+
 class CertificateKeyPath
 {
     /** @var string */
@@ -21,7 +23,7 @@ class CertificateKeyPath
     private function ensureCanReadFile(string $path)
     {
         if (!file_exists($path) || !is_readable($path)) {
-            throw new \Exception(sprintf('File %s does not exist or is not readable', $path));
+            throw new Exception(sprintf('File %s does not exist or is not readable', $path));
         }
     }
 }

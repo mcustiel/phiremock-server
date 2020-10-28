@@ -21,24 +21,23 @@ namespace Mcustiel\Phiremock\Server\Utils\Traits;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\HttpResponse;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 trait ExpectationValidator
 {
-    /** @throws \RuntimeException */
-    protected function validateExpectationOrThrowException(Expectation $expectation, LoggerInterface $logger)
+    protected function validateExpectationOrThrowException(Expectation $expectation, LoggerInterface $logger): void
     {
         $this->validateResponseOrThrowException($expectation, $logger);
         $this->validateScenarioNameOrThrowException($expectation, $logger);
         $this->validateScenarioStateOrThrowException($expectation, $logger);
     }
 
-    /** @throws \RuntimeException */
-    protected function validateResponseOrThrowException(Expectation $expectation, LoggerInterface $logger)
+    protected function validateResponseOrThrowException(Expectation $expectation, LoggerInterface $logger): void
     {
         $this->logger->debug('Validating response');
         if ($this->responseIsInvalid($expectation)) {
             $logger->error('Invalid response specified in expectation');
-            throw new \RuntimeException('Invalid response specified in expectation');
+            throw new RuntimeException('Invalid response specified in expectation');
         }
     }
 
@@ -50,18 +49,16 @@ trait ExpectationValidator
         return $response->isHttpResponse() && empty($response->getStatusCode());
     }
 
-    /** @throws \RuntimeException */
     protected function validateScenarioStateOrThrowException(
         Expectation $expectation,
         LoggerInterface $logger
     ): void {
         if ($expectation->getResponse()->hasNewScenarioState() && !$expectation->getRequest()->hasScenarioState()) {
             $logger->error('Scenario states misconfiguration');
-            throw new \RuntimeException('Trying to set scenario state without specifying scenario previous state');
+            throw new RuntimeException('Trying to set scenario state without specifying scenario previous state');
         }
     }
 
-    /** @throws \RuntimeException */
     protected function validateScenarioNameOrThrowException(
         Expectation $expectation,
         LoggerInterface $logger
@@ -70,7 +67,7 @@ trait ExpectationValidator
             && ($expectation->getRequest()->hasScenarioState() || $expectation->getResponse()->hasNewScenarioState())
         ) {
             $logger->error('Scenario name related misconfiguration');
-            throw new \RuntimeException('Expecting or trying to set scenario state without specifying scenario name');
+            throw new RuntimeException('Expecting or trying to set scenario state without specifying scenario name');
         }
     }
 }

@@ -18,6 +18,8 @@
 
 namespace Mcustiel\Phiremock\Server\Actions;
 
+use InvalidArgumentException;
+
 class ActionLocator
 {
     const LIST_EXPECTATIONS = 'listExpectations';
@@ -57,16 +59,11 @@ class ActionLocator
         $this->factory = $factory;
     }
 
-    /**
-     * @param string $actionIdentifier
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function locate($actionIdentifier): ActionInterface
+    public function locate(string $actionIdentifier): ActionInterface
     {
-        if (\array_key_exists($actionIdentifier, self::ACTION_FACTORY_METHOD_MAP)) {
+        if (array_key_exists($actionIdentifier, self::ACTION_FACTORY_METHOD_MAP)) {
             return $this->factory->{self::ACTION_FACTORY_METHOD_MAP[$actionIdentifier]}();
         }
-        throw new \InvalidArgumentException(sprintf('Trying to get action using %s. Which is not a valid action name.', var_export($actionIdentifier, true)));
+        throw new InvalidArgumentException(sprintf('Trying to get action using %s. Which is not a valid action name.', var_export($actionIdentifier, true)));
     }
 }

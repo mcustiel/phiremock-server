@@ -2,6 +2,7 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\Config;
 
+use Exception;
 use Mcustiel\Phiremock\Server\Cli\Options\CertificateKeyPath;
 use Mcustiel\Phiremock\Server\Cli\Options\CertificatePath;
 use Mcustiel\Phiremock\Server\Cli\Options\ExpectationsDirectory;
@@ -52,6 +53,7 @@ class Config
             && isset($this->configurationArray['certificate-key']);
     }
 
+    /** @throws Exception */
     public function getSecureOptions(): ?SecureOptions
     {
         if (!$this->isSecure()) {

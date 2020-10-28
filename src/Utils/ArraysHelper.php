@@ -26,12 +26,12 @@ class ArraysHelper
             return false;
         }
 
-        return array_keys($array) !== range(0, \count($array) - 1);
+        return array_keys($array) !== range(0, count($array) - 1);
     }
 
     public static function areRecursivelyEquals(array $array1, array $array2): bool
     {
-        if (\count($array1) !== \count($array2)) {
+        if (count($array1) !== count($array2)) {
             return false;
         }
 
@@ -41,7 +41,7 @@ class ArraysHelper
     public static function arrayIsContained(array $array1, array $array2): bool
     {
         foreach ($array1 as $key => $value1) {
-            if (!\array_key_exists($key, $array2)) {
+            if (!array_key_exists($key, $array2)) {
                 return false;
             }
             if (!self::haveTheSameTypeAndValue($value1, $array2[$key])) {
@@ -54,7 +54,7 @@ class ArraysHelper
 
     public static function haveTheSameTypeAndValue($value1, $value2): bool
     {
-        if (\gettype($value1) !== \gettype($value2)) {
+        if (gettype($value1) !== gettype($value2)) {
             return false;
         }
 
@@ -63,7 +63,7 @@ class ArraysHelper
 
     public static function haveTheSameValue($value1, $value2): bool
     {
-        if (\is_array($value1)) {
+        if (is_array($value1)) {
             if (!self::areRecursivelyEquals($value1, $value2)) {
                 return false;
             }

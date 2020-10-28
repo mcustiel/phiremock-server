@@ -18,6 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
+use InvalidArgumentException;
 use Mcustiel\Phiremock\Domain\Conditions;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
@@ -80,11 +81,11 @@ class RequestExpectationComparator
         return true;
     }
 
-    /** @throws \RuntimeException */
+    /** @throws InvalidArgumentException */
     private function checkScenarioNameOrThrowException(Expectation $expectation)
     {
         if (!$expectation->hasScenarioName()) {
-            throw new \InvalidArgumentException('Expecting scenario state without specifying scenario name');
+            throw new InvalidArgumentException('Expecting scenario state without specifying scenario name');
         }
     }
 
@@ -143,7 +144,6 @@ class RequestExpectationComparator
             return true;
         }
         $this->logger->debug('Checking HEADERS against expectation');
-        /** @var \Mcustiel\Phiremock\Domain\Condition\Conditions\HeaderCondition $headerCondition */
         foreach ($headerConditions as $header => $headerCondition) {
             $headerName = $header->asString();
             $this->logger->debug("Checking $headerName against expectation");
@@ -166,7 +166,6 @@ class RequestExpectationComparator
             return true;
         }
         $this->logger->debug('Checking FORM DATA against expectation');
-        /** @var \Mcustiel\Phiremock\Domain\Condition\Conditions\FormFieldCondition $fieldCondition */
         foreach ($formDataConditions as $field => $fieldCondition) {
             $fieldName = $field->asString();
             $this->logger->debug("Checking $fieldName against expectation");

@@ -18,8 +18,8 @@
 
 namespace Mcustiel\Phiremock\Server\Actions;
 
+use Exception;
 use Mcustiel\Phiremock\Common\StringStream;
-use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Utils\RequestToExpectationMapper;
@@ -39,9 +39,6 @@ class AddExpectationAction implements ActionInterface
     /** @var LoggerInterface */
     private $logger;
 
-    /**
-     * @param ArrayToExpectationConverter $converter
-     */
     public function __construct(
         RequestToExpectationMapper $converter,
         ExpectationStorage $storage,
@@ -58,7 +55,7 @@ class AddExpectationAction implements ActionInterface
             $object = $this->converter->map($request);
 
             return $this->process($response, $object);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('An unexpected exception occurred: ' . $e->getMessage());
             $this->logger->debug($e->__toString());
 
@@ -66,7 +63,7 @@ class AddExpectationAction implements ActionInterface
         }
     }
 
-    private function process(ResponseInterface $response, Expectation $expectation)
+    private function process(ResponseInterface $response, Expectation $expectation): ResponseInterface
     {
         $this->logger->debug('process');
         $this->validateExpectationOrThrowException($expectation, $this->logger);
@@ -75,10 +72,7 @@ class AddExpectationAction implements ActionInterface
         return $this->constructResponse([], $response);
     }
 
-    /**
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    private function constructResponse(array $listOfErrors, ResponseInterface $response)
+    private function constructResponse(array $listOfErrors, ResponseInterface $response): ResponseInterface
     {
         if (empty($listOfErrors)) {
             return $response->withStatus(201)->withBody(new StringStream('{"result" : "OK"}'));
@@ -87,10 +81,7 @@ class AddExpectationAction implements ActionInterface
         return $this->constructErrorResponse($listOfErrors, $response);
     }
 
-    /**
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    private function constructErrorResponse(array $listOfErrors, ResponseInterface $response)
+    private function constructErrorResponse(array $listOfErrors, ResponseInterface $response): ResponseInterface
     {
         return $response->withStatus(500)
             ->withBody(

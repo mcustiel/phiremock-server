@@ -28,24 +28,25 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as EventLoop;
+use React\EventLoop\LoopInterface;
 use React\Http\Server;
 use React\Socket\Server as ReactSocket;
 
 class ReactPhpServer implements ServerInterface
 {
-    /** @var \Mcustiel\Phiremock\Server\Http\RequestHandlerInterface */
+    /** @var RequestHandlerInterface */
     private $requestHandler;
 
-    /** @var \React\EventLoop\LoopInterface */
+    /** @var LoopInterface */
     private $loop;
 
-    /** @var \React\Socket\Server */
+    /** @var ReactSocket */
     private $socket;
 
-    /** @var \React\Http\Server */
+    /** @var Server */
     private $http;
 
-    /** @var \Psr\Log\LoggerInterface */
+    /** @var LoggerInterface */
     private $logger;
 
     public function __construct(RequestHandlerInterface $requestHandler, LoggerInterface $logger)
@@ -69,7 +70,7 @@ class ReactPhpServer implements ServerInterface
         $this->http->listen($this->socket);
 
         // Dispatch pending signals periodically
-        if (\function_exists('pcntl_signal_dispatch')) {
+        if (function_exists('pcntl_signal_dispatch')) {
             $this->loop->addPeriodicTimer(0.5, function () {
                 pcntl_signal_dispatch();
             });

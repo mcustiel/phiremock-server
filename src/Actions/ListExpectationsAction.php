@@ -18,6 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Actions;
 
+use Exception;
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Common\Utils\ExpectationToArrayConverterLocator;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
@@ -26,7 +27,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ListExpectationsAction implements ActionInterface
 {
-    /** @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage */
+    /** @var ExpectationStorage */
     private $storage;
     /** @var ExpectationToArrayConverterLocator */
     private $converterLocator;
@@ -39,6 +40,7 @@ class ListExpectationsAction implements ActionInterface
         $this->converterLocator = $converterLocator;
     }
 
+    /** @throws Exception */
     public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $list = [];

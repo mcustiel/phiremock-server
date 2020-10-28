@@ -18,6 +18,8 @@
 
 namespace Mcustiel\Phiremock\Server\Cli\Commands;
 
+use ErrorException;
+use Exception;
 use Mcustiel\Phiremock\Server\Factory\Factory;
 use Mcustiel\Phiremock\Server\Http\ServerInterface;
 use Mcustiel\Phiremock\Server\Utils\Config\Config;
@@ -32,11 +34,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PhiremockServerCommand extends Command
 {
     const IP_HELP_MESSAGE = 'IP address of the interface where Phiremock must list for connections.';
-    const DEFAULT_IP = '0.0.0.0';
     const PORT_HELP_MESSAGE = 'Port where Phiremock must list for connections.';
-    const DEFAULT_PORT = 8086;
     const EXPECTATIONS_DIR_HELP_MESSAGE = 'Directory in which to search for expectation definition files.';
-    const DEFAULT_EXPECTATIONS_DIR = '[USER_HOME_PATH]/.phiremock/expectations';
     const DEBUG_HELP_MESSAGE = 'Sets debug mode.';
     const CONFIG_PATH_HELP_MESSAGE = 'Directory in which to search for configuration files. Default: current directory.';
     const FACTORY_CLASS_HELP_MESSAGE = 'Factory class to use. It must inherit from: ' . Factory::class;
@@ -116,6 +115,7 @@ class PhiremockServerCommand extends Command
             );
     }
 
+    /** @throws Exception */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->createPhiremockPathIfNotExists();
@@ -157,16 +157,18 @@ class PhiremockServerCommand extends Command
         return 0;
     }
 
-    private function createPhiremockPathIfNotExists()
+    /** @throws Exception */
+    private function createPhiremockPathIfNotExists(): void
     {
         $defaultExpectationsPath = ConfigBuilder::getDefaultExpectationsDir();
         if (!$defaultExpectationsPath->exists()) {
             $defaultExpectationsPath->create();
         } elseif (!$defaultExpectationsPath->isDirectory()) {
-            throw new \Exception('Expectations path must be a directory');
+            throw new Exception('Expectations path must be a directory');
         }
     }
 
+    /** @throws Exception */
     private function startHttpServer(Config $config): void
     {
         $this->httpServer = $this->factory->createHttpServer();
@@ -210,7 +212,7 @@ class PhiremockServerCommand extends Command
         $this->logger->debug('Registering shutdown function');
         register_shutdown_function($handleTermination);
 
-        if (\function_exists('pcntl_signal')) {
+        if (function_exists('pcntl_signal')) {
             $this->logger->debug('PCNTL present: Installing signal handlers');
             pcntl_signal(SIGTERM, function () { exit(0); });
         }
@@ -219,7 +221,7 @@ class PhiremockServerCommand extends Command
             $errorInformation = sprintf('%s:%s (%s)', $file, $line, $message);
             if ($this->isError($severity)) {
                 $this->logger->error($errorInformation);
-                throw new \ErrorException($message, 0, $severity, $file, $line);
+                throw new ErrorException($message, 0, $severity, $file, $line);
             }
             $this->logger->warning($errorInformation);
 
@@ -230,7 +232,7 @@ class PhiremockServerCommand extends Command
 
     private function isError(int $severity): bool
     {
-        return \in_array(
+        return in_array(
             $severity,
             [
                 E_COMPILE_ERROR,

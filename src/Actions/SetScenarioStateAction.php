@@ -19,7 +19,9 @@
 namespace Mcustiel\Phiremock\Server\Actions;
 
 use Mcustiel\Phiremock\Common\StringStream;
+use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter;
 use Mcustiel\Phiremock\Common\Utils\ArrayToScenarioStateInfoConverter;
+use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,18 +29,15 @@ use Psr\Log\LoggerInterface;
 
 class SetScenarioStateAction implements ActionInterface
 {
-    /** @var \Mcustiel\Phiremock\Server\Model\ScenarioStorage */
+    /** @var ScenarioStorage */
     private $storage;
 
     /** @var ArrayToScenarioStateInfoConverter */
     private $converter;
 
-    /** @var \Psr\Log\LoggerInterface */
+    /** @var LoggerInterface */
     private $logger;
 
-    /**
-     * @param \Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverter $requestBuilder
-     */
     public function __construct(
         ArrayToScenarioStateInfoConverter $requestBuilder,
         ScenarioStorage $storage,
@@ -49,6 +48,7 @@ class SetScenarioStateAction implements ActionInterface
         $this->logger = $logger;
     }
 
+    /** @throws \Exception */
     public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $state = $this->parseRequestObject($request);
@@ -78,12 +78,9 @@ class SetScenarioStateAction implements ActionInterface
             ->withBody($request->getBody());
     }
 
-    /**
-     * @return \Mcustiel\Phiremock\Domain\ScenarioStateInfo
-     */
-    private function parseRequestObject(ServerRequestInterface $request)
+    /** @throws \Exception */
+    private function parseRequestObject(ServerRequestInterface $request): ScenarioStateInfo
     {
-        /** @var \Mcustiel\Phiremock\Domain\ScenarioStateInfo $object */
         $object = $this->converter->convert(
             $this->parseJsonBody($request)
         );
@@ -92,12 +89,8 @@ class SetScenarioStateAction implements ActionInterface
         return $object;
     }
 
-    /**
-     * @throws \Exception
-     *
-     * @return array
-     */
-    private function parseJsonBody(ServerRequestInterface $request)
+    /** @throws \Exception */
+    private function parseJsonBody(ServerRequestInterface $request): array
     {
         $body = $request->getBody()->__toString();
         $this->logger->debug($body);

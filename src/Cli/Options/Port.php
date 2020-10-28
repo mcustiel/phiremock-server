@@ -18,6 +18,8 @@
 
 namespace Mcustiel\Phiremock\Server\Cli\Options;
 
+use InvalidArgumentException;
+
 class Port
 {
     /** @var int */
@@ -34,11 +36,11 @@ class Port
         return $this->port;
     }
 
-    /** @throws \InvalidArgumentException */
-    private function ensureIsValidPort($port)
+    /** @throws InvalidArgumentException */
+    private function ensureIsValidPort(int $port): void
     {
         if ($port < 1 || $port > 65535) {
-            throw new \InvalidArgumentException(sprintf('Invalid port number: %d', $port));
+            throw new InvalidArgumentException(sprintf('Invalid port number: %d', $port));
         }
     }
 }

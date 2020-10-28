@@ -26,6 +26,6 @@ interface ExpectationStorage
 
     public function clearExpectations(): void;
 
-    /** @return \Mcustiel\Phiremock\Domain\Expectation[] */
+    /** @return Expectation[] */
     public function listExpectations(): array;
 }

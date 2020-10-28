@@ -21,6 +21,7 @@ namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Domain\Condition\MatchersEnum;
 use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\HttpResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -44,6 +45,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
             $httpResponse,
             $request
         );
+        /** @var HttpResponse $responseConfig */
         $responseConfig = $expectation->getResponse();
         $httpResponse = $this->getResponseWithStatusCode($responseConfig, $httpResponse);
         $this->processScenario($expectation);
@@ -57,7 +59,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         ResponseInterface $httpResponse,
         ServerRequestInterface $httpRequest
     ): ResponseInterface {
-        /** @var \Mcustiel\Phiremock\Domain\HttpResponse $responseConfig */
+        /** @var HttpResponse $responseConfig */
         $responseConfig = $expectation->getResponse();
 
         if ($responseConfig->hasBody()) {
@@ -75,7 +77,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         ResponseInterface $httpResponse,
         ServerRequestInterface $httpRequest
     ) {
-        /** @var \Mcustiel\Phiremock\Domain\HttpResponse $responseConfig */
+        /** @var HttpResponse $responseConfig */
         $responseConfig = $expectation->getResponse();
         $headers = $responseConfig->getHeaders();
 

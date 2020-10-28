@@ -18,9 +18,9 @@
 
 namespace Mcustiel\Phiremock\Server\Actions;
 
-use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 class ResetAction implements ActionInterface
 {
@@ -30,14 +30,14 @@ class ResetAction implements ActionInterface
     private $requestCounterCleaner;
     /** @var ReloadPreconfiguredExpectationsAction */
     private $expectationsReloader;
-    /** @var Logger */
+    /** @var LoggerInterface */
     private $logger;
 
     public function __construct(
         ClearScenariosAction $scenariosCleaner,
         ResetRequestsCountAction $requestCounterCleaner,
         ReloadPreconfiguredExpectationsAction $expectationsReloader,
-        Logger $logger
+        LoggerInterface $logger
     ) {
         $this->scenariosCleaner = $scenariosCleaner;
         $this->requestCounterCleaner = $requestCounterCleaner;

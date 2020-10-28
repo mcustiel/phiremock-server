@@ -25,10 +25,11 @@ use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class AbstractResponse
 {
-    /** @var \Psr\Log\LoggerInterface */
+    /** @var LoggerInterface */
     protected $logger;
     /** @var ScenarioStorage */
     private $scenariosStorage;
@@ -53,7 +54,7 @@ class AbstractResponse
     {
         if ($foundExpectation->getResponse()->hasNewScenarioState()) {
             if (!$foundExpectation->hasScenarioName()) {
-                throw new \RuntimeException('Expecting scenario state without specifying scenario name');
+                throw new RuntimeException('Expecting scenario state without specifying scenario name');
             }
             $this->logger->debug(
                 sprintf(
@@ -71,15 +72,9 @@ class AbstractResponse
         }
     }
 
-    /**
-     * @param Response $responseConfig
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    protected function getResponseWithHeaders(HttpResponse $responseConfig, ResponseInterface $httpResponse)
+    protected function getResponseWithHeaders(HttpResponse $responseConfig, ResponseInterface $httpResponse): ResponseInterface
     {
         if ($responseConfig->getHeaders()) {
-            /** @var \Mcustiel\Phiremock\Domain\Http\Header $header */
             foreach ($responseConfig->getHeaders() as $header) {
                 $httpResponse = $httpResponse->withHeader(
                     $header->getName()->asString(),
@@ -91,12 +86,7 @@ class AbstractResponse
         return $httpResponse;
     }
 
-    /**
-     * @param Response $responseConfig
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    protected function getResponseWithStatusCode(HttpResponse $responseConfig, ResponseInterface $httpResponse)
+    protected function getResponseWithStatusCode(HttpResponse $responseConfig, ResponseInterface $httpResponse): ResponseInterface
     {
         if ($responseConfig->getStatusCode()) {
             $httpResponse = $httpResponse->withStatus($responseConfig->getStatusCode()->asInt());

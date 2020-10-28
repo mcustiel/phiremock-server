@@ -18,6 +18,10 @@
 
 namespace Mcustiel\Phiremock\Server\Utils\DataStructures;
 
+use ArrayIterator;
+use BadMethodCallException;
+use InvalidArgumentException;
+
 class StringObjectArrayMap implements Map
 {
     private $mapData;
@@ -29,17 +33,17 @@ class StringObjectArrayMap implements Map
 
     public function getIterator()
     {
-        return new \ArrayIterator($this->mapData);
+        return new ArrayIterator($this->mapData);
     }
 
     public function set($key, $value)
     {
-        if (!\is_string($key)) {
-            throw new \InvalidArgumentException('Expected key to be string. Got: ' . \gettype($key));
+        if (!is_string($key)) {
+            throw new InvalidArgumentException('Expected key to be string. Got: ' . gettype($key));
         }
 
-        if (!\is_object($value)) {
-            throw new \InvalidArgumentException('Expected value to be object. Got: ' . \gettype($key));
+        if (!is_object($value)) {
+            throw new InvalidArgumentException('Expected value to be object. Got: ' . gettype($key));
         }
         $this->mapData[$key] = $value;
     }
@@ -47,7 +51,7 @@ class StringObjectArrayMap implements Map
     public function get($key)
     {
         if (!$this->has($key)) {
-            throw new \BadMethodCallException('Calling get for an absent key: ' . $key);
+            throw new BadMethodCallException('Calling get for an absent key: ' . $key);
         }
 
         return $this->mapData[$key];
@@ -55,8 +59,8 @@ class StringObjectArrayMap implements Map
 
     public function has($key)
     {
-        if (!\is_string($key)) {
-            throw new \InvalidArgumentException('Expected key to be string. Got: ' . \gettype($key));
+        if (!is_string($key)) {
+            throw new InvalidArgumentException('Expected key to be string. Got: ' . gettype($key));
         }
 
         return isset($this->mapData[$key]);
@@ -70,7 +74,7 @@ class StringObjectArrayMap implements Map
     public function delete($key)
     {
         if (!$this->has($key)) {
-            throw new \BadMethodCallException('Calling delete for an absent key: ' . $key);
+            throw new BadMethodCallException('Calling delete for an absent key: ' . $key);
         }
         unset($this->mapData[$key]);
     }

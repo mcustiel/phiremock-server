@@ -28,6 +28,8 @@ use Mcustiel\Phiremock\Server\Utils\Config\Config;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Throwable;
+use function FastRoute\simpleDispatcher;
 
 class FastRouterHandler implements RequestHandlerInterface
 {
@@ -40,7 +42,7 @@ class FastRouterHandler implements RequestHandlerInterface
 
     public function __construct(ActionLocator $locator, Config $config, LoggerInterface $logger)
     {
-        $this->dispatcher = \FastRoute\simpleDispatcher(
+        $this->dispatcher = simpleDispatcher(
             $this->createDispatcherCallable(),
             [
                 'cacheFile'     => __DIR__ . '/route.cache',
@@ -75,7 +77,14 @@ class FastRouterHandler implements RequestHandlerInterface
                         ->locate($routeInfo[1])
                         ->execute($request, new Response());
             }
-        } catch (\Throwable $e) {
+            return new Response(
+                new StringStream(
+                    json_encode(['result' => 'ERROR', 'details' => 'Unexpected error: Router returned unexpected info'])
+                ),
+                500,
+                ['Content-Type' => 'application/json']
+            );
+        } catch (Throwable $e) {
             $this->logger->error($e->getMessage());
 
             return new Response(

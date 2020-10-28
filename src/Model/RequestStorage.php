@@ -24,7 +24,7 @@ interface RequestStorage
 {
     public function addRequest(ServerRequestInterface $request): void;
 
-    /** @return \Psr\Http\Message\ServerRequestInterface[] */
+    /** @return ServerRequestInterface[] */
     public function listRequests(): array;
 
     public function clearRequests(): void;

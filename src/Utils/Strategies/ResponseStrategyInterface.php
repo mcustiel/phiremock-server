@@ -24,10 +24,9 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface ResponseStrategyInterface
 {
-    /** @return \Psr\Http\Message\ResponseInterface */
     public function createResponse(
         Expectation $expectation,
         ResponseInterface $transactionData,
         ServerRequestInterface $request
-    );
+    ): ResponseInterface;
 }

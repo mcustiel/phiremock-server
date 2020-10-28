@@ -32,9 +32,9 @@ class ListRequestsAction implements ActionInterface
 {
     use ExpectationValidator;
 
-    /** @var \Mcustiel\Phiremock\Server\Model\RequestStorage */
+    /** @var RequestStorage */
     private $requestsStorage;
-    /** @var \Mcustiel\Phiremock\Server\Utils\RequestExpectationComparator */
+    /** @var RequestExpectationComparator */
     private $comparator;
     /** @var RequestToExpectationMapper */
     private $converter;
@@ -67,7 +67,7 @@ class ListRequestsAction implements ActionInterface
     public function process(ResponseInterface $response, Expectation $expectation): ResponseInterface
     {
         $executions = $this->searchForExecutionsCount($expectation);
-        $this->logger->debug('Listed ' . \count($executions) . ' request matching the expectation');
+        $this->logger->debug('Listed ' . count($executions) . ' request matching the expectation');
 
         return $response
             ->withStatus(200)
@@ -75,9 +75,7 @@ class ListRequestsAction implements ActionInterface
             ->withBody(new StringStream(json_encode($executions)));
     }
 
-    /**
-     * @return array[]
-     */
+    /** @return array[] */
     private function searchForExecutionsCount(Expectation $expectation): array
     {
         $executions = [];

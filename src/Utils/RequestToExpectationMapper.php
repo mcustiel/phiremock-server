@@ -18,6 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
+use Exception;
 use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverterLocator;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Psr\Http\Message\ServerRequestInterface;
@@ -41,8 +42,8 @@ class RequestToExpectationMapper
         $this->logger = $logger;
     }
 
-    /** @return Expectation */
-    public function map(ServerRequestInterface $request)
+    /** @throws Exception */
+    public function map(ServerRequestInterface $request): Expectation
     {
         $parsedJson = $this->parseJsonBody($request);
         $object = $this->converterLocator->locate($parsedJson)->convert($parsedJson);
@@ -51,9 +52,7 @@ class RequestToExpectationMapper
         return $object;
     }
 
-    /**
-     * @throws \Exception
-     */
+    /** @throws Exception */
     private function parseJsonBody(ServerRequestInterface $request): array
     {
         $this->logger->debug('Adding Expectation->parseJsonBody');
@@ -65,15 +64,14 @@ class RequestToExpectationMapper
 
         $bodyJson = @json_decode($body, true);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \Exception(json_last_error_msg());
+            throw new Exception(json_last_error_msg());
         }
         $this->logger->debug('BODY JSON: ' . var_export($bodyJson, true));
 
         return $bodyJson;
     }
 
-    /** @return bool */
-    private function hasBinaryBody(ServerRequestInterface $request)
+    private function hasBinaryBody(ServerRequestInterface $request): bool
     {
         return $request->hasHeader(self::CONTENT_ENCODING_HEADER)
             && 'base64' === $request->getHeader(self::CONTENT_ENCODING_HEADER);

@@ -24,7 +24,7 @@ use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 class ExpectationAutoStorage implements ExpectationStorage
 {
     /**
-     * @var \Mcustiel\Phiremock\Domain\Expectation[]
+     * @var Expectation[]
      */
     private $expectations;
 

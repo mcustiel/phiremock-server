@@ -20,7 +20,6 @@ namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\HttpResponse;
-use Mcustiel\Phiremock\Domain\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -48,9 +47,6 @@ class HttpResponseStrategy extends AbstractResponse implements ResponseStrategyI
         return $httpResponse;
     }
 
-    /**
-     * @param Response $responseConfig
-     */
     private function getResponseWithBody(HttpResponse $responseConfig, ResponseInterface $httpResponse): ResponseInterface
     {
         if ($responseConfig->getBody()) {

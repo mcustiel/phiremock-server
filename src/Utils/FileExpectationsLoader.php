@@ -18,6 +18,7 @@
 
 namespace Mcustiel\Phiremock\Server\Utils;
 
+use Exception;
 use Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverterLocator;
 use Mcustiel\Phiremock\Server\Model\ExpectationStorage;
 use Mcustiel\Phiremock\Server\Utils\Traits\ExpectationValidator;
@@ -27,11 +28,11 @@ class FileExpectationsLoader
 {
     use ExpectationValidator;
 
-    /** @var \Mcustiel\Phiremock\Common\Utils\ArrayToExpectationConverterLocator */
+    /** @var ArrayToExpectationConverterLocator */
     private $converterLocator;
-    /** @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage */
+    /** @var ExpectationStorage */
     private $storage;
-    /** @var \Mcustiel\Phiremock\Server\Model\ExpectationStorage */
+    /** @var ExpectationStorage */
     private $backup;
     /** @var \Psr\Log\LoggerInterface */
     private $logger;
@@ -48,14 +49,14 @@ class FileExpectationsLoader
         $this->logger = $logger;
     }
 
-    /** @throws \Exception */
+    /** @throws Exception */
     public function loadExpectationFromFile(string $fileName): void
     {
         $this->logger->debug("Loading expectation file $fileName");
         $content = file_get_contents($fileName);
         $data = @json_decode($content, true);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \Exception(json_last_error_msg());
+            throw new Exception(json_last_error_msg());
         }
         $expectation = $this->converterLocator->locate($data)->convert($data);
         $this->validateExpectationOrThrowException($expectation, $this->logger);
@@ -68,6 +69,7 @@ class FileExpectationsLoader
         $this->backup->addExpectation($expectation);
     }
 
+    /** @throws Exception */
     public function loadExpectationsFromDirectory(string $directory): void
     {
         $this->logger->info("Loading expectations from directory $directory");
