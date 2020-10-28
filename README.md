@@ -629,6 +629,7 @@ Phiremock Server still supports expectations in the format of Phiremock V1. This
 ### See also
 
 * Phiremock Client: https://github.com/mcustiel/phiremock-client
+* Phiremock Codeception Extension: https://github.com/mcustiel/phiremock-codeception-extension
 * Examples in tests: https://github.com/mcustiel/phiremock-server/tree/master/tests/acceptance
 
 ### Contributing:
