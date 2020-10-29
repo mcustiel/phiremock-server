@@ -16,19 +16,19 @@ class ConfigBuilder
     /** @var array */
     private static $defaultConfig;
 
-    /** @var Directory */
+    /** @var Directory|null */
     private $configPath;
 
     /** @throws Exception */
-    public function __construct(Directory $configPath)
+    public function __construct(?Directory $configPath)
     {
         if (self::$defaultConfig === null) {
             self::$defaultConfig = [
-                'port'             => self::DEFAULT_PORT,
-                'ip'               => self::DEFAULT_IP,
-                'expectations-dir' => self::getDefaultExpectationsDir()->asString(),
-                'debug'            => false,
-                'factory-class'    => Factory::class,
+                Config::PORT             => self::DEFAULT_PORT,
+                Config::IP               => self::DEFAULT_IP,
+                Config::EXPECTATIONS_DIR => self::getDefaultExpectationsDir()->asString(),
+                Config::DEBUG            => false,
+                Config::FACTORY_CLASS    => Factory::class,
             ];
         }
         $this->configPath = $configPath;
@@ -39,29 +39,7 @@ class ConfigBuilder
     {
         $config = self::$defaultConfig;
 
-        $fileConfiguration = [];
-
-        $configFiles = [
-            __DIR__ . '/../../../../../../.phiremock',
-            __DIR__ . '/../../../../../../.phiremock.dist',
-            __DIR__ . '/../../../.phiremock',
-            __DIR__ . '/../../../.phiremock.dist',
-            getcwd() . '/.phiremock',
-            getcwd() . '/.phiremock.dist',
-            HomePathService::getHomePath()->getFullSubpathAsString(
-                '.phiremock' . DIRECTORY_SEPARATOR . 'config'
-            ),
-            '.phiremock',
-            '.phiremock.dist',
-        ];
-
-        foreach ($configFiles as $configFileName) {
-            $configFilePath = $this->configPath->getFullSubpathAsString($configFileName);
-            if (file_exists($configFilePath)) {
-                $fileConfiguration = require $configFilePath;
-                break;
-            }
-        }
+        $fileConfiguration = $this->getConfigurationFromConfigFile();
         $extraKeys = array_diff_key($fileConfiguration, self::$defaultConfig);
         if (!empty($extraKeys)) {
             throw new DomainException('Extra keys in configuration file: ' . implode(',', $extraKeys));
@@ -78,5 +56,40 @@ class ConfigBuilder
                 '.phiremock' . DIRECTORY_SEPARATOR . 'expectations'
             )
         );
+    }
+
+    /** @throws Exception */
+    protected function getConfigurationFromConfigFile(): array
+    {
+        if ($this->configPath) {
+            $configFiles = ['.phiremock', '.phiremock.dist'];
+            foreach ($configFiles as $configFileName) {
+                $configFilePath = $this->configPath->getFullSubpathAsString($configFileName);
+                if (file_exists($configFilePath)) {
+                    return require $configFilePath;
+                }
+            }
+            throw new Exception('No config file found in: ' . $this->configPath->asString());
+        }
+
+        $configFiles = [
+            __DIR__ . '/../../../../../../.phiremock',
+            __DIR__ . '/../../../../../../.phiremock.dist',
+            __DIR__ . '/../../../.phiremock',
+            __DIR__ . '/../../../.phiremock.dist',
+            getcwd() . '/.phiremock',
+            getcwd() . '/.phiremock.dist',
+            HomePathService::getHomePath()->getFullSubpathAsString(
+                '.phiremock' . DIRECTORY_SEPARATOR . 'config'
+            ),
+            '.phiremock',
+            '.phiremock.dist',
+        ];
+        foreach ($configFiles as $configFilePath) {
+            if (file_exists($configFilePath)) {
+                return require $configFilePath;
+            }
+        }
+        return [];
     }
 }

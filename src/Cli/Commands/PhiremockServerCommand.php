@@ -120,32 +120,8 @@ class PhiremockServerCommand extends Command
     {
         $this->createPhiremockPathIfNotExists();
 
-        $configPath = new Directory($input->getOption('config-path') ?? getcwd());
-        $cliConfig = [];
-        if ($input->getOption('ip')) {
-            $cliConfig['ip'] = (string) $input->getOption('ip');
-        }
-        if ($input->getOption('port')) {
-            $cliConfig['port'] = (int) $input->getOption('port');
-        }
-        if ($input->getOption('debug')) {
-            $cliConfig['debug'] = true;
-        }
-        if ($input->getOption('expectations-dir')) {
-            $cliConfig['expectations-dir'] = $input->getOption('expectations-dir');
-        }
-        if ($input->getOption('factory-class')) {
-            $cliConfig['factory-class'] = $input->getOption('factory-class');
-        }
-        if ($input->getOption('certificate')) {
-            $cliConfig['certificate'] = $input->getOption('certificate');
-        }
-        if ($input->getOption('certificate-key')) {
-            $cliConfig['certificate-key'] = $input->getOption('certificate-key');
-        }
-        if ($input->getOption('cert-passphrase')) {
-            $cliConfig['cert-passphrase'] = $input->getOption('cert-passphrase');
-        }
+        $configPath = $this->getConfigPath($input);
+        $cliConfig = $this->getCommandLineOptions($input);
 
         $config = (new ConfigBuilder($configPath))->build($cliConfig);
 
@@ -188,6 +164,7 @@ class PhiremockServerCommand extends Command
         );
     }
 
+    /** @throws Exception */
     private function processFileExpectations(Config $config): void
     {
         $expectationsDir = $config->getExpectationsPath()->asString();
@@ -201,6 +178,7 @@ class PhiremockServerCommand extends Command
             ->loadExpectationsFromDirectory($expectationsDir);
     }
 
+    /** @throws ErrorException */
     private function setUpHandlers(): void
     {
         $handleTermination = function () {
@@ -243,5 +221,32 @@ class PhiremockServerCommand extends Command
             ],
             true
         );
+    }
+
+    /** @return string[] */
+    private function getCommandLineOptions(InputInterface $input): array
+    {
+        $cliConfig = [];
+        foreach (Config::CONFIG_OPTIONS as $configOption) {
+            $optionValue = $input->getOption($configOption);
+            if ($optionValue) {
+                $cliConfig[$configOption] = (string)$optionValue;
+            }
+        }
+        return $cliConfig;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return Directory|null
+     */
+    protected function getConfigPath(InputInterface $input): ?Directory
+    {
+        $configPath = null;
+        $configPathOptionValue = $input->getOption('config-path');
+        if ($configPathOptionValue) {
+            $configPath = new Directory($configPathOptionValue);
+        }
+        return $configPath;
     }
 }
