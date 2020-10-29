@@ -72,6 +72,11 @@ class ConfigBuilder
             throw new Exception('No config file found in: ' . $this->configPath->asString());
         }
 
+        return $this->searchFileAndGetConfig();
+    }
+
+    protected function searchFileAndGetConfig(): array
+    {
         $configFiles = [
             __DIR__ . '/../../../../../../.phiremock',
             __DIR__ . '/../../../../../../.phiremock.dist',
