@@ -30,6 +30,7 @@ use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as EventLoop;
 use React\EventLoop\LoopInterface;
 use React\Http\Middleware\RequestBodyBufferMiddleware;
+use React\Http\Middleware\RequestBodyParserMiddleware;
 use React\Http\Middleware\StreamingRequestMiddleware;
 use React\Http\Server;
 use React\Socket\Server as ReactSocket;
@@ -64,6 +65,7 @@ class ReactPhpServer implements ServerInterface
             $this->loop,
             new StreamingRequestMiddleware(),
             new RequestBodyBufferMiddleware(),
+            new RequestBodyParserMiddleware(),
             function (ServerRequestInterface $request) {
                 return $this->onRequest($request);
             }
