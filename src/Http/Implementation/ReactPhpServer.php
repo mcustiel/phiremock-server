@@ -29,6 +29,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as EventLoop;
 use React\EventLoop\LoopInterface;
+use React\Http\Middleware\RequestBodyBufferMiddleware;
+use React\Http\Middleware\StreamingRequestMiddleware;
 use React\Http\Server;
 use React\Socket\Server as ReactSocket;
 
@@ -60,6 +62,8 @@ class ReactPhpServer implements ServerInterface
     {
         $this->http = new Server(
             $this->loop,
+            new StreamingRequestMiddleware(),
+            new RequestBodyBufferMiddleware(),
             function (ServerRequestInterface $request) {
                 return $this->onRequest($request);
             }
@@ -70,7 +74,7 @@ class ReactPhpServer implements ServerInterface
         $this->http->listen($this->socket);
 
         // Dispatch pending signals periodically
-        if (function_exists('pcntl_signal_dispatch')) {
+        if (\function_exists('pcntl_signal_dispatch')) {
             $this->loop->addPeriodicTimer(0.5, function () {
                 pcntl_signal_dispatch();
             });
