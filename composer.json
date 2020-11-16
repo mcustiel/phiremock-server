@@ -22,7 +22,7 @@
     "require": {
         "php": "^7.2",
         "ext-json": "*",
-        "mcustiel/phiremock-common": "v1.0.0",
+        "mcustiel/phiremock-common": "^1.0",
         "react/http": "^1.0",
         "monolog/monolog": ">=1.0 <3.0",
         "symfony/console": ">=3.0 <6.0",

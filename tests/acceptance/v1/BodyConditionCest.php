@@ -197,6 +197,33 @@ class BodyConditionCest
         $I->seeResponseEquals('Found');
     }
 
+    public function responseExpectedWhenRequestBodyContainsTest(AcceptanceTester $I)
+    {
+        $I->wantTo('see if mocking based in request body equality works');
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(
+            '/__phiremock/expectations',
+            $I->getPhiremockRequest([
+                'request' => [
+                    'body'    => ['contains' => 'potato'],
+                ],
+                'response' => [
+                    'statusCode' => 201,
+                    'body'       => 'Found',
+                ],
+            ])
+            );
+
+        $I->seeResponseCodeIs(201);
+
+        $I->sendPOST('/dontcare', 'tomato potato banana coconut');
+
+        $I->seeResponseCodeIs(201);
+        $I->seeResponseEquals('Found');
+    }
+
+
     public function responseExpectedWhenRequestBodyCaseInsensitiveEqualsTest(AcceptanceTester $I)
     {
         $I->wantTo('see if mocking based in request body case insensitive equality works');
