@@ -19,7 +19,7 @@ Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not 
 [![Version](https://img.shields.io/packagist/v/mcustiel/phiremock-server)](https://packagist.org/packages/mcustiel/phiremock-server)
 [![Build Status](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/badges/build.png?b=master)](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/build-status/master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/?branch=master)
-![Packagist Downloads](https://img.shields.io/packagist/dm/mcustiel/phiremock-server)
+[![Packagist Downloads](https://img.shields.io/packagist/dm/mcustiel/phiremock-server)](https://packagist.org/packages/mcustiel/phiremock-server)
 
 ## Installation
 
