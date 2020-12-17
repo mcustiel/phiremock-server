@@ -22,6 +22,7 @@ use InvalidArgumentException;
 
 class ActionLocator
 {
+    const STATIC_FILES_SERVER = 'displayStaticFile';
     const LIST_EXPECTATIONS = 'listExpectations';
     const ADD_EXPECTATION = 'addExpectation';
     const CLEAR_EXPECTATIONS = 'clearExpectations';
@@ -35,6 +36,8 @@ class ActionLocator
     const MANAGE_REQUEST = 'manageRequest';
 
     const ACTION_FACTORY_METHOD_MAP = [
+        self::STATIC_FILES_SERVER => 'createStaticFileServer',
+
         self::LIST_EXPECTATIONS  => 'createListExpectations',
         self::ADD_EXPECTATION    => 'createAddExpectation',
         self::CLEAR_EXPECTATIONS => 'createClearExpectations',

@@ -1,0 +1,18 @@
+version: "3.2"
+
+services:
+
+  phiremock:
+    build: ./docker/config/phiremock
+    volumes:
+      - ./:/opt/composer/vendor
+
+  nginx:
+    image: nginx
+    ports: 
+      - "8080:80"
+    volumes:
+      - ./docker/config/nginx/templates:/etc/nginx/conf.d
+      - ./:/usr/share/nginx/html:ro
+    depends_on: 
+      - phiremock

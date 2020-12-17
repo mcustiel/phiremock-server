@@ -1,0 +1,51 @@
+body {
+    background-color: #444444;
+    color: antiquewhite;
+}
+
+.json-display {
+    background-color: black;
+    color: whitesmoke;
+    border-color: white;
+    border-width: 4px;
+    font-family: "Courier New", monospace;
+}
+
+.bracket, .curly-brace {
+    color: yellow;
+}
+
+#main-content {
+    padding-top: 80px;
+}
+
+.json-row {
+    padding-left: 2em;
+}
+
+.json-value {
+    padding-left: 2em;
+}
+
+.json-key {
+    color: aquamarine;
+}
+
+.json-string {
+    color: lightskyblue;
+}
+
+.json-row.json-level-0 {
+    border-bottom-color: white;
+    border-bottom-width: 3px;
+    border-bottom-style: solid;
+    
+}
+
+.json-object {
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-top: 3px;
+    border-bottom: 3px;
+    border-color: azure;
+}

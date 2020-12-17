@@ -40,6 +40,11 @@ class ActionsFactory
         $this->phiremockFactory = $phiremockFactory;
     }
 
+    public function createStaticFileServer(): DisplayStaticFileAction
+    {
+        return new DisplayStaticFileAction($this->serverFactory->createLogger());
+    }
+
     public function createAddExpectation(): AddExpectationAction
     {
         return new AddExpectationAction(

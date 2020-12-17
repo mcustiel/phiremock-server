@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+docker run \
+	--rm -it \
+	-v $(pwd):/app \
+	-e DISPLAY=unix$DISPLAY \
+	-v /tmp/.X11-unix:/tmp/.X11-unix \
+	node-typescript \
+	npm $@

@@ -65,11 +65,11 @@ class FastRouterHandler implements RequestHandlerInterface
                         ->execute($request, new Response());
                 case Dispatcher::METHOD_NOT_ALLOWED:
                     return new Response(
-                        sprintf(
+                        new StringStream(sprintf(
                             'Method not allowed. Allowed methods for %s: %s',
                             $uri,
                             implode(', ', $routeInfo[1])
-                        ),
+                        )),
                         405
                     );
                 case Dispatcher::FOUND:
@@ -86,6 +86,7 @@ class FastRouterHandler implements RequestHandlerInterface
             );
         } catch (Throwable $e) {
             $this->logger->error($e->getMessage());
+            $this->logger->debug((string) $e);
 
             return new Response(
                 new StringStream(
@@ -100,6 +101,8 @@ class FastRouterHandler implements RequestHandlerInterface
     private function createDispatcherCallable(): callable
     {
         return function (RouteCollector $r) {
+            $r->addRoute('GET', '/__phiremock/static/{path:.*}', ActionLocator::STATIC_FILES_SERVER);
+
             $r->addRoute('GET', '/__phiremock/expectations', ActionLocator::LIST_EXPECTATIONS);
             $r->addRoute('POST', '/__phiremock/expectations', ActionLocator::ADD_EXPECTATION);
             $r->addRoute('DELETE', '/__phiremock/expectations', ActionLocator::CLEAR_EXPECTATIONS);
