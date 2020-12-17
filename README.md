@@ -19,7 +19,7 @@ Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not 
 [![Version](https://img.shields.io/packagist/v/mcustiel/phiremock-server)](https://packagist.org/packages/mcustiel/phiremock-server)
 [![Build Status](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/badges/build.png?b=master)](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/build-status/master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mcustiel/phiremock-server/?branch=master)
-![Packagist Downloads](https://img.shields.io/packagist/dm/mcustiel/phiremock-server)
+[![Packagist Downloads](https://img.shields.io/packagist/dm/mcustiel/phiremock-server)](https://packagist.org/packages/mcustiel/phiremock-server)
 
 ## Installation
 
@@ -34,7 +34,7 @@ Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not 
 Phiremock Server requires guzzle client v6 to work. This dependency can be avoided and you can choose any psr18-compatible http client and overwrite Phiremock Server's factory to provide it.
 
 ### Phar
-You can also download the standalone server as a phar from [here](https://github.com/mcustiel/phiremock-server/releases/download/v1.0.0/phiremock.phar).
+You can also download the standalone server as a phar from [here](https://github.com/mcustiel/phiremock-server/releases/download/v1.1.1/phiremock.phar).
 
 ## Running
 
