@@ -223,7 +223,6 @@ class BodyConditionCest
         $I->seeResponseEquals('Found');
     }
 
-
     public function responseExpectedWhenRequestBodyCaseInsensitiveEqualsTest(AcceptanceTester $I)
     {
         $I->wantTo('see if mocking based in request body case insensitive equality works');

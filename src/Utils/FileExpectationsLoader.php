@@ -55,7 +55,7 @@ class FileExpectationsLoader
         $this->logger->debug("Loading expectation file $fileName");
         $content = file_get_contents($fileName);
         $data = @json_decode($content, true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
+        if (\JSON_ERROR_NONE !== json_last_error()) {
             throw new Exception(json_last_error_msg());
         }
         $expectation = $this->converterLocator->locate($data)->convert($data);

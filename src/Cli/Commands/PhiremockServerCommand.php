@@ -81,37 +81,37 @@ class PhiremockServerCommand extends Command
                 'debug',
                 'd',
                 InputOption::VALUE_NONE,
-                sprintf(self::DEBUG_HELP_MESSAGE)
+                self::DEBUG_HELP_MESSAGE
             )
             ->addOption(
                 'config-path',
                 'c',
                 InputOption::VALUE_REQUIRED,
-                sprintf(self::CONFIG_PATH_HELP_MESSAGE)
+                self::CONFIG_PATH_HELP_MESSAGE
             )
             ->addOption(
                 'factory-class',
                 'f',
                 InputOption::VALUE_REQUIRED,
-                sprintf(self::FACTORY_CLASS_HELP_MESSAGE)
+                self::FACTORY_CLASS_HELP_MESSAGE
             )
             ->addOption(
                 'certificate',
                 't',
                 InputOption::VALUE_REQUIRED,
-                sprintf(self::CERTIFICATE_HELP_MESSAGE)
+                self::CERTIFICATE_HELP_MESSAGE
             )
             ->addOption(
                 'certificate-key',
                 'k',
                 InputOption::VALUE_REQUIRED,
-                sprintf(self::CERTIFICATE_KEY_HELP_MESSAGE)
+                self::CERTIFICATE_KEY_HELP_MESSAGE
             )
             ->addOption(
                 'cert-passphrase',
                 's',
                 InputOption::VALUE_REQUIRED,
-                sprintf(self::PASSPHRASE_HELP_MESSAGE)
+                self::PASSPHRASE_HELP_MESSAGE
             );
     }
 
@@ -131,6 +131,17 @@ class PhiremockServerCommand extends Command
         $this->startHttpServer($config);
 
         return 0;
+    }
+
+    protected function getConfigPath(InputInterface $input): ?Directory
+    {
+        $configPath = null;
+        $configPathOptionValue = $input->getOption('config-path');
+        if ($configPathOptionValue) {
+            $configPath = new Directory($configPathOptionValue);
+        }
+
+        return $configPath;
     }
 
     /** @throws Exception */
@@ -190,9 +201,9 @@ class PhiremockServerCommand extends Command
         $this->logger->debug('Registering shutdown function');
         register_shutdown_function($handleTermination);
 
-        if (function_exists('pcntl_signal')) {
+        if (\function_exists('pcntl_signal')) {
             $this->logger->debug('PCNTL present: Installing signal handlers');
-            pcntl_signal(SIGTERM, function () { exit(0); });
+            pcntl_signal(\SIGTERM, function () { exit(0); });
         }
 
         $errorHandler = function ($severity, $message, $file, $line) {
@@ -210,14 +221,14 @@ class PhiremockServerCommand extends Command
 
     private function isError(int $severity): bool
     {
-        return in_array(
+        return \in_array(
             $severity,
             [
-                E_COMPILE_ERROR,
-                E_CORE_ERROR,
-                E_USER_ERROR,
-                E_PARSE,
-                E_ERROR,
+                \E_COMPILE_ERROR,
+                \E_CORE_ERROR,
+                \E_USER_ERROR,
+                \E_PARSE,
+                \E_ERROR,
             ],
             true
         );
@@ -230,23 +241,10 @@ class PhiremockServerCommand extends Command
         foreach (Config::CONFIG_OPTIONS as $configOption) {
             $optionValue = $input->getOption($configOption);
             if ($optionValue) {
-                $cliConfig[$configOption] = (string)$optionValue;
+                $cliConfig[$configOption] = (string) $optionValue;
             }
         }
-        return $cliConfig;
-    }
 
-    /**
-     * @param InputInterface $input
-     * @return Directory|null
-     */
-    protected function getConfigPath(InputInterface $input): ?Directory
-    {
-        $configPath = null;
-        $configPathOptionValue = $input->getOption('config-path');
-        if ($configPathOptionValue) {
-            $configPath = new Directory($configPathOptionValue);
-        }
-        return $configPath;
+        return $cliConfig;
     }
 }

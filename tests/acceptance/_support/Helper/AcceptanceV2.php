@@ -77,7 +77,7 @@ class AcceptanceV2 extends \Codeception\Module
     public function getPhiremockResponse(string $jsonResponse): string
     {
         $parsedExpectations = json_decode($jsonResponse, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (json_last_error() !== \JSON_ERROR_NONE) {
             return $jsonResponse;
         }
         $v2 = [];

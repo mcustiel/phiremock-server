@@ -98,7 +98,7 @@ class SetScenarioStateAction implements ActionInterface
         }
 
         $bodyJson = @json_decode($body, true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
+        if (\JSON_ERROR_NONE !== json_last_error()) {
             throw new \Exception(json_last_error_msg());
         }
 

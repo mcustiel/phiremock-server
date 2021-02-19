@@ -85,7 +85,7 @@ class Factory
         if (!$this->factoryCache->has('logger')) {
             $logger = new Logger('stdoutLogger');
             $logLevel = $this->config->isDebugMode() ? Logger::DEBUG : Logger::INFO;
-            $logger->pushHandler(new StreamHandler(STDOUT, $logLevel));
+            $logger->pushHandler(new StreamHandler(\STDOUT, $logLevel));
             $this->factoryCache->set('logger', $logger);
         }
 

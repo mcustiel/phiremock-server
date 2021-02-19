@@ -61,7 +61,7 @@ class ServerControl extends \Codeception\Extension
         if (!$this->application->isRunning()) {
             return;
         }
-        $this->application->stop(5, SIGTERM);
+        $this->application->stop(5, \SIGTERM);
         $this->writeln('Phiremock is stopped');
     }
 }

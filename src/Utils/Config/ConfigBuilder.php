@@ -70,7 +70,7 @@ class ConfigBuilder
     {
         return new ExpectationsDirectory(
             HomePathService::getHomePath()->getFullSubpathAsString(
-                '.phiremock' . DIRECTORY_SEPARATOR . 'expectations'
+                '.phiremock' . \DIRECTORY_SEPARATOR . 'expectations'
             )
         );
     }
@@ -102,7 +102,7 @@ class ConfigBuilder
             getcwd() . '/.phiremock',
             getcwd() . '/.phiremock.dist',
             HomePathService::getHomePath()->getFullSubpathAsString(
-                '.phiremock' . DIRECTORY_SEPARATOR . 'config'
+                '.phiremock' . \DIRECTORY_SEPARATOR . 'config'
             ),
             '.phiremock',
             '.phiremock.dist',
@@ -112,6 +112,7 @@ class ConfigBuilder
                 return require $configFilePath;
             }
         }
+
         return [];
     }
 }

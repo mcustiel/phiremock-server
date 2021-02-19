@@ -21,7 +21,7 @@ use Symfony\Component\Console\Application;
 
 const IS_SINGLE_COMMAND = true;
 
-if (PHP_SAPI !== 'cli') {
+if (\PHP_SAPI !== 'cli') {
     throw new RuntimeException('This is a standalone CLI application');
 }
 

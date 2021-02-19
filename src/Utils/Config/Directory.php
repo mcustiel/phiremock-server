@@ -29,7 +29,7 @@ class Directory
     public function __construct(string $directory)
     {
         $this->ensureIsDirectory($directory);
-        $this->directory = rtrim($directory, DIRECTORY_SEPARATOR);
+        $this->directory = rtrim($directory, \DIRECTORY_SEPARATOR);
     }
 
     public function asString(): string
@@ -39,7 +39,7 @@ class Directory
 
     public function getFullSubpathAsString(string $subPath): string
     {
-        return $this->directory . DIRECTORY_SEPARATOR . $subPath;
+        return $this->directory . \DIRECTORY_SEPARATOR . $subPath;
     }
 
     private function ensureIsDirectory(string $directory): void

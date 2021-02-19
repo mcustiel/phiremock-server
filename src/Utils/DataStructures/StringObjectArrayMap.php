@@ -38,12 +38,12 @@ class StringObjectArrayMap implements Map
 
     public function set($key, $value)
     {
-        if (!is_string($key)) {
-            throw new InvalidArgumentException('Expected key to be string. Got: ' . gettype($key));
+        if (!\is_string($key)) {
+            throw new InvalidArgumentException('Expected key to be string. Got: ' . \gettype($key));
         }
 
-        if (!is_object($value)) {
-            throw new InvalidArgumentException('Expected value to be object. Got: ' . gettype($key));
+        if (!\is_object($value)) {
+            throw new InvalidArgumentException('Expected value to be object. Got: ' . \gettype($key));
         }
         $this->mapData[$key] = $value;
     }
@@ -59,8 +59,8 @@ class StringObjectArrayMap implements Map
 
     public function has($key)
     {
-        if (!is_string($key)) {
-            throw new InvalidArgumentException('Expected key to be string. Got: ' . gettype($key));
+        if (!\is_string($key)) {
+            throw new InvalidArgumentException('Expected key to be string. Got: ' . \gettype($key));
         }
 
         return isset($this->mapData[$key]);

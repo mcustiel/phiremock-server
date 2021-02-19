@@ -20,6 +20,7 @@ namespace Mcustiel\Phiremock\Server\Http\Implementation;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use function FastRoute\simpleDispatcher;
 use Laminas\Diactoros\Response;
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
@@ -29,7 +30,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
-use function FastRoute\simpleDispatcher;
 
 class FastRouterHandler implements RequestHandlerInterface
 {
@@ -77,6 +77,7 @@ class FastRouterHandler implements RequestHandlerInterface
                         ->locate($routeInfo[1])
                         ->execute($request, new Response());
             }
+
             return new Response(
                 new StringStream(
                     json_encode(['result' => 'ERROR', 'details' => 'Unexpected error: Router returned unexpected info'])
