@@ -34,7 +34,7 @@ Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not 
 Phiremock Server requires guzzle client v6 to work. This dependency can be avoided and you can choose any psr18-compatible http client and overwrite Phiremock Server's factory to provide it.
 
 ### Phar
-You can also download the standalone server as a phar from [here](https://github.com/mcustiel/phiremock-server/releases/download/v1.1.1/phiremock.phar).
+You can also download the standalone server as a phar from [here](https://github.com/mcustiel/phiremock-server/releases/download/v1.1.2/phiremock.phar).
 
 ## Running
 
