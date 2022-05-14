@@ -20,6 +20,7 @@
 namespace Mcustiel\Phiremock\Server\Tests\V1;
 
 use AcceptanceTester;
+use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class RequestListCest
 {
@@ -56,7 +57,12 @@ class RequestListCest
 
         $I->sendPUT('/__phiremock/executions', '');
         $I->seeResponseCodeIs('200');
-        $I->seeResponseEquals('[{"method":"GET","url":"http:\/\/localhost:8086\/the\/request\/url","headers":{"Host":["localhost:8086"],"User-Agent":["Symfony BrowserKit"],"Content-Type":["application\/json"],"Referer":["http:\/\/localhost:8086\/__phiremock\/expectations"]},"cookies":[],"body":""}]');
+        $I->seeResponseContainsJson(
+            json_decode(
+                '[{"method":"GET","url":"http:\/\/localhost:8086\/the\/request\/url","headers":{"Host":["localhost:8086"],"User-Agent":["Symfony BrowserKit"],"Content-Type":["application\/json"],"Referer":["http:\/\/localhost:8086\/__phiremock\/expectations"]},"cookies":[],"body":""}]',
+                true
+            )
+        );
     }
 
     public function returnExecutedRequestMatchingExpectation(AcceptanceTester $I)
@@ -86,6 +92,12 @@ class RequestListCest
             ],
         ]));
         $I->seeResponseCodeIs('200');
-        $I->seeResponseEquals('[{"method":"GET","url":"http:\/\/localhost:8086\/the\/request\/url","headers":{"Host":["localhost:8086"],"User-Agent":["Symfony BrowserKit"],"Content-Type":["application\/json"],"Referer":["http:\/\/localhost:8086\/__phiremock\/expectations"]},"cookies":[],"body":""}]');
+        $I->seeResponseIsJson('200');
+        $I->seeResponseContainsJson(
+            json_decode(
+                '[{"method":"GET","url":"http:\/\/localhost:8086\/the\/request\/url","headers":{"Host":["localhost:8086"],"User-Agent":["Symfony BrowserKit"],"Content-Type":["application\/json"],"Referer":["http:\/\/localhost:8086\/__phiremock\/expectations"]},"cookies":[],"body":""}]',
+                true
+            )
+        );
     }
 }
