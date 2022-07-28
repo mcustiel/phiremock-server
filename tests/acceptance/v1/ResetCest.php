@@ -98,7 +98,12 @@ class ResetCest
 
         $I->sendPUT('/__phiremock/executions', '');
         $I->seeResponseCodeIs('200');
-        $I->seeResponseEquals('[{"method":"GET","url":"http:\/\/localhost:8086\/the\/request\/url","headers":{"Host":["localhost:8086"],"User-Agent":["Symfony BrowserKit"],"Referer":["http:\/\/localhost:8086\/__phiremock\/executions"]},"cookies":[],"body":""}]');
+        $I->seeResponseContainsJson(
+            json_decode(
+                '[{"method":"GET","url":"http:\/\/localhost:8086\/the\/request\/url","headers":{"Host":["localhost:8086"],"User-Agent":["Symfony BrowserKit"],"Referer":["http:\/\/localhost:8086\/__phiremock\/executions"]},"cookies":[],"body":""}]',
+                true
+            )
+        );
 
         $I->sendPOST('/__phiremock/reset');
 
