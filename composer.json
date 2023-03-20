@@ -24,7 +24,7 @@
         "ext-json": "*",
         "mcustiel/phiremock-common": "^1.0",
         "react/http": "^1.0",
-        "monolog/monolog": ">=1.0 <3.0",
+        "monolog/monolog": ">=1.0 <4.0",
         "symfony/console": ">=3.0 <7.0",
         "nikic/fast-route": "^1.3.0",
         "psr/http-client": "^1.0"
