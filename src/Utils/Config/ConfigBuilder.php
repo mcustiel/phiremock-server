@@ -108,7 +108,7 @@ class ConfigBuilder
             '.phiremock.dist',
         ];
         foreach ($configFiles as $configFilePath) {
-            if (file_exists($configFilePath)) {
+            if (is_file($configFilePath)) {
                 return require $configFilePath;
             }
         }
