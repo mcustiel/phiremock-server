@@ -34,3 +34,7 @@ build:
       environment:
         php:
           version: 8.1
+    php82:
+      environment:
+        php:
+          version: 8.2

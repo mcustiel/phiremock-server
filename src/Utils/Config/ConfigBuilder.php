@@ -82,7 +82,7 @@ class ConfigBuilder
             $configFiles = ['.phiremock', '.phiremock.dist'];
             foreach ($configFiles as $configFileName) {
                 $configFilePath = $this->configPath->getFullSubpathAsString($configFileName);
-                if (file_exists($configFilePath)) {
+                if (is_file($configFilePath)) {
                     return require $configFilePath;
                 }
             }
@@ -108,7 +108,7 @@ class ConfigBuilder
             '.phiremock.dist',
         ];
         foreach ($configFiles as $configFilePath) {
-            if (file_exists($configFilePath)) {
+            if (is_file($configFilePath)) {
                 return require $configFilePath;
             }
         }
