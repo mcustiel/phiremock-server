@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 
-COMPOSER=composer.phar.json composer update --no-dev --optimize-autoloader --prefer-stable
+rm -rf vendor
 
-box build
+composer clearcache
+composer global update
 
+mv composer.json composer.json.bkp
+cp composer.phar.json composer.json
+
+composer update --no-dev --optimize-autoloader
+
+box compile -vvv
+
+mv composer.json.bkp composer.json
