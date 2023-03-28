@@ -82,8 +82,8 @@ class SearchRequestAction implements ActionInterface
 
     private function getNextMatchingExpectation(?Expectation $lastFound, ServerRequestInterface $request, Expectation $expectation): ?Expectation
     {
-        if ($this->comparator->equals($request, $expectation)) {
-            if (null === $lastFound || $expectation->getPriority() > $lastFound->getPriority()) {
+        if (null === $lastFound || $expectation->getPriority() > $lastFound->getPriority()) {
+            if ($this->comparator->equals($request, $expectation)) {
                 $lastFound = $expectation;
             }
         }
