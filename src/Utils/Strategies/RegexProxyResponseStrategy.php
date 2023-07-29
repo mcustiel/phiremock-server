@@ -22,23 +22,28 @@ use Laminas\Diactoros\Uri;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\ProxyResponse;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
+use Mcustiel\Phiremock\Server\Utils\Strategies\Utils\RegexReplacer;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ProxyResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
+class RegexProxyResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
     /** @var ClientInterface */
     private $httpService;
+    /** @var RegexReplacer */
+    private $regexReplacer;
 
     public function __construct(
         ScenarioStorage $scenarioStorage,
         LoggerInterface $logger,
-        ClientInterface $httpService
+        ClientInterface $httpService,
+        RegexReplacer $regexReplacer
     ) {
         parent::__construct($scenarioStorage, $logger);
         $this->httpService = $httpService;
+        $this->regexReplacer = $regexReplacer;
     }
 
     /**
@@ -54,6 +59,8 @@ class ProxyResponseStrategy extends AbstractResponse implements ResponseStrategy
         /** @var ProxyResponse $response */
         $response = $expectation->getResponse();
         $url = $response->getUri()->asString();
+        $url = $this->regexReplacer->fillWithUrlMatches($expectation, $request, $url);
+        $url = $this->regexReplacer->fillWithBodyMatches($expectation, $request, $url);
         $this->logger->debug('Proxying request to : ' . $url);
         $this->processScenario($expectation);
         $this->processDelay($response);

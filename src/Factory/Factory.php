@@ -42,7 +42,9 @@ use Mcustiel\Phiremock\Server\Utils\RequestToExpectationMapper;
 use Mcustiel\Phiremock\Server\Utils\ResponseStrategyLocator;
 use Mcustiel\Phiremock\Server\Utils\Strategies\HttpResponseStrategy;
 use Mcustiel\Phiremock\Server\Utils\Strategies\ProxyResponseStrategy;
+use Mcustiel\Phiremock\Server\Utils\Strategies\RegexProxyResponseStrategy;
 use Mcustiel\Phiremock\Server\Utils\Strategies\RegexResponseStrategy;
+use Mcustiel\Phiremock\Server\Utils\Strategies\Utils\RegexReplacer;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Http\Client\ClientInterface;
@@ -114,7 +116,8 @@ class Factory
                 'regexResponseStrategy',
                 new RegexResponseStrategy(
                     $this->createScenarioStorage(),
-                    $this->createLogger()
+                    $this->createLogger(),
+                    $this->createRegexReplacer()
                 )
             );
         }
@@ -129,14 +132,44 @@ class Factory
             $this->factoryCache->set(
                 'proxyResponseStrategy',
                 new ProxyResponseStrategy(
-                    $this->createHttpClient(),
                     $this->createScenarioStorage(),
-                    $this->createLogger()
+                    $this->createLogger(),
+                    $this->createHttpClient()
                 )
             );
         }
 
         return $this->factoryCache->get('proxyResponseStrategy');
+    }
+
+    /** @throws Exception */
+    public function createRegexProxyResponseStrategy(): RegexProxyResponseStrategy
+    {
+        if (!$this->factoryCache->has('regexProxyResponseStrategy')) {
+            $this->factoryCache->set(
+                'regexProxyResponseStrategy',
+                new RegexProxyResponseStrategy(
+                    $this->createScenarioStorage(),
+                    $this->createLogger(),
+                    $this->createHttpClient(),
+                    $this->createRegexReplacer()
+                )
+            );
+        }
+
+        return $this->factoryCache->get('regexProxyResponseStrategy');
+    }
+
+    public function createRegexReplacer(): RegexReplacer
+    {
+        if (!$this->factoryCache->has('regexReplacer')) {
+            $this->factoryCache->set(
+                'regexReplacer',
+                new RegexReplacer()
+            );
+        }
+
+        return $this->factoryCache->get('regexReplacer');
     }
 
     public function createResponseStrategyLocator(): ResponseStrategyLocator

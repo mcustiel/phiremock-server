@@ -20,7 +20,6 @@
 namespace Mcustiel\Phiremock\Server\Tests\V1;
 
 use AcceptanceTester;
-use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class RequestListCest
 {
