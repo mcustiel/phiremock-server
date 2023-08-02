@@ -19,22 +19,31 @@
 namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
-use Mcustiel\Phiremock\Domain\Condition\MatchersEnum;
 use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Domain\HttpResponse;
+use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
+use Mcustiel\Phiremock\Server\Utils\Strategies\Utils\RegexReplacer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 class RegexResponseStrategy extends AbstractResponse implements ResponseStrategyInterface
 {
-    const PLACEHOLDER_BODY = 'body';
-    const PLACEHOLDER_URL = 'url';
+    /** @var RegexReplacer */
+    private $regexReplacer;
 
-    public function createResponse(
-        Expectation $expectation,
-        ResponseInterface $httpResponse,
-        ServerRequestInterface $request
-    ): ResponseInterface {
+    public function __construct(
+        ScenarioStorage $scenarioStorage,
+        LoggerInterface $logger,
+        RegexReplacer $regexReplacer
+    ) {
+        parent::__construct($scenarioStorage, $logger);
+
+        $this->regexReplacer = $regexReplacer;
+    }
+
+    public function createResponse(Expectation $expectation, ResponseInterface $httpResponse, ServerRequestInterface $request): ResponseInterface
+    {
         $httpResponse = $this->getResponseWithReplacedBody(
             $expectation,
             $httpResponse,
@@ -64,8 +73,8 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
 
         if ($responseConfig->hasBody()) {
             $bodyString = $responseConfig->getBody()->asString();
-            $bodyString = $this->fillWithUrlMatches($expectation, $httpRequest, $bodyString);
-            $bodyString = $this->fillWithBodyMatches($expectation, $httpRequest, $bodyString);
+            $bodyString = $this->regexReplacer->fillWithUrlMatches($expectation, $httpRequest, $bodyString);
+            $bodyString = $this->regexReplacer->fillWithBodyMatches($expectation, $httpRequest, $bodyString);
             $httpResponse = $httpResponse->withBody(new StringStream($bodyString));
         }
 
@@ -76,7 +85,7 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         Expectation $expectation,
         ResponseInterface $httpResponse,
         ServerRequestInterface $httpRequest
-    ) {
+    ): ResponseInterface {
         /** @var HttpResponse $responseConfig */
         $responseConfig = $expectation->getResponse();
         $headers = $responseConfig->getHeaders();
@@ -87,108 +96,11 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
 
         foreach ($headers as $header) {
             $headerValue = $header->getValue()->asString();
-            $headerValue = $this->fillWithUrlMatches($expectation, $httpRequest, $headerValue);
-            $headerValue = $this->fillWithBodyMatches($expectation, $httpRequest, $headerValue);
+            $headerValue = $this->regexReplacer->fillWithUrlMatches($expectation, $httpRequest, $headerValue);
+            $headerValue = $this->regexReplacer->fillWithBodyMatches($expectation, $httpRequest, $headerValue);
             $httpResponse = $httpResponse->withHeader($header->getName()->asString(), $headerValue);
         }
 
         return $httpResponse;
-    }
-
-    private function fillWithBodyMatches(
-        Expectation $expectation,
-        ServerRequestInterface $httpRequest,
-        string $responseBody
-    ): string {
-        if ($this->bodyConditionIsRegex($expectation)) {
-            $responseBody = $this->replaceMatches(
-                self::PLACEHOLDER_BODY,
-                $expectation->getRequest()->getBody()->getValue()->asString(),
-                $httpRequest->getBody()->__toString(),
-                $responseBody
-            );
-        }
-
-        return $responseBody;
-    }
-
-    private function fillWithUrlMatches(
-        Expectation $expectation,
-        ServerRequestInterface $httpRequest,
-        string $responseBody
-    ): string {
-        if ($this->urlConditionIsRegex($expectation)) {
-            return $this->replaceMatches(
-                self::PLACEHOLDER_URL,
-                $expectation->getRequest()->getUrl()->getValue()->asString(),
-                $this->getUri($httpRequest),
-                $responseBody
-            );
-        }
-
-        return $responseBody;
-    }
-
-    private function getUri(ServerRequestInterface $httpRequest): string
-    {
-        $path = ltrim($httpRequest->getUri()->getPath(), '/');
-        $query = $httpRequest->getUri()->getQuery();
-        $return = '/' . $path;
-        if ($query) {
-            $return .= '?' . $httpRequest->getUri()->getQuery();
-        }
-
-        return $return;
-    }
-
-    private function urlConditionIsRegex(Expectation $expectation): bool
-    {
-        return $expectation->getRequest()->getUrl()
-            && MatchersEnum::MATCHES === $expectation->getRequest()->getUrl()->getMatcher()->getName();
-    }
-
-    private function bodyConditionIsRegex(Expectation $expectation): bool
-    {
-        return $expectation->getRequest()->getBody()
-            && MatchersEnum::MATCHES === $expectation->getRequest()->getBody()->getMatcher()->getName();
-    }
-
-    private function replaceMatches(
-        string $type, string $pattern, string $subject, string $destination): string
-    {
-        $matches = [];
-
-        $matchCount = preg_match_all(
-            $pattern,
-            $subject,
-            $matches
-        );
-        if ($matchCount > 0) {
-            // we don't need full matches
-            unset($matches[0]);
-            $destination = $this->replaceMatchesInBody($matches, $type, $destination);
-        }
-
-        return $destination;
-    }
-
-    private function replaceMatchesInBody(array $matches, string $type, string $responseBody): string
-    {
-        $search = [];
-        $replace = [];
-
-        foreach ($matches as $matchGroupId => $matchGroup) {
-            // add first element as replacement for $(type.index)
-            $search[] = "\${{$type}.{$matchGroupId}}";
-            $replace[] = reset($matchGroup);
-            foreach ($matchGroup as $matchId => $match) {
-                // fix index to start with 1 instead of 0
-                ++$matchId;
-                $search[] = "\${{$type}.{$matchGroupId}.{$matchId}}";
-                $replace[] = $match;
-            }
-        }
-
-        return str_replace($search, $replace, $responseBody);
     }
 }

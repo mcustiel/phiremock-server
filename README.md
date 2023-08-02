@@ -561,6 +561,28 @@ Content-Type: application/json
 }
 ```
 
+This is also supported to generate the proxy url as shown in the following example:
+
+```
+POST /__phiremock/expectations HTTP/1.1
+Host: your.phiremock.host
+Content-Type: application/json
+
+{
+    "version": "2",
+    "on": {
+        "method": { "isSameString": "GET" },
+        "url": {"matches": "~^/example_service/(\w+)~"}
+        "headers": {
+            "Content-Type": {"isEqualTo": "application/json"}
+        }
+    },
+    "then": {
+        "proxyTo": "https://some.other.service/path/${url.1}"
+    }
+}
+```
+
 ### Conditions based in form data
 For requests encoded with `application/x-www-form-urlencoded` and specifying this Content Type in the headers. Phiremock Server is capable of execute conditions on the values of the form fields.
 
@@ -636,7 +658,7 @@ Phiremock Server still supports expectations in the format of Phiremock V1. This
 
 ### Contributing:
 
-Just submit a pull request. Don't forget to run tests and php-cs-fixer first and write documentation.
+Just submit a pull request. Don't forget to run tests and php-cs-fixer first, and write documentation.
 
 ### Thanks to:
 

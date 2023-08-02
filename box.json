@@ -1,0 +1,19 @@
+{
+    "directories" : [ "src" ],
+    "compactors": [ "KevinGH\\Box\\Compactor\\Php" ],
+    "dump-autoload": false,
+    "chmod" : "0755",
+    "main" : "bin/phiremock",
+    "output" : "phiremock.phar",
+    "stub" : true,
+    "files": [
+        "LICENSE"
+    ],
+    "finder": [
+        {
+            "name": ["*.php"],
+            "exclude": ["Tests", "tests"],
+            "in": ["vendor", "."]
+        }
+    ]
+}

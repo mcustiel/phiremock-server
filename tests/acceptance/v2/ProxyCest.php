@@ -19,8 +19,34 @@
 
 namespace Mcustiel\Phiremock\Server\Tests\V2;
 
+use AcceptanceTester;
+use GuzzleHttp\Client as HttpClient;
 use Mcustiel\Phiremock\Server\Tests\V1\ProxyCest as ProxyCestV1;
 
 class ProxyCest extends ProxyCestV1
 {
+    public function proxyToGivenUriUsingDataFromRequestTest(AcceptanceTester $I): void
+    {
+        $realUrl = 'http://info.cern.ch/hypertext/WWW/TheProject.html';
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+
+        $I->sendPOST(
+            '/__phiremock/expectations',
+            $I->getPhiremockRequest([
+                                'version' => '2',
+                'request'                 => [
+                    'url'                    => ['matches' => '~^/path/([a-z]+)~i'],
+                                      'body' => ['matches' => '~"file"\s*:\s*\"([a-z]+)"~i'],
+                ],
+                'proxyTo' => 'http://info.cern.ch/hypertext/${url.1}/${body.1}.html',
+            ])
+        );
+
+        $guzzle = new HttpClient();
+        $originalBody = $guzzle->get($realUrl)->getBody()->__toString();
+
+        $I->sendPost('/path/WWW', ['file' => 'TheProject']);
+        $I->seeResponseEquals($originalBody);
+    }
 }

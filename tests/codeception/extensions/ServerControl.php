@@ -35,7 +35,7 @@ class ServerControl extends \Codeception\Extension
     /** @var Process */
     private $application;
 
-    public function suiteBefore(SuiteEvent $event)
+    public function suiteBefore(SuiteEvent $event): void
     {
         $this->writeln('Starting Phiremock server');
 
@@ -55,7 +55,7 @@ class ServerControl extends \Codeception\Extension
         sleep(1);
     }
 
-    public function suiteAfter()
+    public function suiteAfter(): void
     {
         $this->writeln('Stopping Phiremock server');
         if (!$this->application->isRunning()) {

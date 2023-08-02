@@ -38,8 +38,13 @@ class ResponseStrategyLocator
     public function getStrategyForExpectation(Expectation $expectation): ResponseStrategyInterface
     {
         if ($expectation->getResponse()->isProxyResponse()) {
+            if ($this->requestBodyOrUrlAreRegexp($expectation)) {
+                return $this->factory->createRegexProxyResponseStrategy();
+            }
+
             return $this->factory->createProxyResponseStrategy();
         }
+
         if ($this->requestBodyOrUrlAreRegexp($expectation)) {
             return $this->factory->createRegexResponseStrategy();
         }
