@@ -518,8 +518,7 @@ Content-Type: application/json
         "method": { "isSameString": "POST" },
         "url": { "isEqualTo": "/api/users" },
         "jsonPath": {
-            "path": "user.address.zipCode",
-            "isEqualTo": "12345"
+            "user.address.zipCode": { "isEqualTo": "12345" }
         }
     },
     "then": {
