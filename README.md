@@ -506,6 +506,32 @@ Content-Type: application/json
 }
 ```
 
+### JSON Path Conditions
+Phiremock allows filtering requests by checking values in specific JSON paths in the request body. This is particularly useful when you need to match requests based on nested JSON structures:
+```
+POST /__phiremock/expectations HTTP/1.1
+Host: your.phiremock.host
+Content-Type: application/json
+{
+    "version": "2",
+    "on": {
+        "method": { "isSameString": "POST" },
+        "url": { "isEqualTo": "/api/users" },
+        "jsonPath": {
+            "path": "user.address.zipCode",
+            "isEqualTo": "12345"
+        }
+    },
+    "then": {
+        "response": {
+            "statusCode": 201,
+            "body": "Created"
+        }
+    }
+}
+```
+In this example, Phiremock will check if the request body contains a JSON object with path "user.address.zipCode" equal to "12345". The jsonPath condition supports all the standard matchers. You can use jsonPath together with other request conditions like method, url, headers etc. to create more specific [matches](#list-of-condition-matchers). The path notation uses dot syntax to navigate through the JSON structure.
+
 ### Generate response based in request data
 It could happen that you want to make your response dependent on data you receive in your request. For this cases you can use regexp matching for request url and/or body, and access the subpatterns matches from your response body specification using `${body.matchIndex}` or `${url.matchIndex}` notation.
 

@@ -49,7 +49,7 @@ class BodyConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":{"isEqualTo":"Potato body"},"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":null,"body":{"isEqualTo":"Potato body"},"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -80,7 +80,7 @@ class BodyConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":{"isEqualTo":"a=b"},"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":null,"body":{"isEqualTo":"a=b"},"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":418,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -110,7 +110,7 @@ class BodyConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":{"matches":"\/tomato (\\\\d[^a])+\/"},"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":null,"body":{"matches":"\/tomato (\\\\d[^a])+\/"},"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));

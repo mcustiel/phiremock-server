@@ -49,7 +49,7 @@ class MethodConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"post","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"post","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -77,7 +77,7 @@ class MethodConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"get","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"get","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -104,7 +104,7 @@ class MethodConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"put","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"put","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -131,7 +131,7 @@ class MethodConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"delete","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"delete","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -158,7 +158,7 @@ class MethodConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"fetch","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"fetch","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -185,7 +185,7 @@ class MethodConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"options","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"options","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -212,7 +212,7 @@ class MethodConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"head","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"head","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -239,7 +239,7 @@ class MethodConditionCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"patch","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"patch","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));

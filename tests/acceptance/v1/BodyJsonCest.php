@@ -49,7 +49,7 @@ class BodyJsonCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":200,"body":"{\"foo\":\"bar\"}","headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));

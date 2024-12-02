@@ -28,11 +28,21 @@ class AcceptanceV1 extends \Codeception\Module
 
     public function getPhiremockRequest(array $request): array
     {
+        unset($request['request']['jsonPath']);
         return $request;
     }
 
-    public function getPhiremockResponse(string $response): string
+    public function getPhiremockResponse(string $jsonResponse): string
     {
-        return $response;
+        $parsedExpectations = json_decode($jsonResponse, true);
+        if (json_last_error() !== \JSON_ERROR_NONE) {
+            return $jsonResponse;
+        }
+
+        foreach ($parsedExpectations as &$parsedExpectation) {
+            unset($parsedExpectation['request']['jsonPath']);
+        }
+
+        return json_encode($parsedExpectations);
     }
 }
