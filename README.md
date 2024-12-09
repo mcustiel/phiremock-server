@@ -518,7 +518,8 @@ Content-Type: application/json
         "method": { "isSameString": "POST" },
         "url": { "isEqualTo": "/api/users" },
         "jsonPath": {
-            "user.address.zipCode": { "isEqualTo": "12345" }
+            "user.address.zipCode": { "isEqualTo": "12345" },
+            "user.phones.0.value": { "isEqualTo": "+1234567890" }
         }
     },
     "then": {
@@ -529,7 +530,7 @@ Content-Type: application/json
     }
 }
 ```
-In this example, Phiremock will check if the request body contains a JSON object with path "user.address.zipCode" equal to "12345". The jsonPath condition supports all the standard matchers. You can use jsonPath together with other request conditions like method, url, headers etc. to create more specific [matches](#list-of-condition-matchers). The path notation uses dot syntax to navigate through the JSON structure.
+In this example, Phiremock will check if the request body contains a JSON object with path `user.address.zipCode` equal to `"12345"` and path `user.phones.0.value` equal to `"+1234567890"`. The `jsonPath` condition supports all the standard [matchers](#list-of-condition-matchers). You can use `jsonPath` together with other request conditions like method, url, headers etc. to create more specific matches. The path notation uses dot syntax to navigate through the JSON structure, including array access where numeric indices are specified directly in the path (e.g. `phones.0.value` to access the first element of the phones array).
 
 ### Generate response based in request data
 It could happen that you want to make your response dependent on data you receive in your request. For this cases you can use regexp matching for request url and/or body, and access the subpatterns matches from your response body specification using `${body.matchIndex}` or `${url.matchIndex}` notation.

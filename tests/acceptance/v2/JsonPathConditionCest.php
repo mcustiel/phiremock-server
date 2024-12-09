@@ -104,7 +104,10 @@ class JsonPathConditionCest
                         ],
                         'user.active' => [
                             'isEqualTo' => true
-                        ]
+                        ],
+                        'user.phones.0.value' => [
+                            'isEqualTo' => '+1234567890'
+                        ],
                     ]
                 ],
                 'then' => [
@@ -120,7 +123,7 @@ class JsonPathConditionCest
         $I->sendGET('/__phiremock/expectations');
         $I->seeResponseCodeIs('200');
         $I->seeResponseIsJson();
-        $I->seeResponseEquals('[{"version":"2","scenarioName":null,"on":{"scenarioStateIs":null,"method":{"isSameString":"post"},"url":{"isEqualTo":"\/test-json-path"},"body":null,"headers":null,"formData":null,"jsonPath":{"user.id":{"isEqualTo":"123"},"user.address.type":{"matches":"\/^(home|work)$\/"},"user.active":{"isEqualTo":true}}},"then":{"delayMillis":null,"newScenarioState":null,"proxyTo":null,"response":{"statusCode":201,"body":"Multiple paths matched","headers":null}},"priority":0}]');
+        $I->seeResponseEquals('[{"version":"2","scenarioName":null,"on":{"scenarioStateIs":null,"method":{"isSameString":"post"},"url":{"isEqualTo":"\/test-json-path"},"body":null,"headers":null,"formData":null,"jsonPath":{"user.id":{"isEqualTo":"123"},"user.address.type":{"matches":"\/^(home|work)$\/"},"user.active":{"isEqualTo":true},"user.phones.0.value":{"isEqualTo":"+1234567890"}}},"then":{"delayMillis":null,"newScenarioState":null,"proxyTo":null,"response":{"statusCode":201,"body":"Multiple paths matched","headers":null}},"priority":0}]');
 
         // Should match when all conditions are met
         $I->sendPOST('/test-json-path', [
@@ -130,7 +133,11 @@ class JsonPathConditionCest
                     'type' => 'home',
                     'street' => 'Main St'
                 ],
-                'active' => true
+                'active' => true,
+                'phones' => [
+                    ['value' => '+1234567890', 'type' => 'home'],
+                    ['value' => '+0987654321', 'type' => 'work'] 
+                ],
             ]
         ]);
         $I->seeResponseCodeIs(201);
@@ -158,6 +165,23 @@ class JsonPathConditionCest
                     'street' => 'Main St'
                 ],
                 'active' => false // Wrong active status
+            ]
+        ]);
+        $I->seeResponseCodeIs(404);
+
+        // Should not match when array condition fails
+        $I->sendPOST('/test-json-path', [
+            'user' => [
+                'id' => '123',
+                'address' => [
+                    'type' => 'home',
+                    'street' => 'Main St'
+                ],
+                'phones' => [
+                    ['value' => '+9999999999', 'type' => 'home'], // Invalid phone number
+                    ['value' => '+0987654321', 'type' => 'work']
+                ],
+                'active' => true
             ]
         ]);
         $I->seeResponseCodeIs(404);
