@@ -49,7 +49,7 @@ class HeadersSpecificationCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":200,"body":null,"headers":{"Location":"\/potato.php"},"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -80,7 +80,7 @@ class HeadersSpecificationCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":200,"body":null,"headers":{'
             . '"Location":"\/potato.php","Cache-Control":"private, max-age=0, no-cache",'
             . '"Pragma":"no-cache"},"delayMillis":null},'
@@ -108,7 +108,7 @@ class HeadersSpecificationCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":200,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));

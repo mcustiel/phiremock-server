@@ -62,7 +62,8 @@ class RequestExpectationComparator
             && $this->requestUrlMatchesExpectation($httpRequest, $expectedRequest)
             && $this->requestBodyMatchesExpectation($httpRequest, $expectedRequest)
             && $this->requestHeadersMatchExpectation($httpRequest, $expectedRequest)
-            && $this->requestFormDataMatchExpectation($httpRequest, $expectedRequest);
+            && $this->requestFormDataMatchExpectation($httpRequest, $expectedRequest)
+            && $this->requestJsonMatchesExpectation($httpRequest, $expectedRequest);
     }
 
     private function isExpectedScenarioState(Expectation $expectation): bool
@@ -182,6 +183,42 @@ class RequestExpectationComparator
             }
         }
 
+        return true;
+    }
+
+    private function requestJsonMatchesExpectation(ServerRequestInterface $httpRequest, Conditions $expectedRequest): bool
+    {
+        if (!$expectedRequest->hasJsonPath()) {
+            return true;
+        }
+        
+        $this->logger->debug('Checking JSON PATH against expectation');
+        
+        $requestBody = $httpRequest->getBody()->__toString();
+        $requestData = json_decode($requestBody, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+        
+        /** @var JsonPathName $pathName */
+        /** @var JsonPathCondition $jsonCondition */
+        foreach ($expectedRequest->getJsonPath() as $pathName => $jsonCondition) {
+            $path = explode('.', $pathName->asString());
+            $value = $requestData;
+            
+            foreach ($path as $key) {
+                if (!is_array($value) || !isset($value[$key])) {
+                    return false;
+                }
+                $value = $value[$key];
+            }
+            
+            if (!$jsonCondition->getMatcher()->matches($value)) {
+                return false;
+            }
+        }
+        
         return true;
     }
 }

@@ -49,7 +49,7 @@ class HeadersConditionsCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":null,"headers":{"Content-Type":{"isEqualTo":"application\/x-www-form-urlencoded"}},"formData":null},'
+            . '"request":{"method":null,"url":null,"body":null,"headers":{"Content-Type":{"isEqualTo":"application\/x-www-form-urlencoded"}},"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -76,7 +76,7 @@ class HeadersConditionsCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":null,"headers":{"Content-Type":{"matches":"\/application\/"}},"formData":null},'
+            . '"request":{"method":null,"url":null,"body":null,"headers":{"Content-Type":{"matches":"\/application\/"}},"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -155,7 +155,7 @@ class HeadersConditionsCest
             . '"request":{"method":null,"url":null,"body":null,"headers":{'
             . '"Content-Type":{"matches":"\/application\/"},'
             . '"Content-Length":{"isEqualTo":"25611"},'
-            . '"Content-Encoding":{"isSameString":"gzip"}},"formData":null},'
+            . '"Content-Encoding":{"isSameString":"gzip"}},"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));

@@ -39,8 +39,10 @@ class ServerControl extends \Codeception\Extension
     {
         $this->writeln('Starting Phiremock server');
 
+        $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+
         $commandLine = [
-            'exec',
+            $isWindows ? PHP_BINARY : 'exec',
             './bin/phiremock',
             '-d',
             '-e',
@@ -49,6 +51,7 @@ class ServerControl extends \Codeception\Extension
             codecept_log_dir('phiremock.log'),
             '2>&1',
         ];
+
         $this->application = Process::fromShellCommandline(implode(' ', $commandLine));
         $this->writeln($this->application->getCommandLine());
         $this->application->start();
@@ -61,7 +64,9 @@ class ServerControl extends \Codeception\Extension
         if (!$this->application->isRunning()) {
             return;
         }
-        $this->application->stop(5, \SIGTERM);
+
+        $signal = defined('SIGTERM') ? \SIGTERM : 15;
+        $this->application->stop(5, $signal);
         $this->writeln('Phiremock is stopped');
     }
 }

@@ -48,7 +48,7 @@ class ExpectationCreationCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -79,7 +79,7 @@ class ExpectationCreationCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":{"isEqualTo":"\/the\/request\/url"},"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -106,7 +106,7 @@ class ExpectationCreationCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"post","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"post","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -133,7 +133,7 @@ class ExpectationCreationCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":{"matches":"~potato~"},"headers":null,"formData":null},'
+            . '"request":{"method":null,"url":null,"body":{"matches":"~potato~"},"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -160,7 +160,7 @@ class ExpectationCreationCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":null,"url":null,"body":null,"headers":{"Accept":{"matches":"~potato~"}},"formData":null},'
+            . '"request":{"method":null,"url":null,"body":null,"headers":{"Accept":{"matches":"~potato~"}},"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":201,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -186,7 +186,7 @@ class ExpectationCreationCest
         $I->seeResponseIsJson();
         $I->seeResponseEquals($I->getPhiremockResponse(
             '[{"scenarioName":null,"scenarioStateIs":null,"newScenarioState":null,'
-            . '"request":{"method":"get","url":null,"body":null,"headers":null,"formData":null},'
+            . '"request":{"method":"get","url":null,"body":null,"headers":null,"formData":null,"jsonPath":null},'
             . '"response":{"statusCode":200,"body":null,"headers":null,"delayMillis":null},'
             . '"proxyTo":null,"priority":0}]'
         ));
@@ -248,6 +248,9 @@ class ExpectationCreationCest
                     'formData' => [
                         'name' => ['isEqualTo' => 'potato'],
                     ],
+                    'jsonPath' => [
+                        'user.id' => ['isEqualTo' => 'tomato'],
+                    ]
                 ],
                 'response' => [
                     'statusCode' => 201,
@@ -278,7 +281,9 @@ class ExpectationCreationCest
             . '"Accepts":{"isEqualTo":"application\/json"},'
             . '"X-Some-Random-Header":{"isEqualTo":"random value"}},'
             . '"formData":{'
-            . '"name":{"isEqualTo":"potato"}}},'
+            . '"name":{"isEqualTo":"potato"}},'
+            . '"jsonPath":{'
+            . '"user.id":{"isEqualTo":"tomato"}}},'
             . '"response":{'
             . '"statusCode":201,"body":"Response body","headers":{'
             . '"X-Special-Header":"potato",'
