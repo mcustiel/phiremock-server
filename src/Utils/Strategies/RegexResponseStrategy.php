@@ -20,6 +20,7 @@ namespace Mcustiel\Phiremock\Server\Utils\Strategies;
 
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Domain\Expectation;
+use Mcustiel\Phiremock\Domain\Http\BinaryBody;
 use Mcustiel\Phiremock\Domain\HttpResponse;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Mcustiel\Phiremock\Server\Utils\Strategies\Utils\RegexReplacer;
@@ -72,10 +73,14 @@ class RegexResponseStrategy extends AbstractResponse implements ResponseStrategy
         $responseConfig = $expectation->getResponse();
 
         if ($responseConfig->hasBody()) {
-            $bodyString = $responseConfig->getBody()->asString();
-            $bodyString = $this->regexReplacer->fillWithUrlMatches($expectation, $httpRequest, $bodyString);
-            $bodyString = $this->regexReplacer->fillWithBodyMatches($expectation, $httpRequest, $bodyString);
-            $httpResponse = $httpResponse->withBody(new StringStream($bodyString));
+            if ($responseConfig->getBody() instanceof BinaryBody) {
+                $httpResponse = $httpResponse->withBody($responseConfig->getBody()->asStream());
+            } else {
+                $bodyString = $responseConfig->getBody()->asString();
+                $bodyString = $this->regexReplacer->fillWithUrlMatches($expectation, $httpRequest, $bodyString);
+                $bodyString = $this->regexReplacer->fillWithBodyMatches($expectation, $httpRequest, $bodyString);
+                $httpResponse = $httpResponse->withBody(new StringStream($bodyString));
+            }
         }
 
         return $httpResponse;

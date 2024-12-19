@@ -55,4 +55,31 @@ class BinaryContentCest
         $responseBody = $I->grabResponse();
         $I->assertEquals($responseContents, $responseBody);
     }
+
+    public function shouldCreateAnExpectationWithBinaryResponseAndRegexUrl(AcceptanceTester $I)
+    {
+        $responseContents = file_get_contents(Configuration::dataDir() . 'fixtures/silhouette-1444982_640.png');
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(
+            '/__phiremock/expectations',
+            $I->getPhiremockRequest([
+                'request' => [
+                    'url' => ['matches' => '/\/show-me-the-image-\d+/'],
+                ],
+                'response' => [
+                    'headers' => [
+                        'Content-Type'     => 'image/jpeg',
+                    ],
+                    'body' => 'phiremock.base64:' . base64_encode($responseContents),
+                ],
+            ])
+        );
+
+        $I->sendGET('/show-me-the-image-123');
+        $I->seeResponseCodeIs(200);
+        $I->seeHttpHeader('Content-Type', 'image/jpeg');
+        $responseBody = $I->grabResponse();
+        $I->assertEquals($responseContents, $responseBody);
+    }
 }
