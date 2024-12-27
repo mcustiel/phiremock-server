@@ -3,6 +3,7 @@ vendor/
 .buildpath
 .project
 .settings
+.vscode
 composer.lock
 tests/_output
 tests/_support/_generated
