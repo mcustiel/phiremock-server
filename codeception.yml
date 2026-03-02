@@ -5,6 +5,7 @@ paths:
     data: tests/acceptance/_data
     support: tests/acceptance/_support
     envs: tests/acceptance/_envs
+    output: tests/acceptance/_output
 settings:
     colors: true
     memory_limit: 1024M

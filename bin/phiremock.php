@@ -33,6 +33,6 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 
 $application = new Application('Phiremock', '');
 $phiremockServerCommand = new PhiremockServerCommand();
-$application->add($phiremockServerCommand);
+$application->addCommand($phiremockServerCommand);
 $application->setDefaultCommand($phiremockServerCommand->getName(), IS_SINGLE_COMMAND);
 $application->run();
