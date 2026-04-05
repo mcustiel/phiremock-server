@@ -21,7 +21,9 @@ jobs:
             ini-values: post_max_size=256M, max_execution_time=180
             coverage: xdebug
             tools: php-cs-fixer, phpunit:${{ matrix.phpunit-versions }}
-        - name: Composer
-          uses: php-actions/composer@v6
+        - name: Validate composer.json
+          run: composer validate
+        - name: Install dependencies
+          run: composer install --prefer-dist --no-progress --no-interaction --no-suggest
         - name: Codeception
           run: php vendor/bin/codecept run
