@@ -24,4 +24,4 @@ jobs:
         - name: Composer
           uses: php-actions/composer@v6
         - name: Codeception
-          uses: joelwmale/codeception-action@master
+          run: php vendor/bin/codecept run
