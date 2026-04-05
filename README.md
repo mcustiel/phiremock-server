@@ -3,8 +3,8 @@
 Phiremock is a mocker and stubber of HTTP services, it allows software developers to mock HTTP requests and setup responses to avoid calling real services during development, and is particulary useful during acceptance testing when expected http requests can be mocked and verified. Any HTTP service (i.e.: REST services) can be mocked and stubbed with Phiremock.
 
 Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not force you to have a java installation in your PHP development environment. The full functionality of Phiremock is detailed in the following list:
-* Allows to mock http request based in method, headers, url, body content and form fields. 
-* Allows to match expectations using several comparison functions. 
+* Allows to mock http request based in method, headers, url, body content and form fields.
+* Allows to match expectations using several comparison functions.
 * REST interface to setup.
 * Stateful and stateless mocking through scenarios.
 * Network latency simulation.
@@ -33,9 +33,6 @@ Phiremock is heavily inspired by [WireMock](http://wiremock.org/), but does not 
 ```
 Phiremock Server requires guzzle client v6 to work. This dependency can be avoided and you can choose any psr18-compatible http client and overwrite Phiremock Server's factory to provide it.
 
-### Phar
-You can also download the standalone server as a phar from [here](https://github.com/mcustiel/phiremock-server/releases/latest/download/phiremock.phar).
-
 ## Running
 
 Execute `./vendor/bin/phiremock`.
@@ -51,7 +48,7 @@ Execute `./vendor/bin/phiremock`.
 * **--cert-passphrase|s <pasphrase>** - Passphrase to use if the certificate is encrypted.
 * **--debug|-d** - Flag to activate the debug mode.
 
-**Note:** Static expectations saved in files are very useful if you use phiremock in your development environment. For testing, can be more useful to setup expectations on the fly. 
+**Note:** Static expectations saved in files are very useful if you use phiremock in your development environment. For testing, can be more useful to setup expectations on the fly.
 
 **Note:** When a certificate is added, phiremock-server will only listen for secure connections.
 
@@ -108,7 +105,7 @@ class FactoryWithGuzzle7 extends Factory
 Then provide the fully qualified class name to phiremock-server using the command line options or the configuration file.
 
 **Note:** This will only work if phiremock is instaled through composer, since it will use the same vendor folder and autoloader as your project. Also if you pull phiremock repo and extend the composer.json file.
- 
+
 ## How does it work?
 
 Phiremock will allow you to create a stubbed version of some external service your application needs to communicate to. That can be used to avoid calling the real application during development or to setup responses to expected requests. To do this, you need to trick your application to request phiremock server when on development stage or testing stage.
@@ -171,7 +168,7 @@ The same format can be used in expectation files saved in the directory tree spe
 
 ## Features
 
-### Create an expectation 
+### Create an expectation
 To create previous response from code the following should be used:
 
 ```
@@ -251,7 +248,7 @@ Content-Type: application/json
 ```
 
 ### Reset requests log
-To reset the requests counter to 0, Phiremock Server also provides an endpoint: 
+To reset the requests counter to 0, Phiremock Server also provides an endpoint:
 
 ```
 DELETE /__phiremock/executions HTTP/1.1
@@ -341,7 +338,7 @@ Content-Type: application/json
             "headers": [ "Content-Type": "application/json" ]
         }
     },
-    "priority": 10    
+    "priority": 10
 }
 ```
 
@@ -408,7 +405,7 @@ Content-Type: application/json
 In this case, the first time that Phiremock Server receives a request matching the expectation, the first one will match and it will change the state of the `saved` scenario. From the second time the same request is executed, the second expectation will be matched.
 If you want after the second call, to go back to the initial state just add `"newScenarioState": "Scenario.START"` to the `then` section.
 
-To reset all scenarios to the initial state (Scenario.START) use this simple method from the client: 
+To reset all scenarios to the initial state (Scenario.START) use this simple method from the client:
 
 ```
 DELETE /__phiremock/scenarios HTTP/1.1
