@@ -15,4 +15,4 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v2
         - name: Codeception
-          uses: joelwmale/codeception-action@v1
+          uses: joelwmale/codeception-action@master
