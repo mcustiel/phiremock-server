@@ -12,7 +12,6 @@ jobs:
         matrix:
           php-versions: ['8.2', '8.3', '8.4', '8.5' ]
       steps:
-        - name: Checkout
-          uses: actions/checkout@v2
-        - name: Codeception
-          uses: joelwmale/codeception-action@master
+        - uses: actions/checkout@v2
+        - uses: php-actions/composer@v6
+        - uses: joelwmale/codeception-action@master
