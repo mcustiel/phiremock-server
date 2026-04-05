@@ -13,5 +13,15 @@ jobs:
           php-versions: ['8.2', '8.3', '8.4', '8.5' ]
       steps:
         - uses: actions/checkout@v2
-        - uses: php-actions/composer@v6
-        - uses: joelwmale/codeception-action@master
+        - name: Setup php
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: ${{ matrix.php-versions }}
+            extensions: mbstring, intl
+            ini-values: post_max_size=256M, max_execution_time=180
+            coverage: xdebug
+            tools: php-cs-fixer, phpunit:${{ matrix.phpunit-versions }}
+        - name: Composer
+          uses: php-actions/composer@v6
+        - name: Codeception
+          uses: joelwmale/codeception-action@master
