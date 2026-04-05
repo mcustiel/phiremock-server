@@ -1,4 +1,4 @@
-class_name: CommonTester
+actor: CommonTester
 suite_namespace: Mcustiel/Phiremock/Server/Tests/Common
 modules:
     enabled:

@@ -1,4 +1,4 @@
-class_name: AcceptanceTester
+actor: AcceptanceTester
 suite_namespace: Mcustiel/Phiremock/Server/Tests/V2
 modules:
     enabled:
