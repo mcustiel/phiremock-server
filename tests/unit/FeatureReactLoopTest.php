@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use React\EventLoop\Factory as EventLoop;
+use React\EventLoop\Loop as EventLoop;
 use React\EventLoop\LoopInterface;
 
 class FeatureReactLoopTest extends TestCase
@@ -11,7 +11,7 @@ class FeatureReactLoopTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->loop = EventLoop::create();
+        $this->loop = EventLoop::get();
         $this->loop->run();
     }
 
@@ -35,7 +35,7 @@ class FeatureReactLoopTest extends TestCase
             return $deferred->promise();
         };
         for ($i = 0; $i < 10; ++$i) {
-            $promise = new \React\Promise\LazyPromise($function);
+            $promise = new \React\Promise\Promise($function);
             $promise->then(function ($seconds) {
                 echo sprintf('Slept for %d seconds', $seconds);
             });
