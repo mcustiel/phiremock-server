@@ -31,6 +31,7 @@ class ActionLocator
     const LIST_REQUESTS = 'listRequests';
     const RESET_REQUESTS_COUNT = 'resetRequestsCount';
     const RESET = 'reset';
+    const GUI = 'gui';
 
     const MANAGE_REQUEST = 'manageRequest';
 
@@ -47,6 +48,7 @@ class ActionLocator
         self::RESET_REQUESTS_COUNT => 'createResetRequestsCount',
 
         self::RESET => 'createReset',
+        self::GUI   => 'createGui',
 
         self::MANAGE_REQUEST => 'createSearchRequest',
     ];

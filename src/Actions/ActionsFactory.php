@@ -130,4 +130,9 @@ class ActionsFactory
             $this->serverFactory->createLogger()
         );
     }
+
+    public function createGui(): GuiAction
+    {
+        return new GuiAction();
+    }
 }
