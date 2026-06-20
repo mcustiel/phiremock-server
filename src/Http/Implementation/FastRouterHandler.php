@@ -113,6 +113,8 @@ class FastRouterHandler implements RequestHandlerInterface
             $r->addRoute('DELETE', '/__phiremock/executions', ActionLocator::RESET_REQUESTS_COUNT);
 
             $r->addRoute('POST', '/__phiremock/reset', ActionLocator::RESET);
+
+            $r->addRoute('GET', '/__phiremock/gui', ActionLocator::GUI);
         };
     }
 }

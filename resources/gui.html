@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Phiremock GUI</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --background: #f6f8fb;
+            --panel: #ffffff;
+            --panel-strong: #101820;
+            --text: #17202a;
+            --muted: #667085;
+            --line: #d9e1ea;
+            --primary: #057a7a;
+            --primary-dark: #045f5f;
+            --danger: #b42318;
+            --danger-dark: #8f1c13;
+            --warn-bg: #fff4dc;
+            --warn-text: #6b4600;
+            --ok-bg: #e9f8ee;
+            --ok-text: #126437;
+            --code-bg: #0d1117;
+            --code-text: #d7dde8;
+            --shadow: 0 12px 28px rgba(16, 24, 40, .08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font: 15px/1.5 Arial, Helvetica, sans-serif;
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 270px minmax(0, 1fr);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--panel-strong);
+            color: #eef4f6;
+            padding: 24px 18px;
+        }
+
+        .brand {
+            margin: 0 0 24px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .menu {
+            display: grid;
+            gap: 8px;
+        }
+
+        .menu button {
+            width: 100%;
+            min-height: 44px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            background: transparent;
+            color: #d5e4e8;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+            text-align: left;
+            padding: 10px 12px;
+        }
+
+        .menu button:hover,
+        .menu button:focus-visible {
+            border-color: rgba(255, 255, 255, .22);
+            outline: none;
+        }
+
+        .menu button[aria-selected="true"] {
+            background: #eaf7f7;
+            color: #053f43;
+        }
+
+        .main {
+            min-width: 0;
+            padding: 28px;
+        }
+
+        .view {
+            display: none;
+            max-width: 1180px;
+        }
+
+        .view.is-active {
+            display: block;
+        }
+
+        .view-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.2;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 330px;
+            resize: vertical;
+            border: 1px solid #bdc9d8;
+            border-radius: 6px;
+            background: #fbfdff;
+            color: var(--text);
+            font: 14px/1.45 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            padding: 14px;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            outline: 3px solid rgba(5, 122, 122, .16);
+        }
+
+        button.primary,
+        button.secondary,
+        button.danger {
+            min-height: 40px;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+            padding: 9px 14px;
+        }
+
+        button.primary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        button.primary:hover,
+        button.primary:focus-visible {
+            background: var(--primary-dark);
+        }
+
+        button.secondary {
+            background: #e8eef5;
+            color: #263241;
+        }
+
+        button.secondary:hover,
+        button.secondary:focus-visible {
+            background: #dce5ef;
+        }
+
+        button.danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        button.danger:hover,
+        button.danger:focus-visible {
+            background: var(--danger-dark);
+        }
+
+        .status {
+            min-height: 22px;
+            margin-top: 12px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .status.ok {
+            color: var(--ok-text);
+        }
+
+        .status.error {
+            color: var(--danger);
+        }
+
+        .output {
+            min-height: 230px;
+            max-height: 62vh;
+            overflow: auto;
+            margin: 0;
+            border-radius: 8px;
+            background: var(--code-bg);
+            color: var(--code-text);
+            font: 13px/1.55 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            padding: 16px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .output-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .output-list .output {
+            min-height: 0;
+        }
+
+        .token-key {
+            color: #7dd3fc;
+        }
+
+        .token-string {
+            color: #86efac;
+        }
+
+        .token-number {
+            color: #fbbf24;
+        }
+
+        .token-boolean {
+            color: #f472b6;
+        }
+
+        .token-null {
+            color: #c4b5fd;
+        }
+
+        .empty-state {
+            color: #8796a8;
+        }
+
+        .notice {
+            border-radius: 6px;
+            background: var(--warn-bg);
+            color: var(--warn-text);
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 780px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                padding: 16px;
+            }
+
+            .brand {
+                margin-bottom: 12px;
+            }
+
+            .menu {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .menu button {
+                text-align: center;
+            }
+
+            .main {
+                padding: 18px 14px;
+            }
+
+            .view-header {
+                display: block;
+            }
+
+            .actions {
+                margin-top: 12px;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .menu {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <p class="brand">Phiremock</p>
+            <nav class="menu" aria-label="Phiremock GUI">
+                <button type="button" data-view="create" aria-selected="true">Create an expectation</button>
+                <button type="button" data-view="delete" aria-selected="false">Delete expectations</button>
+                <button type="button" data-view="list" aria-selected="false">List expectations</button>
+                <button type="button" data-view="requests" aria-selected="false">Search executed requests</button>
+                <button type="button" data-view="clean-requests" aria-selected="false">Clean requests log</button>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <section class="view is-active" id="view-create" aria-labelledby="title-create">
+                <div class="view-header">
+                    <h1 id="title-create">Create an expectation</h1>
+                    <div class="actions">
+                        <button class="primary" type="button" id="create-submit">Create</button>
+                        <button class="secondary" type="button" id="create-reset">Reset JSON</button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <label for="create-json">Expectation JSON</label>
+                    <textarea id="create-json" spellcheck="false"></textarea>
+                    <div class="status" id="create-status" role="status"></div>
+                </div>
+                <div class="panel">
+                    <pre class="output" id="create-output"><span class="empty-state">No response yet.</span></pre>
+                </div>
+            </section>
+
+            <section class="view" id="view-delete" aria-labelledby="title-delete">
+                <div class="view-header">
+                    <h1 id="title-delete">Delete expectations</h1>
+                    <div class="actions">
+                        <button class="danger" type="button" id="delete-submit">Delete expectations</button>
+                    </div>
+                </div>
+                <div class="notice">This clears all configured expectations from the running server.</div>
+                <div class="panel">
+                    <pre class="output" id="delete-output"><span class="empty-state">No response yet.</span></pre>
+                    <div class="status" id="delete-status" role="status"></div>
+                </div>
+            </section>
+
+            <section class="view" id="view-list" aria-labelledby="title-list">
+                <div class="view-header">
+                    <h1 id="title-list">List expectations</h1>
+                    <div class="actions">
+                        <button class="primary" type="button" id="list-refresh">Refresh</button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="output-list" id="list-output">
+                        <pre class="output"><span class="empty-state">No response yet.</span></pre>
+                    </div>
+                    <div class="status" id="list-status" role="status"></div>
+                </div>
+            </section>
+
+            <section class="view" id="view-requests" aria-labelledby="title-requests">
+                <div class="view-header">
+                    <h1 id="title-requests">Search executed requests</h1>
+                    <div class="actions">
+                        <button class="primary" type="button" id="requests-submit">Search</button>
+                        <button class="secondary" type="button" id="requests-clear">Clear matcher</button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <label for="requests-json">Matcher JSON</label>
+                    <textarea id="requests-json" spellcheck="false"></textarea>
+                    <div class="status" id="requests-status" role="status"></div>
+                </div>
+                <div class="panel">
+                    <div class="output-list" id="requests-output">
+                        <pre class="output"><span class="empty-state">No response yet.</span></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section class="view" id="view-clean-requests" aria-labelledby="title-clean-requests">
+                <div class="view-header">
+                    <h1 id="title-clean-requests">Clean requests log</h1>
+                    <div class="actions">
+                        <button class="danger" type="button" id="clean-requests-submit">Clean requests log</button>
+                    </div>
+                </div>
+                <div class="notice">This clears all executed requests recorded by the running server.</div>
+                <div class="panel">
+                    <pre class="output" id="clean-requests-output"><span class="empty-state">No response yet.</span></pre>
+                    <div class="status" id="clean-requests-status" role="status"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (function () {
+            var endpoints = {
+                expectations: '/__phiremock/expectations',
+                executions: '/__phiremock/executions'
+            };
+
+            var defaultExpectation = {
+                version: '2',
+                on: {
+                    method: { isSameString: 'GET' },
+                    url: { isEqualTo: '/hello' }
+                },
+                then: {
+                    response: {
+                        statusCode: 200,
+                        body: 'Hello from Phiremock',
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        }
+                    }
+                },
+                priority: 0
+            };
+
+            var elements = {
+                createJson: document.getElementById('create-json'),
+                createOutput: document.getElementById('create-output'),
+                createStatus: document.getElementById('create-status'),
+                deleteOutput: document.getElementById('delete-output'),
+                deleteStatus: document.getElementById('delete-status'),
+                listOutput: document.getElementById('list-output'),
+                listStatus: document.getElementById('list-status'),
+                requestsJson: document.getElementById('requests-json'),
+                requestsOutput: document.getElementById('requests-output'),
+                requestsStatus: document.getElementById('requests-status'),
+                cleanRequestsOutput: document.getElementById('clean-requests-output'),
+                cleanRequestsStatus: document.getElementById('clean-requests-status')
+            };
+
+            function pretty(value) {
+                return JSON.stringify(value, null, 2);
+            }
+
+            function escapeHtml(value) {
+                return value.replace(/[&<>]/g, function (character) {
+                    return {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;'
+                    }[character];
+                });
+            }
+
+            function highlightJson(json) {
+                return escapeHtml(json).replace(
+                    /("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+                    function (match) {
+                        var className = 'token-number';
+                        if (/^"/.test(match)) {
+                            className = /:$/.test(match) ? 'token-key' : 'token-string';
+                        } else if (/true|false/.test(match)) {
+                            className = 'token-boolean';
+                        } else if (/null/.test(match)) {
+                            className = 'token-null';
+                        }
+                        return '<span class="' + className + '">' + match + '</span>';
+                    }
+                );
+            }
+
+            function renderOutput(target, payload) {
+                var formatted = payload;
+                try {
+                    formatted = pretty(JSON.parse(payload));
+                    target.innerHTML = highlightJson(formatted);
+                } catch (error) {
+                    target.textContent = payload || '';
+                }
+            }
+
+            function createOutputBlock(content, useHtml) {
+                var pre = document.createElement('pre');
+                pre.className = 'output';
+                if (useHtml) {
+                    pre.innerHTML = content;
+                } else {
+                    pre.textContent = content;
+                }
+                return pre;
+            }
+
+            function renderOutputList(target, payload) {
+                var parsed;
+                target.innerHTML = '';
+                try {
+                    parsed = JSON.parse(payload);
+                } catch (error) {
+                    target.appendChild(createOutputBlock(payload || '', false));
+                    return;
+                }
+
+                if (!Array.isArray(parsed) || parsed.length === 0) {
+                    target.appendChild(createOutputBlock(highlightJson(pretty(parsed)), true));
+                    return;
+                }
+
+                parsed.forEach(function (request) {
+                    target.appendChild(createOutputBlock(highlightJson(pretty(request)), true));
+                });
+            }
+
+            function setStatus(target, message, type) {
+                target.className = 'status' + (type ? ' ' + type : '');
+                target.textContent = message;
+            }
+
+            function request(method, url, body, callback) {
+                var xhr = new XMLHttpRequest();
+                xhr.open(method, url, true);
+                xhr.setRequestHeader('Accept', 'application/json');
+                if (body !== null) {
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                }
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        callback(xhr.status, xhr.responseText);
+                    }
+                };
+                xhr.send(body);
+            }
+
+            function validateJsonIfPresent(value) {
+                if (!value.replace(/\s/g, '')) {
+                    return '';
+                }
+                JSON.parse(value);
+                return value;
+            }
+
+            function validateRequiredJson(value) {
+                if (!value.replace(/\s/g, '')) {
+                    throw new Error('Expectation JSON is required');
+                }
+                JSON.parse(value);
+                return value;
+            }
+
+            function showView(viewName) {
+                var buttons = document.querySelectorAll('[data-view]');
+                var views = document.querySelectorAll('.view');
+                var index;
+                for (index = 0; index < buttons.length; index += 1) {
+                    buttons[index].setAttribute('aria-selected', buttons[index].getAttribute('data-view') === viewName ? 'true' : 'false');
+                }
+                for (index = 0; index < views.length; index += 1) {
+                    views[index].className = views[index].id === 'view-' + viewName ? 'view is-active' : 'view';
+                }
+                if (viewName === 'list') {
+                    listExpectations();
+                }
+            }
+
+            function createExpectation() {
+                var payload = elements.createJson.value;
+                try {
+                    validateRequiredJson(payload);
+                } catch (error) {
+                    setStatus(elements.createStatus, 'Invalid JSON: ' + error.message, 'error');
+                    return;
+                }
+                setStatus(elements.createStatus, 'Creating expectation...', '');
+                request('POST', endpoints.expectations, payload, function (status, responseText) {
+                    renderOutput(elements.createOutput, responseText);
+                    setStatus(
+                        elements.createStatus,
+                        status >= 200 && status < 300 ? 'Expectation created.' : 'Request failed with HTTP ' + status + '.',
+                        status >= 200 && status < 300 ? 'ok' : 'error'
+                    );
+                });
+            }
+
+            function deleteExpectations() {
+                setStatus(elements.deleteStatus, 'Deleting expectations...', '');
+                request('DELETE', endpoints.expectations, null, function (status, responseText) {
+                    renderOutput(elements.deleteOutput, responseText);
+                    setStatus(
+                        elements.deleteStatus,
+                        status >= 200 && status < 300 ? 'Expectations deleted.' : 'Request failed with HTTP ' + status + '.',
+                        status >= 200 && status < 300 ? 'ok' : 'error'
+                    );
+                });
+            }
+
+            function listExpectations() {
+                setStatus(elements.listStatus, 'Loading expectations...', '');
+                request('GET', endpoints.expectations, null, function (status, responseText) {
+                    renderOutputList(elements.listOutput, responseText);
+                    setStatus(
+                        elements.listStatus,
+                        status >= 200 && status < 300 ? 'Loaded expectations.' : 'Request failed with HTTP ' + status + '.',
+                        status >= 200 && status < 300 ? 'ok' : 'error'
+                    );
+                });
+            }
+
+            function searchRequests() {
+                var payload;
+                try {
+                    payload = validateJsonIfPresent(elements.requestsJson.value);
+                } catch (error) {
+                    setStatus(elements.requestsStatus, 'Invalid JSON: ' + error.message, 'error');
+                    return;
+                }
+                setStatus(elements.requestsStatus, 'Searching requests...', '');
+                request('PUT', endpoints.executions, payload, function (status, responseText) {
+                    renderOutputList(elements.requestsOutput, responseText);
+                    setStatus(
+                        elements.requestsStatus,
+                        status >= 200 && status < 300 ? 'Loaded executed requests.' : 'Request failed with HTTP ' + status + '.',
+                        status >= 200 && status < 300 ? 'ok' : 'error'
+                    );
+                });
+            }
+
+            function cleanRequestsLog() {
+                setStatus(elements.cleanRequestsStatus, 'Cleaning requests log...', '');
+                request('DELETE', endpoints.executions, null, function (status, responseText) {
+                    renderOutput(elements.cleanRequestsOutput, responseText);
+                    setStatus(
+                        elements.cleanRequestsStatus,
+                        status >= 200 && status < 300 ? 'Requests log cleaned.' : 'Request failed with HTTP ' + status + '.',
+                        status >= 200 && status < 300 ? 'ok' : 'error'
+                    );
+                });
+            }
+
+            document.getElementById('create-submit').onclick = createExpectation;
+            document.getElementById('create-reset').onclick = function () {
+                elements.createJson.value = pretty(defaultExpectation);
+                setStatus(elements.createStatus, '', '');
+            };
+            document.getElementById('delete-submit').onclick = deleteExpectations;
+            document.getElementById('list-refresh').onclick = listExpectations;
+            document.getElementById('requests-submit').onclick = searchRequests;
+            document.getElementById('clean-requests-submit').onclick = cleanRequestsLog;
+            document.getElementById('requests-clear').onclick = function () {
+                elements.requestsJson.value = '';
+                setStatus(elements.requestsStatus, '', '');
+            };
+
+            var menuButtons = document.querySelectorAll('[data-view]');
+            for (var i = 0; i < menuButtons.length; i += 1) {
+                menuButtons[i].onclick = function () {
+                    showView(this.getAttribute('data-view'));
+                };
+            }
+
+            elements.createJson.value = pretty(defaultExpectation);
+            elements.requestsJson.value = '';
+        }());
+    </script>
+</body>
+</html>
