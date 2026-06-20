@@ -34,8 +34,11 @@ class GuiActionTest extends TestCase
         $this->assertStringContainsString('Delete expectations', $body);
         $this->assertStringContainsString('List expectations', $body);
         $this->assertStringContainsString('Search executed requests', $body);
+        $this->assertStringContainsString('Clean requests log', $body);
         $this->assertStringContainsString('/__phiremock/expectations', $body);
         $this->assertStringContainsString('/__phiremock/executions', $body);
+        $this->assertStringContainsString('<button class="danger" type="button" id="clean-requests-submit">Clean requests log</button>', $body);
+        $this->assertStringContainsString("request('DELETE', endpoints.executions", $body);
         $this->assertStringContainsString('<div class="output-list" id="list-output">', $body);
         $this->assertStringNotContainsString('<pre class="output" id="list-output">', $body);
         $this->assertStringContainsString('<div class="output-list" id="requests-output">', $body);

@@ -319,6 +319,7 @@
                 <button type="button" data-view="delete" aria-selected="false">Delete expectations</button>
                 <button type="button" data-view="list" aria-selected="false">List expectations</button>
                 <button type="button" data-view="requests" aria-selected="false">Search executed requests</button>
+                <button type="button" data-view="clean-requests" aria-selected="false">Clean requests log</button>
             </nav>
         </aside>
 
@@ -389,6 +390,20 @@
                     </div>
                 </div>
             </section>
+
+            <section class="view" id="view-clean-requests" aria-labelledby="title-clean-requests">
+                <div class="view-header">
+                    <h1 id="title-clean-requests">Clean requests log</h1>
+                    <div class="actions">
+                        <button class="danger" type="button" id="clean-requests-submit">Clean requests log</button>
+                    </div>
+                </div>
+                <div class="notice">This clears all executed requests recorded by the running server.</div>
+                <div class="panel">
+                    <pre class="output" id="clean-requests-output"><span class="empty-state">No response yet.</span></pre>
+                    <div class="status" id="clean-requests-status" role="status"></div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -427,7 +442,9 @@
                 listStatus: document.getElementById('list-status'),
                 requestsJson: document.getElementById('requests-json'),
                 requestsOutput: document.getElementById('requests-output'),
-                requestsStatus: document.getElementById('requests-status')
+                requestsStatus: document.getElementById('requests-status'),
+                cleanRequestsOutput: document.getElementById('clean-requests-output'),
+                cleanRequestsStatus: document.getElementById('clean-requests-status')
             };
 
             function pretty(value) {
@@ -615,6 +632,18 @@
                 });
             }
 
+            function cleanRequestsLog() {
+                setStatus(elements.cleanRequestsStatus, 'Cleaning requests log...', '');
+                request('DELETE', endpoints.executions, null, function (status, responseText) {
+                    renderOutput(elements.cleanRequestsOutput, responseText);
+                    setStatus(
+                        elements.cleanRequestsStatus,
+                        status >= 200 && status < 300 ? 'Requests log cleaned.' : 'Request failed with HTTP ' + status + '.',
+                        status >= 200 && status < 300 ? 'ok' : 'error'
+                    );
+                });
+            }
+
             document.getElementById('create-submit').onclick = createExpectation;
             document.getElementById('create-reset').onclick = function () {
                 elements.createJson.value = pretty(defaultExpectation);
@@ -623,6 +652,7 @@
             document.getElementById('delete-submit').onclick = deleteExpectations;
             document.getElementById('list-refresh').onclick = listExpectations;
             document.getElementById('requests-submit').onclick = searchRequests;
+            document.getElementById('clean-requests-submit').onclick = cleanRequestsLog;
             document.getElementById('requests-clear').onclick = function () {
                 elements.requestsJson.value = '';
                 setStatus(elements.requestsStatus, '', '');
