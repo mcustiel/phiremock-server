@@ -227,6 +227,15 @@
             word-break: break-word;
         }
 
+        .output-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .output-list .output {
+            min-height: 0;
+        }
+
         .token-key {
             color: #7dd3fc;
         }
@@ -354,7 +363,9 @@
                     </div>
                 </div>
                 <div class="panel">
-                    <pre class="output" id="list-output"><span class="empty-state">No response yet.</span></pre>
+                    <div class="output-list" id="list-output">
+                        <pre class="output"><span class="empty-state">No response yet.</span></pre>
+                    </div>
                     <div class="status" id="list-status" role="status"></div>
                 </div>
             </section>
@@ -373,7 +384,9 @@
                     <div class="status" id="requests-status" role="status"></div>
                 </div>
                 <div class="panel">
-                    <pre class="output" id="requests-output"><span class="empty-state">No response yet.</span></pre>
+                    <div class="output-list" id="requests-output">
+                        <pre class="output"><span class="empty-state">No response yet.</span></pre>
+                    </div>
                 </div>
             </section>
         </main>
@@ -456,6 +469,37 @@
                 } catch (error) {
                     target.textContent = payload || '';
                 }
+            }
+
+            function createOutputBlock(content, useHtml) {
+                var pre = document.createElement('pre');
+                pre.className = 'output';
+                if (useHtml) {
+                    pre.innerHTML = content;
+                } else {
+                    pre.textContent = content;
+                }
+                return pre;
+            }
+
+            function renderOutputList(target, payload) {
+                var parsed;
+                target.innerHTML = '';
+                try {
+                    parsed = JSON.parse(payload);
+                } catch (error) {
+                    target.appendChild(createOutputBlock(payload || '', false));
+                    return;
+                }
+
+                if (!Array.isArray(parsed) || parsed.length === 0) {
+                    target.appendChild(createOutputBlock(highlightJson(pretty(parsed)), true));
+                    return;
+                }
+
+                parsed.forEach(function (request) {
+                    target.appendChild(createOutputBlock(highlightJson(pretty(request)), true));
+                });
             }
 
             function setStatus(target, message, type) {
@@ -543,7 +587,7 @@
             function listExpectations() {
                 setStatus(elements.listStatus, 'Loading expectations...', '');
                 request('GET', endpoints.expectations, null, function (status, responseText) {
-                    renderOutput(elements.listOutput, responseText);
+                    renderOutputList(elements.listOutput, responseText);
                     setStatus(
                         elements.listStatus,
                         status >= 200 && status < 300 ? 'Loaded expectations.' : 'Request failed with HTTP ' + status + '.',
@@ -562,7 +606,7 @@
                 }
                 setStatus(elements.requestsStatus, 'Searching requests...', '');
                 request('PUT', endpoints.executions, payload, function (status, responseText) {
-                    renderOutput(elements.requestsOutput, responseText);
+                    renderOutputList(elements.requestsOutput, responseText);
                     setStatus(
                         elements.requestsStatus,
                         status >= 200 && status < 300 ? 'Loaded executed requests.' : 'Request failed with HTTP ' + status + '.',

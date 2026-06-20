@@ -36,6 +36,10 @@ class GuiActionTest extends TestCase
         $this->assertStringContainsString('Search executed requests', $body);
         $this->assertStringContainsString('/__phiremock/expectations', $body);
         $this->assertStringContainsString('/__phiremock/executions', $body);
+        $this->assertStringContainsString('<div class="output-list" id="list-output">', $body);
+        $this->assertStringNotContainsString('<pre class="output" id="list-output">', $body);
+        $this->assertStringContainsString('<div class="output-list" id="requests-output">', $body);
+        $this->assertStringNotContainsString('<pre class="output" id="requests-output">', $body);
     }
 
     private function createConfig(): Config
