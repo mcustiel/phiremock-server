@@ -24,9 +24,12 @@ class GuiActionTest extends TestCase
         $router = new FastRouterHandler($locator, $this->createConfig(), new NullLogger());
         $response = $router->dispatch(new ServerRequest([], [], '/__phiremock/gui', 'GET'));
         $body = (string) $response->getBody();
+        $resourceHtml = file_get_contents(dirname(__DIR__, 2) . '/resources/gui.html');
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertStringContainsString('text/html', $response->getHeaderLine('Content-Type'));
+        $this->assertNotFalse($resourceHtml);
+        $this->assertSame($resourceHtml, $body);
         $this->assertStringContainsString('Create an expectation', $body);
         $this->assertStringContainsString('Delete expectations', $body);
         $this->assertStringContainsString('List expectations', $body);
