@@ -265,6 +265,16 @@ Host: your.phiremock.host
 
 ## Cool stuff
 
+### Web GUI
+Phiremock Server includes a small web GUI available at:
+
+```
+GET /__phiremock/gui HTTP/1.1
+Host: your.phiremock.host
+```
+
+The GUI lets you create expectations, delete expectations, list expectations, search executed requests, and clean the requests log from a browser. It is useful if you are using phiremock to mock external services during development or in a staging environment.
+
 ### Send binary body in response
 Binary contents can be sent as a response body too by encoding it as base64 in the expectation json.
 
