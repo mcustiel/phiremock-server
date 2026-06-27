@@ -60,4 +60,27 @@ class ExpectationListCest
             . '"proxyTo":null,"priority":0}]'
         ));
     }
+
+    public function clearCreatedExpectationsTest(AcceptanceTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(
+            '/__phiremock/expectations',
+            $I->getPhiremockRequest([
+                'request' => [
+                    'url' => ['isEqualTo' => '/the/request/url'],
+                ],
+                'response' => [
+                    'statusCode' => 201,
+                ],
+            ])
+        );
+
+        $I->sendDELETE('/__phiremock/expectations');
+        $I->seeResponseCodeIs('200');
+
+        $I->sendGET('/__phiremock/expectations');
+        $I->seeResponseCodeIs('200');
+        $I->seeResponseEquals('[]');
+    }
 }

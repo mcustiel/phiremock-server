@@ -88,4 +88,34 @@ class RequestCountCest
         $I->seeResponseCodeIs('200');
         $I->seeResponseEquals('{"count":1}');
     }
+
+    public function resetRequestsCountEndpointClearsRecordedRequests(AcceptanceTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(
+            '/__phiremock/expectations',
+            $I->getPhiremockRequest([
+                'request' => [
+                    'url' => ['isEqualTo' => '/the/request/url'],
+                ],
+                'response' => [
+                    'statusCode' => 201,
+                ],
+            ])
+        );
+
+        $I->sendGET('/the/request/url');
+        $I->seeResponseCodeIs('201');
+
+        $I->sendPOST('/__phiremock/executions', '');
+        $I->seeResponseCodeIs('200');
+        $I->seeResponseEquals('{"count":1}');
+
+        $I->sendDELETE('/__phiremock/executions');
+        $I->seeResponseCodeIs('200');
+
+        $I->sendPOST('/__phiremock/executions', '');
+        $I->seeResponseCodeIs('200');
+        $I->seeResponseEquals('{"count":0}');
+    }
 }
