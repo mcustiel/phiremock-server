@@ -72,23 +72,13 @@ class SearchRequestAction implements ActionInterface
 
     private function searchForMatchingExpectation(ServerRequestInterface $request): ?Expectation
     {
-        $lastFound = null;
         foreach ($this->expectationsStorage->listExpectations() as $expectation) {
-            $lastFound = $this->getNextMatchingExpectation($lastFound, $request, $expectation);
-        }
-
-        return $lastFound;
-    }
-
-    private function getNextMatchingExpectation(?Expectation $lastFound, ServerRequestInterface $request, Expectation $expectation): ?Expectation
-    {
-        if (null === $lastFound || $expectation->getPriority() > $lastFound->getPriority()) {
             if ($this->comparator->equals($request, $expectation)) {
-                $lastFound = $expectation;
+                return $expectation;
             }
         }
 
-        return $lastFound;
+        return null;
     }
 
     private function getLoggableRequest(ServerRequestInterface $request): string
