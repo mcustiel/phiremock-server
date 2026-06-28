@@ -7,6 +7,22 @@ use PHPUnit\Framework\TestCase;
 
 class RequestAutoStorageTest extends TestCase
 {
+    public function testItKeepsAllRequestsWhenNoLimitIsConfigured(): void
+    {
+        $storage = new RequestAutoStorage();
+
+        $storage->addRequest($this->request('/first'));
+        $storage->addRequest($this->request('/second'));
+        $storage->addRequest($this->request('/third'));
+
+        $requests = $storage->listRequests();
+
+        $this->assertCount(3, $requests);
+        $this->assertSame('/first', $requests[0]->getUri()->getPath());
+        $this->assertSame('/second', $requests[1]->getUri()->getPath());
+        $this->assertSame('/third', $requests[2]->getUri()->getPath());
+    }
+
     public function testItKeepsOnlyNewestRequestsWithinConfiguredLimit(): void
     {
         $storage = new RequestAutoStorage(2);
