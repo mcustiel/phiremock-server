@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -24,8 +25,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class RegexReplacer
 {
-    const PLACEHOLDER_BODY = 'body';
-    const PLACEHOLDER_URL = 'url';
+    public const PLACEHOLDER_BODY = 'body';
+    public const PLACEHOLDER_URL = 'url';
 
     public function fillWithBodyMatches(
         Expectation $expectation,
@@ -86,8 +87,11 @@ class RegexReplacer
     }
 
     private function replaceMatches(
-        string $type, string $pattern, string $subject, string $destination): string
-    {
+        string $type,
+        string $pattern,
+        string $subject,
+        string $destination
+    ): string {
         $matches = [];
 
         $matchCount = preg_match_all(

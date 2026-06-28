@@ -26,41 +26,12 @@ class SetScenarioStateCest
     public function _before(AcceptanceTester $I)
     {
         $I->sendDELETE('/__phiremock/expectations');
+        $I->sendDELETE('/__phiremock/scenarios');
     }
 
     public function setScenarioState(AcceptanceTester $I)
     {
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST(
-            '/__phiremock/expectations',
-            $I->getPhiremockRequest([
-                'request' => [
-                    'method' => 'get',
-                    'url'    => ['isEqualTo' => '/test'],
-                ],
-                'response' => [
-                    'body' => 'start',
-                ],
-                'scenarioName'    => 'test-scenario',
-                'scenarioStateIs' => 'Scenario.START',
-            ])
-        );
-
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST(
-            '/__phiremock/expectations',
-            $I->getPhiremockRequest([
-                'request' => [
-                    'method' => 'get',
-                    'url'    => ['isEqualTo' => '/test'],
-                ],
-                'response' => [
-                    'body' => 'potato',
-                ],
-                'scenarioName'    => 'test-scenario',
-                'scenarioStateIs' => 'Scenario.POTATO',
-            ])
-         );
+        $this->createScenarioExpectations($I);
 
         $I->sendGET('/test');
         $I->seeResponseCodeIs('200');
@@ -95,5 +66,63 @@ class SetScenarioStateCest
         $I->sendPUT('/__phiremock/scenarios', []);
         $I->seeResponseCodeIs(500);
         $I->seeResponseEquals('{"result":"ERROR","details":"Scenario name not set"}');
+    }
+
+    public function clearScenarioStates(AcceptanceTester $I)
+    {
+        $this->createScenarioExpectations($I);
+
+        $I->sendPUT(
+            '/__phiremock/scenarios',
+            [
+                'scenarioName'  => 'test-scenario',
+                'scenarioState' => 'Scenario.POTATO',
+            ]
+        );
+        $I->sendGET('/test');
+        $I->seeResponseCodeIs('200');
+        $I->seeResponseEquals('potato');
+
+        $I->sendDELETE('/__phiremock/scenarios');
+        $I->seeResponseCodeIs('200');
+
+        $I->sendGET('/test');
+        $I->seeResponseCodeIs('200');
+        $I->seeResponseEquals('start');
+    }
+
+    private function createScenarioExpectations(AcceptanceTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(
+            '/__phiremock/expectations',
+            $I->getPhiremockRequest([
+                'request' => [
+                    'method' => 'get',
+                    'url'    => ['isEqualTo' => '/test'],
+                ],
+                'response' => [
+                    'body' => 'start',
+                ],
+                'scenarioName'    => 'test-scenario',
+                'scenarioStateIs' => 'Scenario.START',
+            ])
+        );
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(
+            '/__phiremock/expectations',
+            $I->getPhiremockRequest([
+                'request' => [
+                    'method' => 'get',
+                    'url'    => ['isEqualTo' => '/test'],
+                ],
+                'response' => [
+                    'body' => 'potato',
+                ],
+                'scenarioName'    => 'test-scenario',
+                'scenarioStateIs' => 'Scenario.POTATO',
+            ])
+        );
     }
 }

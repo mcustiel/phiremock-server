@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -33,15 +34,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class PhiremockServerCommand extends Command
 {
-    const IP_HELP_MESSAGE = 'IP address of the interface where Phiremock must list for connections.';
-    const PORT_HELP_MESSAGE = 'Port where Phiremock must list for connections.';
-    const EXPECTATIONS_DIR_HELP_MESSAGE = 'Directory in which to search for expectation definition files.';
-    const DEBUG_HELP_MESSAGE = 'Sets debug mode.';
-    const CONFIG_PATH_HELP_MESSAGE = 'Directory in which to search for configuration files. Default: current directory.';
-    const FACTORY_CLASS_HELP_MESSAGE = 'Factory class to use. It must inherit from: ' . Factory::class;
-    const CERTIFICATE_HELP_MESSAGE = 'Path to the local certificate for secure connection';
-    const CERTIFICATE_KEY_HELP_MESSAGE = 'Path to the local certificate key for secure connection';
-    const PASSPHRASE_HELP_MESSAGE = 'Passphrase if the local certificate is encrypted';
+    public const IP_HELP_MESSAGE = 'IP address of the interface where Phiremock must list for connections.';
+    public const PORT_HELP_MESSAGE = 'Port where Phiremock must list for connections.';
+    public const EXPECTATIONS_DIR_HELP_MESSAGE = 'Directory in which to search for expectation definition files.';
+    public const DEBUG_HELP_MESSAGE = 'Sets debug mode.';
+    public const CONFIG_PATH_HELP_MESSAGE = 'Directory in which to search for configuration files. Default: current directory.';
+    public const FACTORY_CLASS_HELP_MESSAGE = 'Factory class to use. It must inherit from: ' . Factory::class;
+    public const CERTIFICATE_HELP_MESSAGE = 'Path to the local certificate for secure connection';
+    public const CERTIFICATE_KEY_HELP_MESSAGE = 'Path to the local certificate key for secure connection';
+    public const PASSPHRASE_HELP_MESSAGE = 'Passphrase if the local certificate is encrypted';
 
     /** @var Factory */
     private $factory;
@@ -182,7 +183,8 @@ class PhiremockServerCommand extends Command
         $this->logger->debug(
             sprintf(
                 'Phiremock\'s expectation dir is set to: %s',
-                $this->factory->createFileSystemService()->getRealPath($expectationsDir))
+                $this->factory->createFileSystemService()->getRealPath($expectationsDir)
+            )
         );
         $this->factory
             ->createFileExpectationsLoader()
@@ -203,7 +205,9 @@ class PhiremockServerCommand extends Command
 
         if (\function_exists('pcntl_signal')) {
             $this->logger->debug('PCNTL present: Installing signal handlers');
-            pcntl_signal(\SIGTERM, function () { exit(0); });
+            pcntl_signal(\SIGTERM, function () {
+                exit(0);
+            });
         }
 
         $errorHandler = function ($severity, $message, $file, $line) {

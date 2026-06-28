@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -26,7 +27,7 @@ use Psr\Log\LoggerInterface;
 
 class RequestToExpectationMapper
 {
-    const CONTENT_ENCODING_HEADER = 'Content-Encoding';
+    public const CONTENT_ENCODING_HEADER = 'Content-Encoding';
 
     /** @var ArrayToExpectationConverterLocator */
     private $converterLocator;
@@ -74,6 +75,6 @@ class RequestToExpectationMapper
     private function hasBinaryBody(ServerRequestInterface $request): bool
     {
         return $request->hasHeader(self::CONTENT_ENCODING_HEADER)
-            && 'base64' === $request->getHeader(self::CONTENT_ENCODING_HEADER);
+            && 'base64' === strtolower(trim($request->getHeaderLine(self::CONTENT_ENCODING_HEADER)));
     }
 }

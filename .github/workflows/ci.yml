@@ -3,7 +3,7 @@ on:
   - pull_request
 
 jobs:
-  acceptance_tests:
+  tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,5 +22,16 @@ jobs:
         run: composer validate
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction --no-suggest
+      - name: PHPUnit
+        uses: php-actions/phpunit@v3
+        env:
+          XDEBUG_MODE: coverage
+        with:
+          version: 11
+          configuration: phpunit.xml
+          php_extensions: "xdebug"
+          php_version: ${{ matrix.php-versions }}
+          coverage_clover: "build/coverage.xml"
+          test_suffix: Test.php
       - name: Codeception
         run: php vendor/bin/codecept run

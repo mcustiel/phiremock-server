@@ -1,48 +1,31 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use React\EventLoop\Loop as EventLoop;
-use React\EventLoop\LoopInterface;
+use React\EventLoop\StreamSelectLoop;
+use React\Promise\Deferred;
 
 class FeatureReactLoopTest extends TestCase
 {
-    /** @var LoopInterface */
-    private $loop;
-
-    protected function setUp(): void
+    public function testTimersResolveWithoutBlockingTheLoop(): void
     {
-        $this->loop = EventLoop::get();
-        $this->loop->run();
-    }
+        $loop = new StreamSelectLoop();
+        $resolved = [];
 
-    protected function tearDown(): void
-    {
-        $this->loop->stop();
-    }
-
-    public function testParallelExecutions(): void
-    {
-        $function = function () {
-            $deferred = new \React\Promise\Deferred();
-
-            $this->loop->addTimer(0, function () use ($deferred) {
-                $seconds = rand(3, 8);
-                echo sprintf('Sleeping for %d seconds', $seconds);
-                sleep($seconds);
-                $deferred->resolve($seconds);
+        foreach ([0.03, 0.01, 0.02] as $delay) {
+            $deferred = new Deferred();
+            $loop->addTimer($delay, function () use ($deferred, $delay) {
+                $deferred->resolve($delay);
             });
-
-            return $deferred->promise();
-        };
-        for ($i = 0; $i < 10; ++$i) {
-            $promise = new \React\Promise\Promise($function);
-            $promise->then(function ($seconds) {
-                echo sprintf('Slept for %d seconds', $seconds);
+            $deferred->promise()->then(function ($delay) use (&$resolved) {
+                $resolved[] = $delay;
             });
         }
 
-        sleep(10);
+        $loop->addTimer(0.05, function () use ($loop) {
+            $loop->stop();
+        });
+        $loop->run();
 
-        $this->assertTrue(true);
+        $this->assertSame([0.01, 0.02, 0.03], $resolved);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -191,34 +192,57 @@ class RequestExpectationComparator
         if (!$expectedRequest->hasJsonPath()) {
             return true;
         }
-        
+
         $this->logger->debug('Checking JSON PATH against expectation');
-        
-        $requestBody = $httpRequest->getBody()->__toString();
-        $requestData = json_decode($requestBody, true);
-        
-        if (json_last_error() !== JSON_ERROR_NONE) {
+
+        $requestData = json_decode($httpRequest->getBody()->__toString(), true);
+        if (json_last_error() !== \JSON_ERROR_NONE || !is_array($requestData)) {
             return false;
         }
-        
+
         /** @var JsonPathName $pathName */
         /** @var JsonPathCondition $jsonCondition */
         foreach ($expectedRequest->getJsonPath() as $pathName => $jsonCondition) {
-            $path = explode('.', $pathName->asString());
-            $value = $requestData;
-            
-            foreach ($path as $key) {
-                if (!is_array($value) || !isset($value[$key])) {
-                    return false;
-                }
-                $value = $value[$key];
+            if (!$this->tryGetJsonPathValue($requestData, $pathName->asString(), $value)) {
+                return false;
             }
-            
+
             if (!$jsonCondition->getMatcher()->matches($value)) {
                 return false;
             }
         }
-        
+
         return true;
+    }
+
+    private function tryGetJsonPathValue(array $data, string $path, &$value): bool
+    {
+        return $this->tryGetJsonPathSegmentsValue($data, explode('.', $path), $value);
+    }
+
+    private function tryGetJsonPathSegmentsValue($data, array $segments, &$value): bool
+    {
+        if (empty($segments)) {
+            $value = $data;
+
+            return true;
+        }
+        if (!is_array($data)) {
+            return false;
+        }
+
+        $remainingPath = implode('.', $segments);
+        if (array_key_exists($remainingPath, $data)) {
+            $value = $data[$remainingPath];
+
+            return true;
+        }
+
+        $segment = array_shift($segments);
+        if (!array_key_exists($segment, $data)) {
+            return false;
+        }
+
+        return $this->tryGetJsonPathSegmentsValue($data[$segment], $segments, $value);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -35,7 +36,7 @@ class ExpectationAutoStorage implements ExpectationStorage
 
     public function addExpectation(Expectation $expectation): void
     {
-        $this->expectations[] = $expectation;
+        $this->addByPriority($expectation);
     }
 
     /**
@@ -51,5 +52,27 @@ class ExpectationAutoStorage implements ExpectationStorage
     public function clearExpectations(): void
     {
         $this->expectations = [];
+    }
+
+    private function addByPriority(Expectation $expectation): void
+    {
+        $newPriority = $this->getPriorityValue($expectation);
+        foreach ($this->expectations as $index => $storedExpectation) {
+            if ($newPriority > $this->getPriorityValue($storedExpectation)) {
+                array_splice($this->expectations, $index, 0, [$expectation]);
+
+                return;
+            }
+        }
+        $this->expectations[] = $expectation;
+    }
+
+    private function getPriorityValue(Expectation $expectation): int
+    {
+        if ($expectation->hasPriority()) {
+            return $expectation->getPriority()->asInt();
+        }
+
+        return 0;
     }
 }

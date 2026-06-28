@@ -59,7 +59,8 @@ class BodySpecificationCest
     {
         $I->wantTo('create an expectation with an empty body');
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST('/__phiremock/expectations',
+        $I->sendPOST(
+            '/__phiremock/expectations',
             $I->getPhiremockRequest([
                 'request' => [
                     'url' => ['isEqualTo' => '/the/request/url'],

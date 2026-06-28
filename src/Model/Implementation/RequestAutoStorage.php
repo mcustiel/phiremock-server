@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -18,6 +19,8 @@
 
 namespace Mcustiel\Phiremock\Server\Model\Implementation;
 
+use Laminas\Diactoros\ServerRequest;
+use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Model\RequestStorage;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -26,14 +29,21 @@ class RequestAutoStorage implements RequestStorage
     /** @var ServerRequestInterface[] */
     private $requests;
 
-    public function __construct()
+    /** @var int|null */
+    private $maxRequests;
+
+    public function __construct(?int $maxRequests = null)
     {
+        $this->maxRequests = $maxRequests === null ? null : max(1, $maxRequests);
         $this->clearRequests();
     }
 
     public function addRequest(ServerRequestInterface $request): void
     {
-        $this->requests[] = $request;
+        $this->requests[] = $this->createRequestSnapshot($request);
+        if ($this->maxRequests !== null && \count($this->requests) > $this->maxRequests) {
+            $this->requests = array_slice($this->requests, -$this->maxRequests);
+        }
     }
 
     /**
@@ -49,5 +59,21 @@ class RequestAutoStorage implements RequestStorage
     public function clearRequests(): void
     {
         $this->requests = [];
+    }
+
+    private function createRequestSnapshot(ServerRequestInterface $request): ServerRequestInterface
+    {
+        return new ServerRequest(
+            [],
+            [],
+            $request->getUri(),
+            $request->getMethod(),
+            new StringStream($request->getBody()->__toString()),
+            $request->getHeaders(),
+            $request->getCookieParams(),
+            $request->getQueryParams(),
+            $request->getParsedBody(),
+            $request->getProtocolVersion()
+        );
     }
 }
