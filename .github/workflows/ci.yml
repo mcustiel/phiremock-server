@@ -33,6 +33,5 @@ jobs:
           php_version: ${{ matrix.php-versions }}
           coverage_clover: "build/coverage.xml"
           test_suffix: Test.php
-
       - name: Codeception
         run: php vendor/bin/codecept run

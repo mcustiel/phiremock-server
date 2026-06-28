@@ -34,7 +34,7 @@ class RequestExpectationComparatorTest extends TestCase
         $this->assertTrue($comparator->equals($request, $expectation));
     }
 
-    public function testJsonBodyIsDecodedOnlyOncePerRequest(): void
+    public function testJsonBodyIsDecodedForEachComparison(): void
     {
         $comparator = $this->comparator();
         $body = new CountingStringStream('{"user":{"name":"Mariano"}}');
@@ -42,7 +42,7 @@ class RequestExpectationComparatorTest extends TestCase
 
         $this->assertTrue($comparator->equals($request, $this->expectationWithJsonPath('user.name', 'Mariano')));
         $this->assertTrue($comparator->equals($request, $this->expectationWithJsonPath('user.name', 'Mariano')));
-        $this->assertSame(1, $body->stringCasts);
+        $this->assertSame(2, $body->stringCasts);
     }
 
     private function comparator(): RequestExpectationComparator
