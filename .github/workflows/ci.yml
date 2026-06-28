@@ -3,7 +3,7 @@ on:
   - pull_request
 
 jobs:
-  acceptance_tests:
+  tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
