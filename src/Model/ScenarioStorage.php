@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -24,7 +25,7 @@ use Mcustiel\Phiremock\Domain\ScenarioStateInfo;
 
 interface ScenarioStorage
 {
-    const INITIAL_SCENARIO = 'Scenario.START';
+    public const INITIAL_SCENARIO = 'Scenario.START';
 
     public function setScenarioState(ScenarioStateInfo $scenarioState): void;
 

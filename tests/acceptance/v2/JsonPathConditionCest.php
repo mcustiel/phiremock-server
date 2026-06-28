@@ -15,7 +15,7 @@ class JsonPathConditionCest
     {
         $I->wantTo('verify that json path condition works');
         $I->haveHttpHeader('Content-Type', 'application/json');
-        
+
         // Create expectation with json path condition
         $I->sendPOST(
             '/__phiremock/expectations',
@@ -57,13 +57,13 @@ class JsonPathConditionCest
         ]);
         $I->seeResponseCodeIs(201);
         $I->seeResponseEquals('Path matched');
-        
+
         // Should not match when path exists but value is different
         $I->sendPOST('/test-json-path', [
             'user' => [
                 'name' => 'John',
                 'address' => [
-                    'street' => 'Main St', 
+                    'street' => 'Main St',
                     'zipCode' => '54321'
                 ]
             ]
@@ -86,7 +86,7 @@ class JsonPathConditionCest
     {
         $I->wantTo('verify that multiple json path conditions work together');
         $I->haveHttpHeader('Content-Type', 'application/json');
-        
+
         // Create expectation with multiple json path conditions
         $I->sendPOST(
             '/__phiremock/expectations',
@@ -136,7 +136,7 @@ class JsonPathConditionCest
                 'active' => true,
                 'phones' => [
                     ['value' => '+1234567890', 'type' => 'home'],
-                    ['value' => '+0987654321', 'type' => 'work'] 
+                    ['value' => '+0987654321', 'type' => 'work']
                 ],
             ]
         ]);

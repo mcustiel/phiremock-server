@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -195,7 +196,7 @@ class RequestExpectationComparator
         if (!$expectedRequest->hasJsonPath()) {
             return true;
         }
-        
+
         $this->logger->debug('Checking JSON PATH against expectation');
 
         $decodedBody = $this->getDecodedJsonBody($httpRequest);
@@ -203,7 +204,7 @@ class RequestExpectationComparator
             return false;
         }
         $requestData = $decodedBody['data'];
-        
+
         /** @var JsonPathName $pathName */
         /** @var JsonPathCondition $jsonCondition */
         foreach ($expectedRequest->getJsonPath() as $pathName => $jsonCondition) {
@@ -215,7 +216,7 @@ class RequestExpectationComparator
                 return false;
             }
         }
-        
+
         return true;
     }
 

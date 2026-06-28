@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -20,7 +21,6 @@ namespace Mcustiel\Phiremock\Server\Http\Implementation;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use function FastRoute\cachedDispatcher;
 use Laminas\Diactoros\Response;
 use Mcustiel\Phiremock\Common\StringStream;
 use Mcustiel\Phiremock\Server\Actions\ActionLocator;
@@ -30,6 +30,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
+use function FastRoute\cachedDispatcher;
 
 class FastRouterHandler implements RequestHandlerInterface
 {

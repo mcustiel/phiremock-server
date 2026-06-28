@@ -213,7 +213,7 @@ class BodyConditionCest
                     'body'       => 'Found',
                 ],
             ])
-            );
+        );
 
         $I->seeResponseCodeIs(201);
 

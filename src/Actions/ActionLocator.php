@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Phiremock.
  *
@@ -22,20 +23,20 @@ use InvalidArgumentException;
 
 class ActionLocator
 {
-    const LIST_EXPECTATIONS = 'listExpectations';
-    const ADD_EXPECTATION = 'addExpectation';
-    const CLEAR_EXPECTATIONS = 'clearExpectations';
-    const SET_SCENARIO_STATE = 'setScenarioState';
-    const CLEAR_SCENARIOS = 'clearScenarios';
-    const COUNT_REQUESTS = 'countRequests';
-    const LIST_REQUESTS = 'listRequests';
-    const RESET_REQUESTS_COUNT = 'resetRequestsCount';
-    const RESET = 'reset';
-    const GUI = 'gui';
+    public const LIST_EXPECTATIONS = 'listExpectations';
+    public const ADD_EXPECTATION = 'addExpectation';
+    public const CLEAR_EXPECTATIONS = 'clearExpectations';
+    public const SET_SCENARIO_STATE = 'setScenarioState';
+    public const CLEAR_SCENARIOS = 'clearScenarios';
+    public const COUNT_REQUESTS = 'countRequests';
+    public const LIST_REQUESTS = 'listRequests';
+    public const RESET_REQUESTS_COUNT = 'resetRequestsCount';
+    public const RESET = 'reset';
+    public const GUI = 'gui';
 
-    const MANAGE_REQUEST = 'manageRequest';
+    public const MANAGE_REQUEST = 'manageRequest';
 
-    const ACTION_FACTORY_METHOD_MAP = [
+    public const ACTION_FACTORY_METHOD_MAP = [
         self::LIST_EXPECTATIONS  => 'createListExpectations',
         self::ADD_EXPECTATION    => 'createAddExpectation',
         self::CLEAR_EXPECTATIONS => 'createClearExpectations',
