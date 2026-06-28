@@ -24,6 +24,7 @@ use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use WeakMap;
 
 class RequestExpectationComparator
 {
@@ -31,6 +32,8 @@ class RequestExpectationComparator
     private $scenarioStorage;
     /** @var LoggerInterface */
     private $logger;
+    /** @var WeakMap<ServerRequestInterface, array{valid: bool, data: mixed}> */
+    private $jsonBodyCache;
 
     public function __construct(
         ScenarioStorage $scenarioStorage,
@@ -38,6 +41,7 @@ class RequestExpectationComparator
     ) {
         $this->scenarioStorage = $scenarioStorage;
         $this->logger = $logger;
+        $this->jsonBodyCache = new WeakMap();
     }
 
     public function equals(ServerRequestInterface $httpRequest, Expectation $expectation): bool
@@ -193,32 +197,70 @@ class RequestExpectationComparator
         }
         
         $this->logger->debug('Checking JSON PATH against expectation');
-        
-        $requestBody = $httpRequest->getBody()->__toString();
-        $requestData = json_decode($requestBody, true);
-        
-        if (json_last_error() !== JSON_ERROR_NONE) {
+
+        $decodedBody = $this->getDecodedJsonBody($httpRequest);
+        if (!$decodedBody['valid'] || !is_array($decodedBody['data'])) {
             return false;
         }
+        $requestData = $decodedBody['data'];
         
         /** @var JsonPathName $pathName */
         /** @var JsonPathCondition $jsonCondition */
         foreach ($expectedRequest->getJsonPath() as $pathName => $jsonCondition) {
-            $path = explode('.', $pathName->asString());
-            $value = $requestData;
-            
-            foreach ($path as $key) {
-                if (!is_array($value) || !isset($value[$key])) {
-                    return false;
-                }
-                $value = $value[$key];
+            if (!$this->tryGetJsonPathValue($requestData, $pathName->asString(), $value)) {
+                return false;
             }
-            
+
             if (!$jsonCondition->getMatcher()->matches($value)) {
                 return false;
             }
         }
         
         return true;
+    }
+
+    /** @return array{valid: bool, data: mixed} */
+    private function getDecodedJsonBody(ServerRequestInterface $httpRequest): array
+    {
+        if (!isset($this->jsonBodyCache[$httpRequest])) {
+            $requestData = json_decode($httpRequest->getBody()->__toString(), true);
+            $this->jsonBodyCache[$httpRequest] = [
+                'valid' => json_last_error() === JSON_ERROR_NONE,
+                'data'  => $requestData,
+            ];
+        }
+
+        return $this->jsonBodyCache[$httpRequest];
+    }
+
+    private function tryGetJsonPathValue(array $data, string $path, &$value): bool
+    {
+        return $this->tryGetJsonPathSegmentsValue($data, explode('.', $path), $value);
+    }
+
+    private function tryGetJsonPathSegmentsValue($data, array $segments, &$value): bool
+    {
+        if (empty($segments)) {
+            $value = $data;
+
+            return true;
+        }
+        if (!is_array($data)) {
+            return false;
+        }
+
+        $remainingPath = implode('.', $segments);
+        if (array_key_exists($remainingPath, $data)) {
+            $value = $data[$remainingPath];
+
+            return true;
+        }
+
+        $segment = array_shift($segments);
+        if (!array_key_exists($segment, $data)) {
+            return false;
+        }
+
+        return $this->tryGetJsonPathSegmentsValue($data[$segment], $segments, $value);
     }
 }
