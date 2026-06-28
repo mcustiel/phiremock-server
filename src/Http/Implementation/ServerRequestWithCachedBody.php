@@ -28,12 +28,13 @@ class ServerRequestWithCachedBody implements ServerRequestInterface
     /** @var ServerRequestInterface */
     private $parent;
 
-    /** @var StreamInterface */
+    /** @var StreamInterface|null */
     private $body;
 
-    public function __construct(ServerRequestInterface $serverRequestInterface)
+    public function __construct(ServerRequestInterface $serverRequestInterface, ?StreamInterface $body = null)
     {
         $this->parent = $serverRequestInterface;
+        $this->body = $body;
     }
 
     public function getBody()
@@ -52,12 +53,12 @@ class ServerRequestWithCachedBody implements ServerRequestInterface
 
     public function withAttribute($name, $value)
     {
-        return $this->parent->withAttribute($name, $value);
+        return $this->withParent($this->parent->withAttribute($name, $value));
     }
 
     public function withUri(UriInterface $uri, $preserveHost = false)
     {
-        return $this->parent->withUri($uri, $preserveHost);
+        return $this->withParent($this->parent->withUri($uri, $preserveHost));
     }
 
     public function getMethod()
@@ -67,7 +68,7 @@ class ServerRequestWithCachedBody implements ServerRequestInterface
 
     public function withoutHeader($name)
     {
-        return $this->parent->withoutHeader($name);
+        return $this->withParent($this->parent->withoutHeader($name));
     }
 
     public function getHeaderLine($name)
@@ -82,7 +83,7 @@ class ServerRequestWithCachedBody implements ServerRequestInterface
 
     public function withCookieParams(array $cookies)
     {
-        return $this->parent->withCookieParams($cookies);
+        return $this->withParent($this->parent->withCookieParams($cookies));
     }
 
     public function getAttribute($name, $default = null)
@@ -92,22 +93,22 @@ class ServerRequestWithCachedBody implements ServerRequestInterface
 
     public function withUploadedFiles(array $uploadedFiles)
     {
-        return $this->parent->withUploadedFiles($uploadedFiles);
+        return $this->withParent($this->parent->withUploadedFiles($uploadedFiles));
     }
 
     public function withAddedHeader($name, $value)
     {
-        return $this->parent->withAddedHeader($name, $value);
+        return $this->withParent($this->parent->withAddedHeader($name, $value));
     }
 
     public function withQueryParams(array $query)
     {
-        return $this->parent->withQueryParams($query);
+        return $this->withParent($this->parent->withQueryParams($query));
     }
 
     public function withoutAttribute($name)
     {
-        return $this->parent->withoutAttribute($name);
+        return $this->withParent($this->parent->withoutAttribute($name));
     }
 
     public function hasHeader($name)
@@ -132,22 +133,22 @@ class ServerRequestWithCachedBody implements ServerRequestInterface
 
     public function withRequestTarget($requestTarget)
     {
-        return $this->parent->withRequestTarget($requestTarget);
+        return $this->withParent($this->parent->withRequestTarget($requestTarget));
     }
 
     public function withProtocolVersion($version)
     {
-        return $this->parent->withProtocolVersion($version);
+        return $this->withParent($this->parent->withProtocolVersion($version));
     }
 
     public function withHeader($name, $value)
     {
-        return $this->parent->withHeader($name, $value);
+        return $this->withParent($this->parent->withHeader($name, $value));
     }
 
     public function withBody(StreamInterface $body)
     {
-        return $this->parent->withBody($body);
+        return $this->withParent($this->parent->withBody($body), $body);
     }
 
     public function getProtocolVersion()
@@ -162,7 +163,7 @@ class ServerRequestWithCachedBody implements ServerRequestInterface
 
     public function withParsedBody($data)
     {
-        return $this->parent->withParsedBody($data);
+        return $this->withParent($this->parent->withParsedBody($data));
     }
 
     public function getUploadedFiles()
@@ -172,7 +173,7 @@ class ServerRequestWithCachedBody implements ServerRequestInterface
 
     public function withMethod($method)
     {
-        return $this->parent->withMethod($method);
+        return $this->withParent($this->parent->withMethod($method));
     }
 
     public function getServerParams()
@@ -188,5 +189,10 @@ class ServerRequestWithCachedBody implements ServerRequestInterface
     public function getUri()
     {
         return $this->parent->getUri();
+    }
+
+    private function withParent(ServerRequestInterface $parent, ?StreamInterface $body = null): self
+    {
+        return new self($parent, $body ?? $this->getBody());
     }
 }

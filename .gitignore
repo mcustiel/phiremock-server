@@ -8,3 +8,4 @@ composer.lock
 tests/_output
 tests/_support/_generated
 tests/.phpunit.result.cache
+.phpunit.cache
