@@ -25,7 +25,6 @@ use Mcustiel\Phiremock\Domain\Expectation;
 use Mcustiel\Phiremock\Server\Model\ScenarioStorage;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use WeakMap;
 
 class RequestExpectationComparator
 {
@@ -33,8 +32,6 @@ class RequestExpectationComparator
     private $scenarioStorage;
     /** @var LoggerInterface */
     private $logger;
-    /** @var WeakMap<ServerRequestInterface, array{valid: bool, data: mixed}> */
-    private $jsonBodyCache;
 
     public function __construct(
         ScenarioStorage $scenarioStorage,
@@ -42,7 +39,6 @@ class RequestExpectationComparator
     ) {
         $this->scenarioStorage = $scenarioStorage;
         $this->logger = $logger;
-        $this->jsonBodyCache = new WeakMap();
     }
 
     public function equals(ServerRequestInterface $httpRequest, Expectation $expectation): bool
@@ -199,11 +195,10 @@ class RequestExpectationComparator
 
         $this->logger->debug('Checking JSON PATH against expectation');
 
-        $decodedBody = $this->getDecodedJsonBody($httpRequest);
-        if (!$decodedBody['valid'] || !is_array($decodedBody['data'])) {
+        $requestData = json_decode($httpRequest->getBody()->__toString(), true);
+        if (json_last_error() !== \JSON_ERROR_NONE || !is_array($requestData)) {
             return false;
         }
-        $requestData = $decodedBody['data'];
 
         /** @var JsonPathName $pathName */
         /** @var JsonPathCondition $jsonCondition */
@@ -218,20 +213,6 @@ class RequestExpectationComparator
         }
 
         return true;
-    }
-
-    /** @return array{valid: bool, data: mixed} */
-    private function getDecodedJsonBody(ServerRequestInterface $httpRequest): array
-    {
-        if (!isset($this->jsonBodyCache[$httpRequest])) {
-            $requestData = json_decode($httpRequest->getBody()->__toString(), true);
-            $this->jsonBodyCache[$httpRequest] = [
-                'valid' => json_last_error() === JSON_ERROR_NONE,
-                'data'  => $requestData,
-            ];
-        }
-
-        return $this->jsonBodyCache[$httpRequest];
     }
 
     private function tryGetJsonPathValue(array $data, string $path, &$value): bool
